@@ -4,6 +4,7 @@ services:
   api:
     build: .
     container_name: smart_kb_api
+    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
@@ -22,10 +23,13 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - kb_network
 
   ui:
     build: .
     container_name: smart_kb_ui
+    restart: unless-stopped
     ports:
       - "8501:8501"
     environment:
@@ -36,7 +40,13 @@ services:
     depends_on:
       api:
         condition: service_healthy
+    networks:
+      - kb_network
 
 volumes:
   kb_data:
     name: smart_kb_data
+
+networks:
+  kb_network:
+    name: smart_kb_network

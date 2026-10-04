@@ -12,11 +12,15 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-download default embedding model to avoid startup delays
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
 # Copy application source
 COPY . .
+RUN chmod +x start.sh || true
 
-# Expose API port
-EXPOSE 8000
+# Expose API and Streamlit UI ports
+EXPOSE 8000 8501
 
 # Default command runs the API
 CMD ["sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
