@@ -1,4 +1,4 @@
-from .models import SearchResult, SearchResponse
+from .models import SearchResult, SearchResponse, QueryRequest
 from .retriever import Retriever
 
-__all__ = ['SearchResult', 'SearchResponse', 'Retriever']
+__all__ = ['SearchResult', 'SearchResponse', 'QueryRequest', 'Retriever']

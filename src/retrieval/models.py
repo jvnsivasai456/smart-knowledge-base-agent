@@ -9,6 +9,10 @@ class SearchResult(BaseModel):
     chunk_index: int
     custom_metadata: Dict[str, Any] = {}
     
+class QueryRequest(BaseModel):
+    query: str
+    top_k: int = 5
+    
 class SearchResponse(BaseModel):
     query: str
     results: List[SearchResult]
