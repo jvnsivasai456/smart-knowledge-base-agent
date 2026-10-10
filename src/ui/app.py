@@ -7,14 +7,10 @@ API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
 
 st.set_page_config(
     page_title="Smart KB Chatbot",
-    page_icon="🤖",
+    page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# Custom header styling
-st.title("🤖 Smart Knowledge Base Chatbot")
-st.caption("Ask questions and get answers grounded in your uploaded documents via vector search.")
 
 # Check Backend Health
 api_healthy = False
@@ -61,11 +57,21 @@ with st.sidebar:
     
     # Chat controls
     st.subheader("⚙️ Chat Settings")
+    bot_icon_choice = st.selectbox(
+        "Chatbot Icon / Avatar:",
+        ["🧠 Brain (Neural)", "⚡ Lightning", "🤖 Robot", "✨ Sparkles", "📚 Knowledge Base", "🔮 Oracle"],
+        index=0
+    )
+    bot_icon = bot_icon_choice.split()[0]
     top_k = st.slider("Max source chunks to retrieve:", min_value=1, max_value=10, value=4)
     
     if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
+
+# Custom header styling
+st.title(f"{bot_icon} Smart Knowledge Base Chatbot")
+st.caption("Ask questions and get answers grounded in your uploaded documents via vector search.")
 
 # Initialize Chat History
 if "messages" not in st.session_state:
@@ -79,7 +85,8 @@ if "messages" not in st.session_state:
 
 # Display Previous Messages
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
+    msg_avatar = bot_icon if msg["role"] == "assistant" else "👤"
+    with st.chat_message(msg["role"], avatar=msg_avatar):
         st.markdown(msg["content"])
         
         # Display source citations if available
@@ -99,11 +106,11 @@ prompt = st.chat_input("Ask a question about your documents...")
 if prompt:
     # 1. Append User Message
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
 
     # 2. Query Knowledge Base & Generate Answer
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar=bot_icon):
         with st.spinner("Searching semantic embeddings in ChromaDB..."):
             try:
                 res = requests.post(
