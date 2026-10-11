@@ -79,3 +79,12 @@ def search(request: QueryRequest):
         raise HTTPException(status_code=500, detail="Retriever not initialized")
         
     return retriever.search(request.query, top_k=request.top_k)
+
+@app.get("/documents")
+def list_documents():
+    """List all indexed documents from the metadata store."""
+    updater = components.get('updater')
+    if not updater or not updater.metadata_store:
+        return {"documents": []}
+    records = updater.metadata_store.get_all_files()
+    return {"documents": records}
