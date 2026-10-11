@@ -153,6 +153,13 @@ with st.sidebar:
     if st.button("🗑️ Clear Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
+        
+    st.divider()
+    st.subheader("📱 Open on Phone")
+    qr_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "mobile_qr.png")
+    if os.path.exists(qr_path):
+        st.image(qr_path, caption="Scan with camera to install", use_container_width=True)
+    st.caption("Link: http://192.168.1.53:8501")
 
 # Initialize Chat History
 if "messages" not in st.session_state:
