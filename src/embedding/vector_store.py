@@ -15,13 +15,20 @@ class VectorStore:
             
         ids = [chunk.chunk_id for chunk in chunks]
         documents = [chunk.content for chunk in chunks]
-        metadatas = [chunk.metadata.model_dump() for chunk in chunks]
+        # Flatten metadata to primitive types required by ChromaDB
+        clean_metadatas = []
+        for chunk in chunks:
+            clean_metadatas.append({
+                "source_id": str(chunk.metadata.source_id),
+                "chunk_index": int(chunk.metadata.chunk_index),
+                "file_hash": str(chunk.metadata.file_hash)
+            })
         
         self.collection.upsert(
             ids=ids,
             embeddings=embeddings,
             documents=documents,
-            metadatas=metadatas
+            metadatas=clean_metadatas
         )
         
     def delete_by_source_id(self, source_id: str):

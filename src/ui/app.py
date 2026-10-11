@@ -1,21 +1,22 @@
 import streamlit as st
 import requests
 import os
+import time
 import json
 import base64
 
-# API Host configuration
+# Backend configuration
 API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
 
 # Mobile PWA Manifest
 pwa_manifest = {
     "name": "Smart Knowledge Base",
     "short_name": "SmartKB",
-    "description": "Smart Knowledge Base AI Chatbot",
+    "description": "Next-Gen AI Semantic Knowledge Base Assistant",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0E1117",
-    "theme_color": "#4F46E5",
+    "background_color": "#0B0F19",
+    "theme_color": "#6366F1",
     "orientation": "portrait",
     "icons": [
         {
@@ -30,13 +31,13 @@ manifest_b64 = base64.b64encode(json.dumps(pwa_manifest).encode('utf-8')).decode
 
 # Streamlit Page Config
 st.set_page_config(
-    page_title="Smart KB",
+    page_title="Smart Knowledge Base",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Native & Mobile PWA App Headers
+# Custom High-End Styling (Glassmorphism, Luxury Dark Mode, Touch Optimized)
 st.markdown(f"""
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -44,164 +45,307 @@ st.markdown(f"""
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="SmartKB">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#4F46E5">
+  <meta name="theme-color" content="#6366F1">
   <link rel="manifest" href="data:application/manifest+json;base64,{manifest_b64}">
   <link rel="apple-touch-icon" href="https://api.iconify.design/fluent-emoji:brain.svg">
 </head>
 <style>
-/* Remove website chrome for native app look */
-#MainMenu {{visibility: hidden; display: none;}}
-footer {{visibility: hidden; display: none;}}
-header {{visibility: hidden; display: none;}}
-.stDeployButton {{display: none;}}
-[data-testid="stToolbar"] {{visibility: hidden; display: none;}}
-[data-testid="stDecoration"] {{display: none;}}
+/* Remove default Streamlit branding & chrome */
+#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"] {{
+  visibility: hidden;
+  display: none !important;
+}}
 
-/* Mobile app touch optimizations */
+/* Universal smooth font & tap behavior */
 * {{
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }}
 
-/* Clean layout & max-width container */
+/* Center container with luxury max width */
 .block-container {{
-  padding-top: 1rem !important;
-  padding-bottom: 5.5rem !important;
-  padding-left: 0.85rem !important;
-  padding-right: 0.85rem !important;
-  max-width: 950px !important;
+  padding-top: 1.2rem !important;
+  padding-bottom: 6rem !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  max-width: 960px !important;
   margin: 0 auto !important;
 }}
 
-/* Native app buttons */
-button {{
-  min-height: 42px !important;
-  border-radius: 12px !important;
-  font-weight: 500 !important;
+/* Top Hero Gradient Title */
+.hero-title {{
+  font-size: 1.85rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #818CF8 0%, #C084FC 50%, #38BDF8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }}
 
-/* Tab bar modern styling */
-[data-baseweb="tab-list"] {{
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 14px;
-  padding: 4px;
+.hero-subtitle {{
+  font-size: 0.88rem;
+  color: #94A3B8;
+  margin-bottom: 1.2rem;
+}}
+
+/* Status Badge */
+.status-badge-online {{
+  background: rgba(16, 185, 129, 0.12);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  margin-bottom: 1rem;
+}}
+
+.status-badge-offline {{
+  background: rgba(239, 68, 68, 0.12);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}}
+
+/* Modern Glass Tabs */
+[data-baseweb="tab-list"] {{
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 6px;
+  gap: 8px;
+  margin-bottom: 1.4rem;
+  backdrop-filter: blur(12px);
 }}
 
 [data-baseweb="tab"] {{
-  border-radius: 10px;
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  font-weight: 600 !important;
+  font-size: 0.92rem !important;
   border: none !important;
+  color: #94A3B8 !important;
+  transition: all 0.2s ease !important;
 }}
 
-/* Chat bubbles */
+[aria-selected="true"] {{
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+}}
+
+/* Chat Message Cards */
 [data-testid="stChatMessage"] {{
-  border-radius: 16px !important;
-  padding: 0.85rem 1.1rem !important;
-  margin-bottom: 0.85rem !important;
+  border-radius: 18px !important;
+  padding: 1rem 1.25rem !important;
+  margin-bottom: 1rem !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }}
 
-/* Card containers */
-.source-card {{
+/* Chat Input Bar */
+[data-testid="stBottomBlockContainer"] {{
+  background: rgba(11, 15, 25, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding-bottom: env(safe-area-inset-bottom, 1rem) !important;
+}}
+
+/* Quick Action / Prompt Chips */
+.chip-btn {{
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  color: #CBD5E1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}}
+
+/* Document Library Cards */
+.doc-card {{
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px 14px;
-  margin-top: 8px;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.15s ease;
+}}
+.doc-card:hover {{
+  border-color: rgba(99, 102, 241, 0.4);
+}}
+
+/* Primary Buttons */
+button {{
+  min-height: 42px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}}
+
+/* Responsive sizing for mobile phones */
+@media (max-width: 768px) {{
+  .hero-title {{ font-size: 1.45rem; }}
+  .hero-subtitle {{ font-size: 0.8rem; }}
+  .block-container {{ padding-left: 0.6rem !important; padding-right: 0.6rem !important; }}
 }}
 </style>
 """, unsafe_allow_html=True)
 
-# Check Backend Health
+# ----------------------------------------------------
+# BACKEND HEALTH & STATS CHECK
+# ----------------------------------------------------
 api_healthy = False
+latency_ms = 0
 try:
+    t0 = time.time()
     health_resp = requests.get(f"{API_HOST}/health", timeout=2)
+    latency_ms = int((time.time() - t0) * 1000)
     if health_resp.status_code == 200:
         api_healthy = True
 except Exception:
     api_healthy = False
 
-# App Header
-col_header, col_status = st.columns([4, 1])
-with col_header:
-    st.markdown("## 🧠 Smart Knowledge Base")
-with col_status:
+# Fetch currently indexed documents
+indexed_docs = []
+if api_healthy:
+    try:
+        doc_resp = requests.get(f"{API_HOST}/documents", timeout=3)
+        if doc_resp.status_code == 200:
+            indexed_docs = doc_resp.json().get("documents", [])
+    except Exception:
+        pass
+
+# ----------------------------------------------------
+# TOP HEADER & CONTROL DASHBOARD
+# ----------------------------------------------------
+col_title, col_stat = st.columns([3, 1.2])
+
+with col_title:
+    st.markdown('<div class="hero-title">🧠 Smart Knowledge Base</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-subtitle">Semantic Search • Multi-Format Ingestion • Vector RAG Engine</div>', unsafe_allow_html=True)
+
+with col_stat:
     if api_healthy:
-        st.markdown("<div style='text-align:right;padding-top:12px;'><span style='background:#10B98122;color:#10B981;border:1px solid #10B98144;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;'>🟢 Online</span></div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""<div style="text-align: right; padding-top: 6px;">
+            <span class="status-badge-online">● Active &bull; {latency_ms}ms</span>
+            <div style="font-size: 11px; color: #64748B; margin-top: 4px;">{len(indexed_docs)} documents indexed</div>
+            </div>""",
+            unsafe_allow_html=True
+        )
     else:
-        st.markdown("<div style='text-align:right;padding-top:12px;'><span style='background:#EF444422;color:#EF4444;border:1px solid #EF444444;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;'>🔴 Offline</span></div>", unsafe_allow_html=True)
-
-# Inside Format: Three Clean Modern Navigation Tabs
-tab_chat, tab_docs, tab_settings = st.tabs(["💬 Chat Assistant", "📁 Document Library", "⚙️ Settings & Mobile"])
+        st.markdown(
+            """<div style="text-align: right; padding-top: 6px;">
+            <span class="status-badge-offline">● Backend Offline</span>
+            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Run `python main.py`</div>
+            </div>""",
+            unsafe_allow_html=True
+        )
 
 # ----------------------------------------------------
-# TAB 1: CONVERSATIONAL CHAT ASSISTANT
+# THREE INTUITIVE NAVIGATION TABS
 # ----------------------------------------------------
+tab_chat, tab_library, tab_controls = st.tabs([
+    "💬 AI Chat Assistant",
+    f"📁 Knowledge Library ({len(indexed_docs)})",
+    "🎛️ Controls & Mobile"
+])
+
+# ====================================================
+# TAB 1: AI CHAT ASSISTANT
+# ====================================================
 with tab_chat:
-    # Quick starter query buttons
-    col_q1, col_q2, col_q3 = st.columns(3)
-    sample_q = None
-    with col_q1:
-        if st.button("📌 Summarize docs", use_container_width=True):
-            sample_q = "Summarize the key topics and contents in the uploaded documents."
-    with col_q2:
-        if st.button("🔍 Key takeaways", use_container_width=True):
-            sample_q = "What are the most important key takeaways from the documents?"
-    with col_q3:
-        if st.button("❓ Main concepts", use_container_width=True):
-            sample_q = "Explain the core concepts and definitions found in the documents."
+    # Quick Starter Questions (One-tap prompt chips)
+    col_chip1, col_chip2, col_chip3 = st.columns(3)
+    quick_prompt = None
+
+    with col_chip1:
+        if st.button("📋 Summarize Documents", use_container_width=True):
+            quick_prompt = "Provide a comprehensive summary of the main points across the uploaded documents."
+    with col_chip2:
+        if st.button("🔍 Key Takeaways", use_container_width=True):
+            quick_prompt = "What are the most critical takeaways, findings, and conclusions?"
+    with col_chip3:
+        if st.button("💡 Extract Concepts", use_container_width=True):
+            quick_prompt = "Identify and clearly explain the core concepts and definitions mentioned."
 
     # Initialize Chat History
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
                 "role": "assistant",
-                "content": "👋 **Hello!** I am your **Knowledge Base Assistant**.\n\nAsk me any question about your documents, or tap **📁 Document Library** above to upload new files!",
+                "content": (
+                    "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
+                    "I have ingested your documents into ChromaDB vector embeddings. "
+                    "Ask me any question, or click one of the quick starter buttons above to begin!"
+                ),
                 "sources": []
             }
         ]
 
-    # Display Previous Messages
+    # Render Conversation Messages
     for msg in st.session_state.messages:
         avatar = "🧠" if msg["role"] == "assistant" else "👤"
         with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(msg["content"])
             
-            # Display source citations if available
+            # Source Citations Card
             if msg.get("sources"):
-                with st.expander(f"📚 Verified Sources ({len(msg['sources'])} chunks)", expanded=False):
+                with st.expander(f"📚 Verified Sources ({len(msg['sources'])} relevant chunks)", expanded=False):
                     for idx, src in enumerate(msg["sources"], 1):
-                        source_name = os.path.basename(src.get("source_id", "Unknown Document"))
+                        source_file = os.path.basename(src.get("source_id", "Document"))
                         score = src.get("score", 0.0)
                         chunk_idx = src.get("chunk_index", 0)
                         
-                        # Calculate intuitive similarity score
-                        match_pct = max(10, min(99, int((1.0 - (score / 2.0)) * 100)))
+                        # Intuitive confidence calculation
+                        match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
+                        badge_color = "#34D399" if match_pct >= 80 else "#818CF8"
                         
-                        st.markdown(f"**Source #{idx}:** `{source_name}` &nbsp;•&nbsp; **Chunk {chunk_idx}** &nbsp;•&nbsp; <span style='color:#10B981;font-weight:600;'>{match_pct}% Match</span>", unsafe_allow_html=True)
+                        st.markdown(
+                            f"""<div style="margin-bottom: 6px;">
+                            <strong>#{idx}</strong> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                            <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
+                            </div>""",
+                            unsafe_allow_html=True
+                        )
                         st.info(src.get("content", ""))
 
     # Chat Input Box
-    prompt = st.chat_input("Ask a question about your documents...")
-    if sample_q:
-        prompt = sample_q
+    user_input = st.chat_input("Ask anything about your documents...")
+    
+    # Handle quick chip or text input
+    active_prompt = quick_prompt if quick_prompt else user_input
 
-    if prompt:
-        st.session_state.messages.append({"role": "user", "content": prompt})
+    if active_prompt:
+        # Append User Message
+        st.session_state.messages.append({"role": "user", "content": active_prompt})
         with st.chat_message("user", avatar="👤"):
-            st.markdown(prompt)
+            st.markdown(active_prompt)
 
+        # Assistant Thinking & Semantic Search
         with st.chat_message("assistant", avatar="🧠"):
-            with st.spinner("Searching semantic knowledge base in ChromaDB..."):
+            with st.spinner("Searching semantic embeddings in ChromaDB..."):
                 try:
-                    top_k_val = st.session_state.get("top_k", 4)
+                    search_depth = st.session_state.get("top_k", 4)
                     res = requests.post(
                         f"{API_HOST}/search",
-                        json={"query": prompt, "top_k": top_k_val},
+                        json={"query": active_prompt, "top_k": search_depth},
                         timeout=30
                     )
                     
@@ -210,137 +354,179 @@ with tab_chat:
                         results = data.get("results", [])
                         
                         if not results:
-                            response_text = (
-                                "🔍 **No matching information found.**\n\n"
-                                "I searched the knowledge base but couldn't find relevant content. "
-                                "Go to the **📁 Document Library** tab to upload relevant documents!"
+                            answer_text = (
+                                "🔍 **No direct matches found in the knowledge base.**\n\n"
+                                "Please verify that your documents are uploaded in the **📁 Knowledge Library** tab, "
+                                "or try asking with different keywords!"
                             )
-                            retrieved_sources = []
+                            sources = []
                         else:
-                            # Clean, polished answer synthesized from top matching context
-                            top_content = results[0]['content'].strip()
+                            # Primary grounded answer from top matching chunks
+                            primary_answer = results[0]['content'].strip()
                             
-                            # Construct source badge list
-                            source_pills = " ".join([f"`📄 {os.path.basename(r['source_id'])}`" for r in results[:3]])
+                            # Clean sources pills
+                            unique_sources = list({os.path.basename(r['source_id']) for r in results})
+                            sources_badges = " ".join([f"`📄 {s}`" for s in unique_sources])
                             
-                            response_text = f"{top_content}\n\n---\n**Grounded in:** {source_pills}"
-                            retrieved_sources = results
+                            answer_text = f"{primary_answer}\n\n---\n**Grounded in:** {sources_badges}"
+                            sources = results
                             
-                        st.markdown(response_text)
+                        st.markdown(answer_text)
                         
-                        if retrieved_sources:
-                            with st.expander(f"📚 Verified Sources ({len(retrieved_sources)} chunks)", expanded=False):
-                                for idx, src in enumerate(retrieved_sources, 1):
-                                    source_name = os.path.basename(src.get("source_id", "Unknown Document"))
+                        # Expandable Sources Details
+                        if sources:
+                            with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
+                                for idx, src in enumerate(sources, 1):
+                                    source_file = os.path.basename(src.get("source_id", "Document"))
                                     score = src.get("score", 0.0)
                                     chunk_idx = src.get("chunk_index", 0)
-                                    match_pct = max(10, min(99, int((1.0 - (score / 2.0)) * 100)))
-                                    st.markdown(f"**Source #{idx}:** `{source_name}` &nbsp;•&nbsp; **Chunk {chunk_idx}** &nbsp;•&nbsp; <span style='color:#10B981;font-weight:600;'>{match_pct}% Match</span>", unsafe_allow_html=True)
+                                    match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
+                                    badge_color = "#34D399" if match_pct >= 80 else "#818CF8"
+                                    
+                                    st.markdown(
+                                        f"""<div style="margin-bottom: 6px;">
+                                        <strong>#{idx}</strong> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                                        <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
+                                        </div>""",
+                                        unsafe_allow_html=True
+                                    )
                                     st.info(src.get("content", ""))
                                     
                         st.session_state.messages.append({
                             "role": "assistant",
-                            "content": response_text,
-                            "sources": retrieved_sources
+                            "content": answer_text,
+                            "sources": sources
                         })
-                        
                     else:
-                        err_msg = f"⚠️ Server Error ({res.status_code})"
-                        st.error(err_msg)
-                        st.session_state.messages.append({"role": "assistant", "content": err_msg})
+                        err = f"⚠️ Server Error ({res.status_code})"
+                        st.error(err)
+                        st.session_state.messages.append({"role": "assistant", "content": err})
                         
                 except requests.exceptions.ConnectionError:
-                    err_msg = "⚠️ Cannot connect to backend server. Ensure `python main.py` is running on port 8000."
-                    st.error(err_msg)
-                    st.session_state.messages.append({"role": "assistant", "content": err_msg})
+                    err = "⚠️ Backend API is offline. Start the backend with `python main.py` on port 8000."
+                    st.error(err)
+                    st.session_state.messages.append({"role": "assistant", "content": err})
                 except Exception as e:
-                    err_msg = f"⚠️ Error: {str(e)}"
-                    st.error(err_msg)
-                    st.session_state.messages.append({"role": "assistant", "content": err_msg})
+                    err = f"⚠️ Error: {str(e)}"
+                    st.error(err)
+                    st.session_state.messages.append({"role": "assistant", "content": err})
 
-# ----------------------------------------------------
-# TAB 2: DOCUMENT LIBRARY & UPLOAD ZONE
-# ----------------------------------------------------
-with tab_docs:
-    st.subheader("📤 Ingest New Documents")
-    uploaded_files = st.file_uploader(
-        "Upload PDF, Word (DOCX), or Text (TXT) files:",
+# ====================================================
+# TAB 2: KNOWLEDGE LIBRARY & DOCUMENT INGESTION
+# ====================================================
+with tab_library:
+    st.subheader("📤 Document Ingestion Dropzone")
+    st.caption("Upload files to automatically extract text, generate 384-d vector embeddings, and store them in ChromaDB.")
+    
+    new_files = st.file_uploader(
+        "Drop PDF, DOCX, or TXT files here:",
         type=["pdf", "docx", "txt"],
         accept_multiple_files=True,
-        key="doc_library_uploader"
+        key="uploader_widget"
     )
     
-    if st.button("⚡ Ingest & Re-index", use_container_width=True):
-        if uploaded_files and api_healthy:
-            success_count = 0
-            for uf in uploaded_files:
-                with st.spinner(f"Ingesting {uf.name}..."):
-                    files = {"file": (uf.name, uf.getvalue())}
-                    try:
-                        res = requests.post(f"{API_HOST}/upload", files=files, timeout=30)
-                        if res.status_code == 200:
-                            success_count += 1
-                    except Exception as e:
-                        st.error(f"Error uploading {uf.name}: {e}")
-            if success_count > 0:
-                st.success(f"✅ Successfully ingested {success_count} file(s) into ChromaDB!")
-        elif not uploaded_files:
-            st.warning("Please choose one or more files to upload.")
-        else:
-            st.error("Backend API is offline.")
-
-    st.divider()
-    st.subheader("📚 Currently Indexed Files")
-    
-    # Fetch indexed documents list from API
-    try:
-        doc_res = requests.get(f"{API_HOST}/documents", timeout=5)
-        if doc_res.status_code == 200:
-            docs = doc_res.json().get("documents", [])
-            if not docs:
-                st.info("No documents indexed yet. Upload your first document above!")
+    col_upload_btn, col_resync_btn = st.columns([2, 1])
+    with col_upload_btn:
+        if st.button("🚀 Ingest & Index Uploaded Files", use_container_width=True, type="primary"):
+            if new_files and api_healthy:
+                successes = 0
+                for f in new_files:
+                    with st.spinner(f"Ingesting {f.name}..."):
+                        files_payload = {"file": (f.name, f.getvalue())}
+                        try:
+                            r = requests.post(f"{API_HOST}/upload", files=files_payload, timeout=30)
+                            if r.status_code == 200:
+                                successes += 1
+                        except Exception as e:
+                            st.error(f"Error indexing {f.name}: {e}")
+                if successes > 0:
+                    st.success(f"✅ Ingested {successes} document(s)! Embeddings saved in ChromaDB.")
+                    time.sleep(1)
+                    st.rerun()
+            elif not new_files:
+                st.warning("Please select at least one file.")
             else:
-                for d in docs:
-                    filename = os.path.basename(d.get("source_id", "Unknown"))
-                    file_type = d.get("source_type", "txt").upper()
-                    icon = "📕" if file_type == "PDF" else "📘" if file_type == "DOCX" else "📄"
-                    last_indexed = d.get("last_indexed", "Recently")[:19].replace("T", " ")
-                    
-                    with st.container():
-                        st.markdown(f"""
-                        <div class="source-card">
-                          <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                              <strong style="font-size:15px;">{icon} {filename}</strong><br>
-                              <span style="font-size:12px;color:#9CA3AF;">Type: {file_type} &nbsp;•&nbsp; Indexed: {last_indexed}</span>
-                            </div>
-                            <span style="background:#4F46E522;color:#818CF8;border:1px solid #4F46E544;padding:3px 8px;border-radius:6px;font-size:11px;font-family:monospace;">Active in ChromaDB</span>
-                          </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-    except Exception:
-        st.warning("Could not retrieve file library from server.")
+                st.error("Backend API is offline.")
+                
+    with col_resync_btn:
+        if st.button("🔄 Refresh Library", use_container_width=True):
+            st.rerun()
 
-# ----------------------------------------------------
-# TAB 3: SETTINGS, CONTROLS & MOBILE APP
-# ----------------------------------------------------
-with tab_settings:
-    st.subheader("⚙️ Retrieval Parameters")
-    st.session_state["top_k"] = st.slider("Number of source chunks to retrieve (Top-K):", min_value=1, max_value=8, value=4)
+    st.markdown("---")
+    st.subheader(f"📚 Currently Indexed Corpus ({len(indexed_docs)} documents)")
+
+    if not indexed_docs:
+        st.info("No documents indexed yet. Drag and drop your first file above to get started!")
+    else:
+        for doc in indexed_docs:
+            src_path = doc.get("source_id", "Unknown")
+            fname = os.path.basename(src_path)
+            ftype = doc.get("source_type", "txt").upper()
+            icon = "📕" if ftype == "PDF" else "📘" if ftype == "DOCX" else "📄"
+            fhash = doc.get("file_hash", "")[:12]
+            indexed_at = doc.get("last_indexed", "Recently")[:19].replace("T", " ")
+            
+            st.markdown(
+                f"""<div class="doc-card">
+                  <div>
+                    <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
+                      <span>{icon}</span> {fname}
+                    </div>
+                    <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">
+                      Format: <strong>{ftype}</strong> &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
+                    </div>
+                  </div>
+                  <div>
+                    <span style="background: rgba(99, 102, 241, 0.15); color: #818CF8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;">
+                      ChromaDB Active
+                    </span>
+                  </div>
+                </div>""",
+                unsafe_allow_html=True
+            )
+
+# ====================================================
+# TAB 3: APP CONTROLS, SETTINGS & MOBILE
+# ====================================================
+with tab_controls:
+    st.subheader("🎛️ Search Precision & Retrieval Depth")
+    st.session_state["top_k"] = st.slider(
+        "Top-K Chunks to Retrieve per Query:",
+        min_value=1,
+        max_value=8,
+        value=st.session_state.get("top_k", 4),
+        help="Higher values retrieve more context, while lower values offer faster response times."
+    )
     
-    st.divider()
-    st.subheader("🧹 Chat Management")
-    if st.button("🗑️ Reset All Chat History", use_container_width=True):
+    st.markdown("---")
+    st.subheader("🧹 Chat Session Controls")
+    if st.button("🗑️ Clear Conversation History", use_container_width=True):
         st.session_state.messages = []
         st.success("Chat history cleared!")
+        time.sleep(0.5)
         st.rerun()
 
-    st.divider()
-    st.subheader("📱 Install & Open on Mobile")
-    st.markdown("Scan this QR code with your phone camera to open and install the app on your mobile home screen:")
+    st.markdown("---")
+    st.subheader("📱 Install on Mobile Device")
+    st.caption("Scan this QR code with your iPhone or Android camera to open and install the app on your home screen:")
     
-    qr_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "mobile_qr.png")
-    if os.path.exists(qr_path):
-        st.image(qr_path, width=220)
-    st.code("http://192.168.1.53:8501", language="text")
-    st.caption("Ensure both phone and computer are on the same Wi-Fi network.")
+    col_qr, col_qr_info = st.columns([1, 2])
+    with col_qr:
+        qr_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "mobile_qr.png")
+        if os.path.exists(qr_file):
+            st.image(qr_file, width=180)
+    with col_qr_info:
+        st.markdown("**Mobile Network Link:**")
+        st.code("http://192.168.1.53:8501", language="text")
+        st.caption("Ensure your phone is connected to the same Wi-Fi network.")
+        st.markdown("""
+        * **iPhone (Safari)**: Tap Share ➔ *Add to Home Screen*.
+        * **Android (Chrome)**: Tap Menu (⋮) ➔ *Install app* or *Add to Home screen*.
+        """)
+
+    st.markdown("---")
+    st.subheader("🔌 System Diagnostics")
+    st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
+    st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
+    st.markdown(f"- **Vector Database:** `ChromaDB Persistent (data/chroma_db)`")
+    st.markdown(f"- **Metadata Database:** `SQLite (data/metadata.sqlite)`")
