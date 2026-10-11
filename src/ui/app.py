@@ -37,175 +37,126 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom High-End Styling (Glassmorphism, Luxury Dark Mode, Touch Optimized)
-st.markdown(f"""
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="SmartKB">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#6366F1">
-  <link rel="manifest" href="data:application/manifest+json;base64,{manifest_b64}">
-  <link rel="apple-touch-icon" href="https://api.iconify.design/fluent-emoji:brain.svg">
-</head>
-<style>
-/* Remove default Streamlit branding & chrome */
-#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"] {{
-  visibility: hidden;
-  display: none !important;
-}}
-
-/* Universal smooth font & tap behavior */
-* {{
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}}
-
-/* Center container with luxury max width */
-.block-container {{
-  padding-top: 1.2rem !important;
-  padding-bottom: 6rem !important;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-  max-width: 960px !important;
-  margin: 0 auto !important;
-}}
-
-/* Top Hero Gradient Title */
-.hero-title {{
-  font-size: 1.85rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #818CF8 0%, #C084FC 50%, #38BDF8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}}
-
-.hero-subtitle {{
-  font-size: 0.88rem;
-  color: #94A3B8;
-  margin-bottom: 1.2rem;
-}}
-
-/* Status Badge */
-.status-badge-online {{
-  background: rgba(16, 185, 129, 0.12);
-  color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}}
-
-.status-badge-offline {{
-  background: rgba(239, 68, 68, 0.12);
-  color: #F87171;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}}
-
-/* Modern Glass Tabs */
-[data-baseweb="tab-list"] {{
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 6px;
-  gap: 8px;
-  margin-bottom: 1.4rem;
-  backdrop-filter: blur(12px);
-}}
-
-[data-baseweb="tab"] {{
-  border-radius: 12px !important;
-  padding: 10px 20px !important;
-  font-weight: 600 !important;
-  font-size: 0.92rem !important;
-  border: none !important;
-  color: #94A3B8 !important;
-  transition: all 0.2s ease !important;
-}}
-
-[aria-selected="true"] {{
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(168, 85, 247, 0.4) !important;
-}}
-
-/* Chat Message Cards */
-[data-testid="stChatMessage"] {{
-  border-radius: 18px !important;
-  padding: 1rem 1.25rem !important;
-  margin-bottom: 1rem !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
-}}
-
-/* Chat Input Bar */
-[data-testid="stBottomBlockContainer"] {{
-  background: rgba(11, 15, 25, 0.88) !important;
-  backdrop-filter: blur(16px) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-  padding-bottom: env(safe-area-inset-bottom, 1rem) !important;
-}}
-
-/* Quick Action / Prompt Chips */
-.chip-btn {{
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 0.82rem;
-  color: #CBD5E1;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}}
-
-/* Document Library Cards */
-.doc-card {{
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 14px 18px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.15s ease;
-}}
-.doc-card:hover {{
-  border-color: rgba(99, 102, 241, 0.4);
-}}
-
-/* Primary Buttons */
-button {{
-  min-height: 42px !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-}}
-
-/* Responsive sizing for mobile phones */
-@media (max-width: 768px) {{
-  .hero-title {{ font-size: 1.45rem; }}
-  .hero-subtitle {{ font-size: 0.8rem; }}
-  .block-container {{ padding-left: 0.6rem !important; padding-right: 0.6rem !important; }}
-}}
-</style>
-""", unsafe_allow_html=True)
+# Custom Clean Styling
+clean_css = """<style>
+#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"] {
+    visibility: hidden;
+    display: none !important;
+}
+html, body, [class*="css"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.block-container {
+    padding-top: 1.2rem !important;
+    padding-bottom: 6rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 960px !important;
+    margin: 0 auto !important;
+}
+.hero-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #818CF8 0%, #C084FC 50%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.hero-subtitle {
+    font-size: 0.88rem;
+    color: #94A3B8;
+    margin-bottom: 1.2rem;
+}
+.status-badge-online {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.status-badge-offline {
+    background: rgba(239, 68, 68, 0.12);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+[data-baseweb="tab-list"] {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 6px;
+    gap: 8px;
+    margin-bottom: 1.4rem;
+    backdrop-filter: blur(12px);
+}
+[data-baseweb="tab"] {
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    border: none !important;
+    color: #94A3B8 !important;
+    transition: all 0.2s ease !important;
+}
+[aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(168, 85, 247, 0.4) !important;
+}
+[data-testid="stChatMessage"] {
+    border-radius: 18px !important;
+    padding: 1rem 1.25rem !important;
+    margin-bottom: 1rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+[data-testid="stBottomBlockContainer"] {
+    background: rgba(11, 15, 25, 0.88) !important;
+    backdrop-filter: blur(16px) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding-bottom: env(safe-area-inset-bottom, 1rem) !important;
+}
+.doc-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.15s ease;
+}
+.doc-card:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+}
+button {
+    min-height: 42px !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+@media (max-width: 768px) {
+    .hero-title { font-size: 1.45rem; }
+    .hero-subtitle { font-size: 0.8rem; }
+    .block-container { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
+}
+</style>"""
+st.markdown(clean_css, unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # BACKEND HEALTH & STATS CHECK
