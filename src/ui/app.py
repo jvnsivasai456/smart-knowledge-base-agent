@@ -12,8 +12,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Native App Clean Styling (removes website headers, toolbars, deploy buttons)
+# Native & Mobile PWA App Headers
 st.markdown("""
+<head>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Smart KB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#4F46E5">
+</head>
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
