@@ -12,6 +12,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Native App Clean Styling (removes website headers, toolbars, deploy buttons)
+st.markdown("""
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+.stDeployButton {display: none;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+
 # Check Backend Health
 api_healthy = False
 try:
