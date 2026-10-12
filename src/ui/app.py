@@ -4,6 +4,7 @@ import os
 import time
 import json
 import base64
+import urllib.parse
 
 # Backend configuration
 API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
@@ -204,13 +205,13 @@ with col_stat:
         st.markdown(
             """<div style="text-align: right; padding-top: 6px;">
             <span class="status-badge-offline">● Backend Offline</span>
-            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Run `python main.py`</div>
+            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Start backend: `python main.py`</div>
             </div>""",
             unsafe_allow_html=True
         )
 
 # ----------------------------------------------------
-# THREE INTUITIVE NAVIGATION TABS
+# THREE NAVIGATION TABS
 # ----------------------------------------------------
 tab_chat, tab_library, tab_controls = st.tabs([
     "💬 AI Chat Assistant",
@@ -222,7 +223,7 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # TAB 1: AI CHAT ASSISTANT
 # ====================================================
 with tab_chat:
-    # Quick Starter Questions (One-tap prompt chips)
+    # Quick Starter Prompt Chips
     col_chip1, col_chip2, col_chip3 = st.columns(3)
     quick_prompt = None
 
@@ -233,7 +234,7 @@ with tab_chat:
         if st.button("🔍 Key Takeaways", use_container_width=True):
             quick_prompt = "What are the most critical takeaways, findings, and conclusions?"
     with col_chip3:
-        if st.button("💡 Extract Concepts", use_container_width=True):
+        if st.button("💡 Core Concepts", use_container_width=True):
             quick_prompt = "Identify and clearly explain the core concepts and definitions mentioned."
 
     # Initialize Chat History
@@ -244,7 +245,7 @@ with tab_chat:
                 "content": (
                     "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
                     "I have ingested your documents into ChromaDB vector embeddings. "
-                    "Ask me any question, or click one of the quick starter buttons above to begin!"
+                    "Ask me any question, or click one of the quick starter buttons above to explore!"
                 ),
                 "sources": []
             }
@@ -264,7 +265,6 @@ with tab_chat:
                         score = src.get("score", 0.0)
                         chunk_idx = src.get("chunk_index", 0)
                         
-                        # Intuitive confidence calculation
                         match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
                         badge_color = "#34D399" if match_pct >= 80 else "#818CF8"
                         
@@ -279,8 +279,6 @@ with tab_chat:
 
     # Chat Input Box
     user_input = st.chat_input("Ask anything about your documents...")
-    
-    # Handle quick chip or text input
     active_prompt = quick_prompt if quick_prompt else user_input
 
     if active_prompt:
@@ -289,42 +287,24 @@ with tab_chat:
         with st.chat_message("user", avatar="👤"):
             st.markdown(active_prompt)
 
-        # Assistant Thinking & Semantic Search
         with st.chat_message("assistant", avatar="🧠"):
-            with st.spinner("Searching semantic embeddings in ChromaDB..."):
+            with st.spinner("Synthesizing answer from semantic knowledge base..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
-                    res = requests.post(
-                        f"{API_HOST}/search",
+                    # Call smart /chat endpoint
+                    chat_res = requests.post(
+                        f"{API_HOST}/chat",
                         json={"query": active_prompt, "top_k": search_depth},
                         timeout=30
                     )
                     
-                    if res.status_code == 200:
-                        data = res.json()
-                        results = data.get("results", [])
+                    if chat_res.status_code == 200:
+                        data = chat_res.json()
+                        answer_text = data.get("answer", "")
+                        sources = data.get("sources", [])
                         
-                        if not results:
-                            answer_text = (
-                                "🔍 **No direct matches found in the knowledge base.**\n\n"
-                                "Please verify that your documents are uploaded in the **📁 Knowledge Library** tab, "
-                                "or try asking with different keywords!"
-                            )
-                            sources = []
-                        else:
-                            # Primary grounded answer from top matching chunks
-                            primary_answer = results[0]['content'].strip()
-                            
-                            # Clean sources pills
-                            unique_sources = list({os.path.basename(r['source_id']) for r in results})
-                            sources_badges = " ".join([f"`📄 {s}`" for s in unique_sources])
-                            
-                            answer_text = f"{primary_answer}\n\n---\n**Grounded in:** {sources_badges}"
-                            sources = results
-                            
                         st.markdown(answer_text)
                         
-                        # Expandable Sources Details
                         if sources:
                             with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
                                 for idx, src in enumerate(sources, 1):
@@ -349,12 +329,12 @@ with tab_chat:
                             "sources": sources
                         })
                     else:
-                        err = f"⚠️ Server Error ({res.status_code})"
+                        err = f"⚠️ Server Error ({chat_res.status_code}): {chat_res.text}"
                         st.error(err)
                         st.session_state.messages.append({"role": "assistant", "content": err})
                         
                 except requests.exceptions.ConnectionError:
-                    err = "⚠️ Backend API is offline. Start the backend with `python main.py` on port 8000."
+                    err = "⚠️ Backend API is offline. Please start the backend with `python main.py` on port 8000."
                     st.error(err)
                     st.session_state.messages.append({"role": "assistant", "content": err})
                 except Exception as e:
@@ -367,7 +347,7 @@ with tab_chat:
 # ====================================================
 with tab_library:
     st.subheader("📤 Document Ingestion Dropzone")
-    st.caption("Upload files to automatically extract text, generate 384-d vector embeddings, and store them in ChromaDB.")
+    st.caption("Upload files to automatically extract text, generate 384-d vector embeddings, and index them in ChromaDB.")
     
     new_files = st.file_uploader(
         "Drop PDF, DOCX, or TXT files here:",
@@ -395,12 +375,18 @@ with tab_library:
                     time.sleep(1)
                     st.rerun()
             elif not new_files:
-                st.warning("Please select at least one file.")
+                st.warning("Please select at least one file to upload.")
             else:
-                st.error("Backend API is offline.")
+                st.error("Backend API is currently offline.")
                 
     with col_resync_btn:
-        if st.button("🔄 Refresh Library", use_container_width=True):
+        if st.button("🔄 Resync & Refresh Library", use_container_width=True):
+            if api_healthy:
+                try:
+                    requests.post(f"{API_HOST}/resync", timeout=5)
+                except Exception:
+                    pass
+            time.sleep(0.5)
             st.rerun()
 
     st.markdown("---")
@@ -411,30 +397,58 @@ with tab_library:
     else:
         for doc in indexed_docs:
             src_path = doc.get("source_id", "Unknown")
-            fname = os.path.basename(src_path)
+            fname = doc.get("filename") or os.path.basename(src_path)
             ftype = doc.get("source_type", "txt").upper()
             icon = "📕" if ftype == "PDF" else "📘" if ftype == "DOCX" else "📄"
             fhash = doc.get("file_hash", "")[:12]
             indexed_at = doc.get("last_indexed", "Recently")[:19].replace("T", " ")
+            size_bytes = doc.get("file_size_bytes", 0)
             
-            st.markdown(
-                f"""<div class="doc-card">
-                  <div>
-                    <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
-                      <span>{icon}</span> {fname}
-                    </div>
-                    <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">
-                      Format: <strong>{ftype}</strong> &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
-                    </div>
-                  </div>
-                  <div>
-                    <span style="background: rgba(99, 102, 241, 0.15); color: #818CF8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;">
-                      ChromaDB Active
-                    </span>
-                  </div>
-                </div>""",
-                unsafe_allow_html=True
-            )
+            size_str = ""
+            if size_bytes > 0:
+                if size_bytes < 1024:
+                    size_str = f"&bull; Size: <strong>{size_bytes} B</strong>"
+                elif size_bytes < 1024 * 1024:
+                    size_str = f"&bull; Size: <strong>{size_bytes/1024:.1f} KB</strong>"
+                else:
+                    size_str = f"&bull; Size: <strong>{size_bytes/(1024*1024):.1f} MB</strong>"
+            
+            col_card, col_del = st.columns([5, 1.2])
+            with col_card:
+                st.markdown(
+                    f"""<div class="doc-card" style="margin-bottom: 0px;">
+                      <div>
+                        <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
+                          <span>{icon}</span> {fname}
+                        </div>
+                        <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">
+                          Format: <strong>{ftype}</strong> {size_str} &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
+                        </div>
+                      </div>
+                      <div>
+                        <span style="background: rgba(99, 102, 241, 0.15); color: #818CF8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;">
+                          ChromaDB Active
+                        </span>
+                      </div>
+                    </div>""",
+                    unsafe_allow_html=True
+                )
+            with col_del:
+                st.write("")
+                if st.button("🗑️ Delete", key=f"del_{fname}", use_container_width=True):
+                    try:
+                        encoded_fname = urllib.parse.quote(fname)
+                        del_res = requests.delete(f"{API_HOST}/documents/{encoded_fname}", timeout=10)
+                        if del_res.status_code == 200:
+                            st.toast(f"Deleted {fname}", icon="🗑️")
+                            st.success(f"Successfully deleted {fname}")
+                            time.sleep(0.5)
+                            st.rerun()
+                        else:
+                            st.error(f"Failed to delete: {del_res.text}")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+            st.write("")
 
 # ====================================================
 # TAB 3: APP CONTROLS, SETTINGS & MOBILE
@@ -446,7 +460,7 @@ with tab_controls:
         min_value=1,
         max_value=8,
         value=st.session_state.get("top_k", 4),
-        help="Higher values retrieve more context, while lower values offer faster response times."
+        help="Controls the number of semantic vector chunks retrieved from ChromaDB for each query."
     )
     
     st.markdown("---")
@@ -479,5 +493,8 @@ with tab_controls:
     st.subheader("🔌 System Diagnostics")
     st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
     st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
+    if api_healthy:
+        st.markdown(f"- **API Latency:** `{latency_ms} ms`")
+        st.markdown(f"- **Indexed Documents:** `{len(indexed_docs)}`")
     st.markdown(f"- **Vector Database:** `ChromaDB Persistent (data/chroma_db)`")
     st.markdown(f"- **Metadata Database:** `SQLite (data/metadata.sqlite)`")
