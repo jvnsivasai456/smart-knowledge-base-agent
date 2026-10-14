@@ -146,65 +146,159 @@ html, body, [class*="css"] {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #F8FAFC !important;
 }
-.block-container {
-    padding-top: 1.2rem !important;
-    padding-bottom: 3.5rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: 980px !important;
-    margin: 0 auto !important;
+
+/* Universal High-Luminance Typography for All Normal Text */
+p, span, li, label, div, td, th, .stMarkdown, .stText {
+    color: #F8FAFC !important;
 }
-/* Enhanced Typography for Smart Knowledge Base Agent */
-.hero-title {
-    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 2.15rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #FFFFFF 0%, #E0E7FF 30%, #C084FC 65%, #38BDF8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.25rem;
+
+/* 3D Radiant Extrusion Header for "Smart Knowledge Base Agent" */
+.hero-title-wrapper {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    filter: drop-shadow(0 2px 20px rgba(168, 85, 247, 0.35));
+    gap: 1.15rem;
+    margin-bottom: 0.35rem;
 }
-.agent-tag {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
-    color: #E0E7FF !important;
-    -webkit-text-fill-color: #E0E7FF !important;
-    border: 1px solid rgba(168, 85, 247, 0.45);
-    padding: 4px 10px;
-    border-radius: 9999px;
-    box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
+.hero-title-3d {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 2.3rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.015em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.15 !important;
+    display: inline-flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+/* Bright White & Indigo 3D Extrusion */
+.text-3d-white {
+    color: #FFFFFF !important;
+    display: inline-block;
+    text-shadow:
+        0 1px 0 #E2E8F0,
+        0 2px 0 #CBD5E1,
+        0 3px 0 #A5B4FC,
+        0 4px 0 #818CF8,
+        0 5px 0 #6366F1,
+        0 6px 0 #4F46E5,
+        0 7px 0 #4338CA,
+        0 8px 1px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(168, 85, 247, 0.9),
+        0 0 45px rgba(99, 102, 241, 0.65),
+        0 10px 22px rgba(0, 0, 0, 0.75) !important;
+    transition: transform 0.25s ease, text-shadow 0.25s ease;
+}
+.text-3d-white:hover {
+    transform: translateY(-2px);
+    text-shadow:
+        0 1px 0 #FFFFFF,
+        0 2px 0 #E2E8F0,
+        0 3px 0 #C7D2FE,
+        0 4px 0 #A5B4FC,
+        0 5px 0 #818CF8,
+        0 6px 0 #6366F1,
+        0 7px 0 #4F46E5,
+        0 8px 0 #4338CA,
+        0 9px 2px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(168, 85, 247, 1),
+        0 0 60px rgba(56, 189, 248, 0.85),
+        0 14px 28px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Radiant Cyan & Blue 3D Extrusion for "Agent" */
+.text-3d-agent {
+    color: #38BDF8 !important;
+    display: inline-block;
+    text-shadow:
+        0 1px 0 #BAE6FD,
+        0 2px 0 #7DD3FC,
+        0 3px 0 #38BDF8,
+        0 4px 0 #0EA5E9,
+        0 5px 0 #0284C7,
+        0 6px 0 #0369A1,
+        0 7px 0 #075985,
+        0 8px 1px rgba(0, 0, 0, 0.45),
+        0 0 25px rgba(56, 189, 248, 0.95),
+        0 0 50px rgba(14, 165, 233, 0.75),
+        0 10px 22px rgba(0, 0, 0, 0.75) !important;
+    transition: transform 0.25s ease, text-shadow 0.25s ease;
+}
+.text-3d-agent:hover {
+    transform: translateY(-2px);
+    text-shadow:
+        0 1px 0 #E0F2FE,
+        0 2px 0 #BAE6FD,
+        0 3px 0 #7DD3FC,
+        0 4px 0 #38BDF8,
+        0 5px 0 #0EA5E9,
+        0 6px 0 #0284C7,
+        0 7px 0 #0369A1,
+        0 8px 0 #075985,
+        0 9px 2px rgba(0, 0, 0, 0.5),
+        0 0 35px rgba(56, 189, 248, 1),
+        0 0 65px rgba(14, 165, 233, 0.9),
+        0 14px 28px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* 3D Pill Badge */
+.agent-tag-3d {
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    background: linear-gradient(135deg, #6366F1 0%, #A855F7 50%, #EC4899 100%) !important;
+    color: #FFFFFF !important;
+    padding: 5px 12px !important;
+    border-radius: 9999px !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 
+        0 2px 0 #4F46E5,
+        0 4px 0 #4338CA,
+        0 6px 12px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(168, 85, 247, 0.6) !important;
+    display: inline-block !important;
     vertical-align: middle;
 }
-.app-brand-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 13px;
-    box-shadow: 0 0 22px rgba(168, 85, 247, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+
+/* 3D App Brand Logo */
+.app-brand-icon-3d {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    box-shadow: 
+        0 3px 0 #4338CA,
+        0 8px 24px rgba(168, 85, 247, 0.65),
+        0 12px 30px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.35);
     display: inline-block;
     vertical-align: middle;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
 }
-.app-brand-icon:hover {
-    transform: scale(1.1) rotate(4deg);
+.app-brand-icon-3d:hover {
+    transform: scale(1.12) rotate(4deg) translateY(-2px);
+    box-shadow: 
+        0 5px 0 #4338CA,
+        0 12px 32px rgba(56, 189, 248, 0.85),
+        0 16px 36px rgba(0, 0, 0, 0.6);
 }
+
 .hero-subtitle {
-    font-size: 0.88rem;
-    color: #94A3B8;
+    font-size: 0.92rem;
+    color: #F1F5F9 !important;
     margin-bottom: 1.3rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: 450;
+    gap: 0.6rem;
+    font-weight: 600;
+}
+.hero-subtitle span {
+    color: #F1F5F9 !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 .status-badge-online {
     background: rgba(16, 185, 129, 0.12);
@@ -463,28 +557,56 @@ html, body, [class*="css"] {
 [data-baseweb="tab"] {
     border-radius: 12px !important;
     padding: 10px 20px !important;
-    font-weight: 600 !important;
-    font-size: 0.92rem !important;
+    font-weight: 650 !important;
+    font-size: 0.95rem !important;
     border: none !important;
-    color: #94A3B8 !important;
+    color: #E2E8F0 !important;
     transition: all 0.2s ease !important;
 }
-[aria-selected="true"] {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
+[data-baseweb="tab"]:hover {
     color: #FFFFFF !important;
-    border: 1px solid rgba(168, 85, 247, 0.4) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+[aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(168, 85, 247, 0.35) 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(168, 85, 247, 0.5) !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4) !important;
 }
 [data-testid="stChatMessage"] {
     border-radius: 18px !important;
     padding: 1.1rem 1.35rem !important;
     margin-bottom: 1rem !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    background: rgba(255, 255, 255, 0.02) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+    color: #F8FAFC !important;
+}
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] span,
+[data-testid="stChatMessage"] li {
+    color: #F8FAFC !important;
+    font-size: 1.02rem !important;
+    line-height: 1.65 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+}
+[data-testid="stChatMessage"] strong,
+[data-testid="stChatMessage"] b {
+    color: #FFFFFF !important;
+    font-weight: 750 !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.35) !important;
+}
+[data-testid="stChatMessage"] code {
+    color: #38BDF8 !important;
+    background: rgba(56, 189, 248, 0.15) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
 }
 .doc-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 16px;
     padding: 14px 18px;
     margin-bottom: 10px;
@@ -494,8 +616,11 @@ html, body, [class*="css"] {
     transition: all 0.15s ease;
 }
 .doc-card:hover {
-    border-color: rgba(99, 102, 241, 0.45);
-    background: rgba(255, 255, 255, 0.045);
+    border-color: rgba(99, 102, 241, 0.6) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+.doc-card strong, .doc-card div, .doc-card span {
+    color: #F8FAFC !important;
 }
 button {
     min-height: 42px !important;
@@ -504,8 +629,8 @@ button {
     transition: all 0.2s ease !important;
 }
 @media (max-width: 768px) {
-    .hero-title { font-size: 1.55rem; }
-    .hero-subtitle { font-size: 0.8rem; }
+    .hero-title-3d { font-size: 1.6rem !important; }
+    .hero-subtitle { font-size: 0.82rem; }
     .block-container { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
 }
 </style>"""
@@ -546,14 +671,18 @@ if "top_k" not in st.session_state:
 # ----------------------------------------------------
 # TOP HEADER & BRANDING (UPDATED TEXT STYLE)
 # ----------------------------------------------------
-col_title, col_stat = st.columns([3.2, 1.3])
+col_title, col_stat = st.columns([3.5, 1.2])
 
 with col_title:
-    brand_html = f'<img src="data:image/png;base64,{icon_b64}" class="app-brand-icon"/>' if icon_b64 else '<span>🔮</span>'
+    brand_html = f'<img src="data:image/png;base64,{icon_b64}" class="app-brand-icon-3d"/>' if icon_b64 else '<span>🔮</span>'
     st.markdown(
-        f"""<div class="hero-title">
+        f"""<div class="hero-title-wrapper">
           {brand_html}
-          <span>Smart Knowledge Base <span class="agent-tag">AI Agent</span></span>
+          <div class="hero-title-3d">
+            <span class="text-3d-white">Smart Knowledge Base</span>
+            <span class="text-3d-agent">Agent</span>
+            <span class="agent-tag-3d">AI 3.0</span>
+          </div>
         </div>""", 
         unsafe_allow_html=True
     )
