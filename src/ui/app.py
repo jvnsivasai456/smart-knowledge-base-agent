@@ -107,9 +107,9 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
 
 # Mobile PWA Manifest
 pwa_manifest = {
-    "name": "Smart Knowledge Base",
-    "short_name": "SmartKB",
-    "description": "Next-Gen Natural Language AI Semantic Knowledge Base Assistant",
+    "name": "Smart Knowledge Base Agent",
+    "short_name": "SmartKBAgent",
+    "description": "Next-Gen Natural Language AI Knowledge Base Agent",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0B0F19",
@@ -128,65 +128,89 @@ manifest_b64 = base64.b64encode(json.dumps(pwa_manifest).encode('utf-8')).decode
 
 # Streamlit Page Config
 st.set_page_config(
-    page_title="Smart Knowledge Base",
+    page_title="Smart Knowledge Base Agent",
     page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "🧠",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom Clean Styling
+# Custom Ultra-Modern Styling with Custom Typography & Ergonomic Search Placement
 clean_css = """<style>
-#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"] {
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+
+#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stBottomBlockContainer"] {
     visibility: hidden;
     display: none !important;
 }
 html, body, [class*="css"] {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 .block-container {
     padding-top: 1.2rem !important;
-    padding-bottom: 6rem !important;
+    padding-bottom: 3.5rem !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
-    max-width: 960px !important;
+    max-width: 980px !important;
     margin: 0 auto !important;
 }
+/* Enhanced Typography for Smart Knowledge Base Agent */
 .hero-title {
-    font-size: 1.85rem;
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 2.15rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #818CF8 0%, #C084FC 50%, #38BDF8 100%);
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #FFFFFF 0%, #E0E7FF 30%, #C084FC 65%, #38BDF8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
+    filter: drop-shadow(0 2px 20px rgba(168, 85, 247, 0.35));
+}
+.agent-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
+    color: #E0E7FF !important;
+    -webkit-text-fill-color: #E0E7FF !important;
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    padding: 4px 10px;
+    border-radius: 9999px;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
+    vertical-align: middle;
 }
 .app-brand-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    box-shadow: 0 0 22px rgba(168, 85, 247, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     display: inline-block;
     vertical-align: middle;
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .app-brand-icon:hover {
-    transform: scale(1.08) rotate(3deg);
+    transform: scale(1.1) rotate(4deg);
 }
 .hero-subtitle {
     font-size: 0.88rem;
     color: #94A3B8;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 450;
 }
 .status-badge-online {
     background: rgba(16, 185, 129, 0.12);
     color: #34D399;
     border: 1px solid rgba(16, 185, 129, 0.25);
-    padding: 4px 12px;
+    padding: 5px 14px;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -198,7 +222,7 @@ html, body, [class*="css"] {
     background: rgba(239, 68, 68, 0.12);
     color: #F87171;
     border: 1px solid rgba(239, 68, 68, 0.25);
-    padding: 4px 12px;
+    padding: 5px 14px;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -214,6 +238,196 @@ html, body, [class*="css"] {
     display: inline-flex;
     align-items: center;
     gap: 4px;
+}
+/* Google Gemini Inspired Search Bar & Action Capsule */
+.gemini-search-container {
+    margin-bottom: 0.65rem;
+    position: relative;
+    width: 100%;
+}
+.gemini-search-container div[data-testid="stForm"] {
+    background: #1E1F20 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 32px !important;
+    padding: 6px 14px 6px 16px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-bottom: 0.45rem !important;
+}
+.gemini-search-container div[data-testid="stForm"]:hover {
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    background: #222326 !important;
+}
+.gemini-search-container div[data-testid="stForm"]:focus-within {
+    border-color: #8AB4F8 !important;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.35), 0 8px 32px rgba(0, 0, 0, 0.55) !important;
+    background: #232427 !important;
+}
+.gemini-search-container div[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+.gemini-search-container div[data-testid="stColumn"] {
+    min-width: unset !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+.gemini-search-container div[data-testid="stColumn"]:nth-child(1) {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    padding: 0 !important;
+}
+.gemini-search-container div[data-testid="stColumn"]:nth-child(2) {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+}
+.gemini-search-container div[data-testid="stColumn"]:nth-child(3) {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    padding: 0 !important;
+}
+
+/* Gemini Sparkle Icon */
+.gemini-sparkle-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 44px;
+    user-select: none;
+}
+.gemini-sparkle-svg {
+    width: 24px;
+    height: 24px;
+    animation: gemini-sparkle-pulse 3.5s ease-in-out infinite alternate;
+}
+@keyframes gemini-sparkle-pulse {
+    0% {
+        filter: drop-shadow(0 0 3px rgba(66, 133, 244, 0.5));
+        transform: scale(0.96) rotate(0deg);
+    }
+    50% {
+        filter: drop-shadow(0 0 9px rgba(155, 114, 203, 0.8));
+        transform: scale(1.08) rotate(3deg);
+    }
+    100% {
+        filter: drop-shadow(0 0 4px rgba(217, 101, 112, 0.6));
+        transform: scale(0.98) rotate(-2deg);
+    }
+}
+
+/* Seamless Inner Input */
+.gemini-search-container [data-baseweb="input"],
+.gemini-search-container [data-baseweb="base-input"],
+.gemini-search-container div[data-testid="stTextInput"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.gemini-search-container div[data-testid="stTextInput"] input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #F1F3F4 !important;
+    font-size: 1.04rem !important;
+    font-weight: 450 !important;
+    padding: 8px 6px !important;
+    height: 46px !important;
+}
+.gemini-search-container div[data-testid="stTextInput"] input::placeholder {
+    color: #8E918F !important;
+    font-size: 0.98rem !important;
+    font-weight: 400 !important;
+}
+.gemini-search-container div[data-testid="stTextInput"] input:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
+}
+
+/* Gemini Circular / Capsule Action Submit Button */
+.gemini-search-container div[data-testid="stFormSubmitButton"] {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+.gemini-search-container div[data-testid="stFormSubmitButton"] button {
+    background: linear-gradient(135deg, #1A73E8 0%, #4285F4 60%, #8AB4F8 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 22px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 18px !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 10px rgba(66, 133, 244, 0.4) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.gemini-search-container div[data-testid="stFormSubmitButton"] button:hover {
+    transform: translateY(-1px) scale(1.02) !important;
+    box-shadow: 0 4px 18px rgba(66, 133, 244, 0.6) !important;
+    background: linear-gradient(135deg, #1967D2 0%, #3B78E7 60%, #76A9FA 100%) !important;
+}
+.gemini-search-container div[data-testid="stFormSubmitButton"] button:active {
+    transform: translateY(1px) scale(0.98) !important;
+}
+
+/* Gemini Suggestion Chips Container */
+.gemini-chips-container {
+    margin-bottom: 0.45rem;
+}
+.gemini-chips-container button {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 9999px !important;
+    color: #E2E8F0 !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+    min-height: 36px !important;
+    height: 36px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+}
+.gemini-chips-container button:hover {
+    background: rgba(66, 133, 244, 0.12) !important;
+    border-color: rgba(138, 180, 248, 0.5) !important;
+    color: #8AB4F8 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 10px rgba(66, 133, 244, 0.25) !important;
+}
+
+/* Gemini Grounding Disclaimer */
+.gemini-disclaimer {
+    text-align: center;
+    font-size: 0.73rem;
+    color: #8E918F;
+    margin-top: 4px;
+    margin-bottom: 1.1rem;
+    font-weight: 450;
+    letter-spacing: 0.015em;
+}
+.gemini-grad-text {
+    background: linear-gradient(135deg, #4285F4 0%, #9B72CB 50%, #D96570 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
 }
 .unique-icon-box {
     width: 46px;
@@ -262,17 +476,11 @@ html, body, [class*="css"] {
 }
 [data-testid="stChatMessage"] {
     border-radius: 18px !important;
-    padding: 1rem 1.25rem !important;
+    padding: 1.1rem 1.35rem !important;
     margin-bottom: 1rem !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     background: rgba(255, 255, 255, 0.02) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
-}
-[data-testid="stBottomBlockContainer"] {
-    background: rgba(11, 15, 25, 0.88) !important;
-    backdrop-filter: blur(16px) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    padding-bottom: env(safe-area-inset-bottom, 1rem) !important;
 }
 .doc-card {
     background: rgba(255, 255, 255, 0.03);
@@ -296,7 +504,7 @@ button {
     transition: all 0.2s ease !important;
 }
 @media (max-width: 768px) {
-    .hero-title { font-size: 1.45rem; }
+    .hero-title { font-size: 1.55rem; }
     .hero-subtitle { font-size: 0.8rem; }
     .block-container { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
 }
@@ -336,18 +544,25 @@ if "top_k" not in st.session_state:
     st.session_state["top_k"] = 4
 
 # ----------------------------------------------------
-# TOP HEADER & CONTROL DASHBOARD
+# TOP HEADER & BRANDING (UPDATED TEXT STYLE)
 # ----------------------------------------------------
-col_title, col_stat = st.columns([3, 1.3])
+col_title, col_stat = st.columns([3.2, 1.3])
 
 with col_title:
     brand_html = f'<img src="data:image/png;base64,{icon_b64}" class="app-brand-icon"/>' if icon_b64 else '<span>🔮</span>'
     st.markdown(
-        f'<div class="hero-title">{brand_html} <span>Smart Knowledge Base</span></div>', 
+        f"""<div class="hero-title">
+          {brand_html}
+          <span>Smart Knowledge Base <span class="agent-tag">AI Agent</span></span>
+        </div>""", 
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="hero-subtitle">Unique Icon Symbols • Natural Language AI • ChromaDB Vector RAG</div>', 
+        """<div class="hero-subtitle">
+          <span>⚡ Natural Language RAG</span> &bull; 
+          <span>🧠 Vector Search</span> &bull; 
+          <span>📊 Semantic Synthesis</span>
+        </div>""", 
         unsafe_allow_html=True
     )
 
@@ -364,10 +579,10 @@ with col_stat:
     if api_healthy:
         st.markdown(
             f"""<div style="text-align: right; padding-top: 4px;">
-            <span class="status-badge-online">● Active &bull; {latency_ms}ms</span>
+            <span class="status-badge-online">● Agent Active &bull; {latency_ms}ms</span>
             <div style="margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; align-items: center;">
               <span class="nlg-pill">{cur_provider_label}</span>
-              <span style="font-size: 11px; color: #64748B;">{len(indexed_docs)} docs</span>
+              <span style="font-size: 11px; color: #64748B;">{len(indexed_docs)} docs indexed</span>
             </div>
             </div>""",
             unsafe_allow_html=True
@@ -376,7 +591,7 @@ with col_stat:
         st.markdown(
             """<div style="text-align: right; padding-top: 6px;">
             <span class="status-badge-offline">● Backend Offline</span>
-            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Start backend: `python main.py`</div>
+            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Run: `python main.py`</div>
             </div>""",
             unsafe_allow_html=True
         )
@@ -385,31 +600,85 @@ with col_stat:
 # THREE NAVIGATION TABS
 # ----------------------------------------------------
 tab_chat, tab_library, tab_controls = st.tabs([
-    "💬 AI Chat Assistant",
+    "💬 AI Agent Chat",
     f"📁 Knowledge Library ({len(indexed_docs)})",
     "🎛️ Controls & Settings"
 ])
 
 # ====================================================
-# TAB 1: AI CHAT ASSISTANT (NATURAL LANGUAGE)
+# TAB 1: AI AGENT CHAT (ERGONOMIC TOP SEARCH BAR)
 # ====================================================
 with tab_chat:
-    # Quick Natural Language Prompt Chips with Unique Symbols
-    col_chip1, col_chip2, col_chip3, col_chip4 = st.columns(4)
+    # ---------------------------------------------------------
+    # GOOGLE GEMINI STYLE SEARCH BAR (Capsule Pill + Sparkle + Grounding)
+    # ---------------------------------------------------------
+    st.markdown('<div class="gemini-search-container">', unsafe_allow_html=True)
+    with st.form("top_search_form", clear_on_submit=True):
+        col_spark, col_search_box, col_search_btn = st.columns([0.38, 5.2, 1.25])
+        with col_spark:
+            st.markdown(
+                """<div class="gemini-sparkle-box">
+                  <svg class="gemini-sparkle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0C12 6.627 6.627 12 0 12C6.627 12 12 17.373 12 24C12 17.373 17.373 12 24 12C17.373 12 12 6.627 12 0Z" fill="url(#geminiSparkGrad)"/>
+                    <defs>
+                      <linearGradient id="geminiSparkGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#4285F4"/>
+                        <stop offset="50%" stop-color="#9B72CB"/>
+                        <stop offset="100%" stop-color="#D96570"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>""",
+                unsafe_allow_html=True
+            )
+        with col_search_box:
+            search_query = st.text_input(
+                "Ask Gemini",
+                placeholder="Ask Gemini anything about your documents...",
+                label_visibility="collapsed",
+                key="top_search_query"
+            )
+        with col_search_btn:
+            submit_search = st.form_submit_button("Ask ➔", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Gemini Prompt Suggestion Chips & Clear Action
+    st.markdown('<div class="gemini-chips-container">', unsafe_allow_html=True)
+    col_chip1, col_chip2, col_chip3, col_chip4, col_clear = st.columns([1, 1, 1, 1, 0.55])
     quick_prompt = None
 
     with col_chip1:
-        if st.button("💬 Explain Simply", use_container_width=True):
+        if st.button("✦ Explain Simply", use_container_width=True):
             quick_prompt = "Explain the core concepts and topics in my documents in simple, everyday English."
     with col_chip2:
-        if st.button("📋 Executive Summary", use_container_width=True):
-            quick_prompt = "Provide a comprehensive summary of the main points across the uploaded documents."
+        if st.button("✦ Summarize All", use_container_width=True):
+            quick_prompt = "Provide a comprehensive executive summary of the main points across the uploaded documents."
     with col_chip3:
-        if st.button("📊 F-Test Hypotheses", use_container_width=True):
+        if st.button("✦ F-Test Hypotheses", use_container_width=True):
             quick_prompt = "What are the null and alternative hypotheses for the F-test and how are they calculated?"
     with col_chip4:
-        if st.button("🥽 Vuforia & Unity", use_container_width=True):
+        if st.button("✦ Vuforia & Unity", use_container_width=True):
             quick_prompt = "What is Vuforia and how does it integrate with GameObjects and Image Targets in Unity?"
+    with col_clear:
+        if st.button("🧹 Clear", use_container_width=True, help="Clear conversation"):
+            st.session_state.messages = []
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Gemini Muted Grounding Note
+    st.markdown(
+        """<div class="gemini-disclaimer">
+          <span class="gemini-grad-text">✦ Gemini Agent</span> &bull; Answers synthesized in natural language with verified citations
+        </div>""",
+        unsafe_allow_html=True
+    )
+
+    # Determine Active Prompt
+    active_prompt = None
+    if submit_search and search_query.strip():
+        active_prompt = search_query.strip()
+    elif quick_prompt:
+        active_prompt = quick_prompt
 
     # Initialize Chat History
     if "messages" not in st.session_state:
@@ -417,14 +686,56 @@ with tab_chat:
             {
                 "role": "assistant",
                 "content": (
-                    "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
-                    "I speak in natural language, using semantic vector embeddings and unique icon classification "
-                    "to explain concepts, calculate formulas, and summarize your files.\n\n"
-                    "Ask me anything, or tap one of the quick starter buttons above to begin!"
+                    "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
+                    "Type any question in the search bar above or tap one of the quick starter buttons to explore your knowledge library in natural language!"
                 ),
                 "sources": []
             }
         ]
+
+    # Process Active Query
+    if active_prompt:
+        st.session_state.messages.append({"role": "user", "content": active_prompt})
+        
+        with st.spinner("Smart Agent synthesizing answer..."):
+            try:
+                search_depth = st.session_state.get("top_k", 4)
+                
+                chat_payload = {
+                    "query": active_prompt,
+                    "top_k": search_depth,
+                    "api_key": st.session_state.get("llm_api_key", ""),
+                    "provider": st.session_state.get("llm_provider", "local")
+                }
+                
+                chat_res = requests.post(
+                    f"{API_HOST}/chat",
+                    json=chat_payload,
+                    timeout=35
+                )
+                
+                if chat_res.status_code == 200:
+                    data = chat_res.json()
+                    answer_text = data.get("answer", "")
+                    sources = data.get("sources", [])
+                    
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": answer_text,
+                        "sources": sources
+                    })
+                else:
+                    err = f"⚠️ Server Error ({chat_res.status_code}): {chat_res.text}"
+                    st.session_state.messages.append({"role": "assistant", "content": err})
+                    
+            except requests.exceptions.ConnectionError:
+                err = "⚠️ Backend API is offline. Please start the backend with `python main.py` on port 8000."
+                st.session_state.messages.append({"role": "assistant", "content": err})
+            except Exception as e:
+                err = f"⚠️ Error: {str(e)}"
+                st.session_state.messages.append({"role": "assistant", "content": err})
+
+    st.markdown('<div style="margin-top: 1.4rem;"></div>', unsafe_allow_html=True)
 
     # Render Conversation Messages
     for msg in st.session_state.messages:
@@ -452,78 +763,6 @@ with tab_chat:
                             unsafe_allow_html=True
                         )
                         st.info(src.get("content", ""))
-
-    # Chat Input Box
-    user_input = st.chat_input("Ask anything in natural language about your files...")
-    active_prompt = quick_prompt if quick_prompt else user_input
-
-    if active_prompt:
-        st.session_state.messages.append({"role": "user", "content": active_prompt})
-        with st.chat_message("user", avatar="👤"):
-            st.markdown(active_prompt)
-
-        with st.chat_message("assistant", avatar="🧠"):
-            with st.spinner("Generating natural language answer..."):
-                try:
-                    search_depth = st.session_state.get("top_k", 4)
-                    
-                    chat_payload = {
-                        "query": active_prompt,
-                        "top_k": search_depth,
-                        "api_key": st.session_state.get("llm_api_key", ""),
-                        "provider": st.session_state.get("llm_provider", "local")
-                    }
-                    
-                    chat_res = requests.post(
-                        f"{API_HOST}/chat",
-                        json=chat_payload,
-                        timeout=35
-                    )
-                    
-                    if chat_res.status_code == 200:
-                        data = chat_res.json()
-                        answer_text = data.get("answer", "")
-                        sources = data.get("sources", [])
-                        
-                        st.markdown(answer_text)
-                        
-                        if sources:
-                            with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
-                                for idx, src in enumerate(sources, 1):
-                                    source_file = os.path.basename(src.get("source_id", "Document"))
-                                    meta = get_unique_doc_metadata(source_file)
-                                    score = src.get("score", 0.0)
-                                    chunk_idx = src.get("chunk_index", 0)
-                                    match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
-                                    badge_color = "#34D399" if match_pct >= 80 else "#818CF8"
-                                    
-                                    st.markdown(
-                                        f"""<div style="margin-bottom: 6px;">
-                                        <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
-                                        <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
-                                        </div>""",
-                                        unsafe_allow_html=True
-                                    )
-                                    st.info(src.get("content", ""))
-                                    
-                        st.session_state.messages.append({
-                            "role": "assistant",
-                            "content": answer_text,
-                            "sources": sources
-                        })
-                    else:
-                        err = f"⚠️ Server Error ({chat_res.status_code}): {chat_res.text}"
-                        st.error(err)
-                        st.session_state.messages.append({"role": "assistant", "content": err})
-                        
-                except requests.exceptions.ConnectionError:
-                    err = "⚠️ Backend API is offline. Please start the backend with `python main.py` on port 8000."
-                    st.error(err)
-                    st.session_state.messages.append({"role": "assistant", "content": err})
-                except Exception as e:
-                    err = f"⚠️ Error: {str(e)}"
-                    st.error(err)
-                    st.session_state.messages.append({"role": "assistant", "content": err})
 
 # ====================================================
 # TAB 2: KNOWLEDGE LIBRARY & DOCUMENT INGESTION
@@ -758,6 +997,7 @@ with tab_controls:
     st.markdown("---")
     st.subheader("🔌 System Diagnostics")
     st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
+    st.markdown(f"- **Agent Identity:** `Smart Knowledge Base Agent 2.0`")
     st.markdown(f"- **Natural Language Engine:** `{provider_format[st.session_state['llm_provider']]}`")
     st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
     if api_healthy:
