@@ -9,6 +9,102 @@ import urllib.parse
 # Backend configuration
 API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
 
+# App Brand Icon path & Base64
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ICON_PATH = os.path.join(PROJECT_ROOT, "app_icon.png")
+icon_b64 = ""
+if os.path.exists(ICON_PATH):
+    try:
+        with open(ICON_PATH, "rb") as f:
+            icon_b64 = base64.b64encode(f.read()).decode("utf-8")
+    except Exception:
+        icon_b64 = ""
+
+# Unique Document Icon & Metadata Resolver
+def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
+    fname_lower = filename.lower()
+    if any(k in fname_lower for k in ["f_test", "ftest", "stat", "hypothesis", "variance", "math", "calc", "prob"]):
+        return {
+            "symbol": "📊",
+            "badge": "Statistics & Math",
+            "color": "#F59E0B",
+            "bg": "rgba(245, 158, 11, 0.12)",
+            "border": "rgba(245, 158, 11, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["vuforia", "ar", "augmented", "target", "vision"]):
+        return {
+            "symbol": "🥽",
+            "badge": "Augmented Reality",
+            "color": "#EC4899",
+            "bg": "rgba(236, 72, 153, 0.12)",
+            "border": "rgba(236, 72, 153, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(219, 39, 119, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["unity", "game", "physics", "gameobject", "script"]):
+        return {
+            "symbol": "🎮",
+            "badge": "Game Engine",
+            "color": "#818CF8",
+            "bg": "rgba(99, 102, 241, 0.12)",
+            "border": "rgba(99, 102, 241, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["ids", "security", "network", "cyber", "firewall", "crypto"]):
+        return {
+            "symbol": "🛡️",
+            "badge": "Cybersecurity",
+            "color": "#10B981",
+            "bg": "rgba(16, 185, 129, 0.12)",
+            "border": "rgba(16, 185, 129, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["ai", "neural", "ml", "deep", "embed", "gpt"]):
+        return {
+            "symbol": "⚡",
+            "badge": "Machine Learning",
+            "color": "#C084FC",
+            "bg": "rgba(168, 85, 247, 0.12)",
+            "border": "rgba(168, 85, 247, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.1))"
+        }
+    elif ftype.upper() == "PDF":
+        return {
+            "symbol": "📕",
+            "badge": "PDF Document",
+            "color": "#EF4444",
+            "bg": "rgba(239, 68, 68, 0.12)",
+            "border": "rgba(239, 68, 68, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.1))"
+        }
+    elif ftype.upper() == "DOCX":
+        return {
+            "symbol": "📘",
+            "badge": "Word Document",
+            "color": "#38BDF8",
+            "bg": "rgba(56, 189, 248, 0.12)",
+            "border": "rgba(56, 189, 248, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(37, 99, 235, 0.1))"
+        }
+    elif ftype.upper() == "TXT":
+        return {
+            "symbol": "📄",
+            "badge": "Text File",
+            "color": "#94A3B8",
+            "bg": "rgba(148, 163, 184, 0.12)",
+            "border": "rgba(148, 163, 184, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(100, 116, 139, 0.1))"
+        }
+    else:
+        return {
+            "symbol": "📑",
+            "badge": "Knowledge File",
+            "color": "#A855F7",
+            "bg": "rgba(168, 85, 247, 0.12)",
+            "border": "rgba(168, 85, 247, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(147, 51, 234, 0.1))"
+        }
+
 # Mobile PWA Manifest
 pwa_manifest = {
     "name": "Smart Knowledge Base",
@@ -21,9 +117,9 @@ pwa_manifest = {
     "orientation": "portrait",
     "icons": [
         {
-            "src": "https://api.iconify.design/fluent-emoji:brain.svg",
-            "sizes": "192x192 512x512",
-            "type": "image/svg+xml",
+            "src": f"data:image/png;base64,{icon_b64}" if icon_b64 else "https://api.iconify.design/fluent-emoji:brain.svg",
+            "sizes": "512x512",
+            "type": "image/png",
             "purpose": "any maskable"
         }
     ]
@@ -33,7 +129,7 @@ manifest_b64 = base64.b64encode(json.dumps(pwa_manifest).encode('utf-8')).decode
 # Streamlit Page Config
 st.set_page_config(
     page_title="Smart Knowledge Base",
-    page_icon="🧠",
+    page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "🧠",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -66,7 +162,20 @@ html, body, [class*="css"] {
     margin-bottom: 0.2rem;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.75rem;
+}
+.app-brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: inline-block;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+}
+.app-brand-icon:hover {
+    transform: scale(1.08) rotate(3deg);
 }
 .hero-subtitle {
     font-size: 0.88rem;
@@ -105,6 +214,28 @@ html, body, [class*="css"] {
     display: inline-flex;
     align-items: center;
     gap: 4px;
+}
+.unique-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+.unique-icon-box:hover {
+    transform: scale(1.1);
+}
+.doc-topic-pill {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 600;
+    display: inline-block;
 }
 [data-baseweb="tab-list"] {
     background: rgba(255, 255, 255, 0.03);
@@ -146,16 +277,17 @@ html, body, [class*="css"] {
 .doc-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 14px 18px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: transform 0.15s ease;
+    transition: all 0.15s ease;
 }
 .doc-card:hover {
-    border-color: rgba(99, 102, 241, 0.4);
+    border-color: rgba(99, 102, 241, 0.45);
+    background: rgba(255, 255, 255, 0.045);
 }
 button {
     min-height: 42px !important;
@@ -209,9 +341,13 @@ if "top_k" not in st.session_state:
 col_title, col_stat = st.columns([3, 1.3])
 
 with col_title:
-    st.markdown('<div class="hero-title">🧠 Smart Knowledge Base</div>', unsafe_allow_html=True)
+    brand_html = f'<img src="data:image/png;base64,{icon_b64}" class="app-brand-icon"/>' if icon_b64 else '<span>🔮</span>'
     st.markdown(
-        '<div class="hero-subtitle">Natural Language AI • Semantic Search • ChromaDB Vector RAG</div>', 
+        f'<div class="hero-title">{brand_html} <span>Smart Knowledge Base</span></div>', 
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="hero-subtitle">Unique Icon Symbols • Natural Language AI • ChromaDB Vector RAG</div>', 
         unsafe_allow_html=True
     )
 
@@ -258,7 +394,7 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # TAB 1: AI CHAT ASSISTANT (NATURAL LANGUAGE)
 # ====================================================
 with tab_chat:
-    # Quick Natural Language Prompt Chips
+    # Quick Natural Language Prompt Chips with Unique Symbols
     col_chip1, col_chip2, col_chip3, col_chip4 = st.columns(4)
     quick_prompt = None
 
@@ -269,10 +405,10 @@ with tab_chat:
         if st.button("📋 Executive Summary", use_container_width=True):
             quick_prompt = "Provide a comprehensive summary of the main points across the uploaded documents."
     with col_chip3:
-        if st.button("🔍 F-Test Hypotheses", use_container_width=True):
+        if st.button("📊 F-Test Hypotheses", use_container_width=True):
             quick_prompt = "What are the null and alternative hypotheses for the F-test and how are they calculated?"
     with col_chip4:
-        if st.button("💡 Vuforia & Unity", use_container_width=True):
+        if st.button("🥽 Vuforia & Unity", use_container_width=True):
             quick_prompt = "What is Vuforia and how does it integrate with GameObjects and Image Targets in Unity?"
 
     # Initialize Chat History
@@ -281,8 +417,8 @@ with tab_chat:
             {
                 "role": "assistant",
                 "content": (
-                    "👋 **Hello! I'm your Natural Language Knowledge Base Assistant.**\n\n"
-                    "I converse with you in everyday English, using semantic vector embeddings and natural language synthesis "
+                    "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
+                    "I speak in natural language, using semantic vector embeddings and unique icon classification "
                     "to explain concepts, calculate formulas, and summarize your files.\n\n"
                     "Ask me anything, or tap one of the quick starter buttons above to begin!"
                 ),
@@ -296,11 +432,12 @@ with tab_chat:
         with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(msg["content"])
             
-            # Source Citations Card
+            # Source Citations Card with Unique Document Symbols
             if msg.get("sources"):
                 with st.expander(f"📚 Verified Sources ({len(msg['sources'])} relevant chunks)", expanded=False):
                     for idx, src in enumerate(msg["sources"], 1):
                         source_file = os.path.basename(src.get("source_id", "Document"))
+                        meta = get_unique_doc_metadata(source_file)
                         score = src.get("score", 0.0)
                         chunk_idx = src.get("chunk_index", 0)
                         
@@ -309,7 +446,7 @@ with tab_chat:
                         
                         st.markdown(
                             f"""<div style="margin-bottom: 6px;">
-                            <strong>#{idx}</strong> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                            <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
                             <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
                             </div>""",
                             unsafe_allow_html=True
@@ -321,7 +458,6 @@ with tab_chat:
     active_prompt = quick_prompt if quick_prompt else user_input
 
     if active_prompt:
-        # Append User Message
         st.session_state.messages.append({"role": "user", "content": active_prompt})
         with st.chat_message("user", avatar="👤"):
             st.markdown(active_prompt)
@@ -331,7 +467,6 @@ with tab_chat:
                 try:
                     search_depth = st.session_state.get("top_k", 4)
                     
-                    # Call smart natural language /chat endpoint
                     chat_payload = {
                         "query": active_prompt,
                         "top_k": search_depth,
@@ -356,6 +491,7 @@ with tab_chat:
                             with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
                                 for idx, src in enumerate(sources, 1):
                                     source_file = os.path.basename(src.get("source_id", "Document"))
+                                    meta = get_unique_doc_metadata(source_file)
                                     score = src.get("score", 0.0)
                                     chunk_idx = src.get("chunk_index", 0)
                                     match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
@@ -363,7 +499,7 @@ with tab_chat:
                                     
                                     st.markdown(
                                         f"""<div style="margin-bottom: 6px;">
-                                        <strong>#{idx}</strong> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                                        <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
                                         <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
                                         </div>""",
                                         unsafe_allow_html=True
@@ -394,7 +530,7 @@ with tab_chat:
 # ====================================================
 with tab_library:
     st.subheader("📤 Document Ingestion Dropzone")
-    st.caption("Upload files to extract text, generate 384-d vector embeddings, and enable natural language answering.")
+    st.caption("Upload files to extract text, generate 384-d vector embeddings, and assign unique topic icon symbols.")
     
     new_files = st.file_uploader(
         "Drop PDF, DOCX, or TXT files here:",
@@ -446,7 +582,9 @@ with tab_library:
             src_path = doc.get("source_id", "Unknown")
             fname = doc.get("filename") or os.path.basename(src_path)
             ftype = doc.get("source_type", "txt").upper()
-            icon = "📕" if ftype == "PDF" else "📘" if ftype == "DOCX" else "📄"
+            
+            # Resolve unique icon & badge styling
+            meta = get_unique_doc_metadata(fname, ftype)
             fhash = doc.get("file_hash", "")[:12]
             indexed_at = doc.get("last_indexed", "Recently")[:19].replace("T", " ")
             size_bytes = doc.get("file_size_bytes", 0)
@@ -464,12 +602,20 @@ with tab_library:
             with col_card:
                 st.markdown(
                     f"""<div class="doc-card" style="margin-bottom: 0px;">
-                      <div>
-                        <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
-                          <span>{icon}</span> {fname}
+                      <div style="display: flex; align-items: center; gap: 14px;">
+                        <div class="unique-icon-box" style="background: {meta['gradient']}; border: 1px solid {meta['border']};">
+                          {meta['symbol']}
                         </div>
-                        <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">
-                          Format: <strong>{ftype}</strong> {size_str} &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
+                        <div>
+                          <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
+                            <span>{fname}</span>
+                            <span class="doc-topic-pill" style="background: {meta['bg']}; color: {meta['color']}; border: 1px solid {meta['border']};">
+                              {meta['badge']}
+                            </span>
+                          </div>
+                          <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">
+                            Format: <strong>{ftype}</strong> {size_str} &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
+                          </div>
                         </div>
                       </div>
                       <div>
@@ -501,6 +647,44 @@ with tab_library:
 # TAB 3: APP CONTROLS, SETTINGS & MOBILE
 # ====================================================
 with tab_controls:
+    st.subheader("🔮 Unique Branding & Icon Symbols")
+    st.caption("Custom high-definition icon symbols dynamically assigned to your documents and application:")
+    
+    col_sym1, col_sym2, col_sym3, col_sym4 = st.columns(4)
+    with col_sym1:
+        st.markdown("""
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">📊</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #F59E0B; margin-top: 4px;">Statistics & Math</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">F-Test, formulas, data</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_sym2:
+        st.markdown("""
+        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">🥽</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #EC4899; margin-top: 4px;">Augmented Reality</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">Vuforia, targets, AR</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_sym3:
+        st.markdown("""
+        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">🎮</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #818CF8; margin-top: 4px;">Game Engine</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">Unity, scripts, objects</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_sym4:
+        st.markdown("""
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">🛡️</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #10B981; margin-top: 4px;">Cybersecurity</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">IDS, networks, safety</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
     st.subheader("🧠 Natural Language Engine Configuration")
     st.caption("Choose how natural language answers are formulated:")
     
@@ -559,7 +743,7 @@ with tab_controls:
     
     col_qr, col_qr_info = st.columns([1, 2])
     with col_qr:
-        qr_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "mobile_qr.png")
+        qr_file = os.path.join(PROJECT_ROOT, "mobile_qr.png")
         if os.path.exists(qr_file):
             st.image(qr_file, width=180)
     with col_qr_info:

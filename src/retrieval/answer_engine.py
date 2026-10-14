@@ -5,6 +5,27 @@ import numpy as np
 
 from .natural_language_generator import NaturalLanguageGenerator
 
+def get_unique_doc_symbol(filename: str) -> str:
+    """Return a unique icon symbol tailored to the document topic and file type."""
+    fn = filename.lower()
+    if any(k in fn for k in ["f_test", "ftest", "stat", "hypothesis", "variance", "math", "calc"]):
+        return "📊"
+    elif any(k in fn for k in ["vuforia", "ar", "augmented", "target", "vision"]):
+        return "🥽"
+    elif any(k in fn for k in ["unity", "game", "physics", "gameobject", "script"]):
+        return "🎮"
+    elif any(k in fn for k in ["ids", "security", "network", "cyber", "firewall"]):
+        return "🛡️"
+    elif any(k in fn for k in ["ai", "neural", "ml", "deep", "embed"]):
+        return "⚡"
+    elif fn.endswith(".pdf"):
+        return "📕"
+    elif fn.endswith(".docx") or fn.endswith(".doc"):
+        return "📘"
+    elif fn.endswith(".txt"):
+        return "📄"
+    return "📑"
+
 class AnswerEngine:
     """
     Intelligent answer extraction and natural language generation engine for RAG.
@@ -50,7 +71,7 @@ class AnswerEngine:
         
         doc_list_text = ""
         if doc_names:
-            items = "\n".join([f"- 📄 **{name}**" for name in doc_names[:5]])
+            items = "\n".join([f"- {get_unique_doc_symbol(name)} **{name}**" for name in doc_names[:5]])
             doc_list_text = f"\n\n**Currently indexed knowledge ({doc_count} document{'s' if doc_count > 1 else ''}):**\n{items}"
             if len(doc_names) > 5:
                 doc_list_text += f"\n- *...and {len(doc_names) - 5} more*"
@@ -116,7 +137,8 @@ class AnswerEngine:
                     themes.append("Document text indexed and ready for semantic natural language queries")
 
             theme_bullets = "\n".join([f"  - {t}" for t in themes])
-            summary_sections.append(f"### 📄 `{fname}` ({ftype})\n{theme_bullets}")
+            symbol = get_unique_doc_symbol(fname)
+            summary_sections.append(f"### {symbol} `{fname}` ({ftype})\n{theme_bullets}")
 
         combined_summary = (
             "## 📋 Executive Knowledge Base Summary\n\n"
@@ -220,7 +242,8 @@ class AnswerEngine:
         top_source = getattr(search_results[0], 'source_id', 'Document')
         primary_name = os.path.basename(top_source) if top_source else "Document"
 
-        full_answer = f"{nl_answer.strip()}\n\n---\n**Grounded in:** `📄 {primary_name}` &bull; **Confidence:** {match_pct}% Match"
+        symbol = get_unique_doc_symbol(primary_name)
+        full_answer = f"{nl_answer.strip()}\n\n---\n**Grounded in:** `{symbol} {primary_name}` &bull; **Confidence:** {match_pct}% Match"
 
         # Filter sources to relevant ones
         sources_data = [
