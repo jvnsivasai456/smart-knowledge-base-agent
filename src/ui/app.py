@@ -723,6 +723,40 @@ with col_actions:
 # VIEW 1: GEMINI CHAT INTERFACE (MATCHING SCREENSHOT)
 # ====================================================
 if st.session_state["active_view"] == "chat":
+    # Direct Mobile Install Helper Banner
+    st.markdown(
+        """<div id="pwa-install-banner" style="background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border: 1px solid #C7D2FE; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.3rem;">📲</span>
+            <div>
+              <div style="font-size: 0.88rem; font-weight: 700; color: #1E1B4B;">Direct Mobile Install Link:</div>
+              <div style="font-size: 0.76rem; color: #4338CA;">Type in phone browser: <code style="background: white; padding: 2px 6px; border-radius: 4px; font-weight: 700;">http://192.168.1.53:8501</code></div>
+            </div>
+          </div>
+          <button id="pwa-install-btn" style="background: #2563EB; color: white; border: none; border-radius: 20px; padding: 6px 14px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: none;">Direct Install</button>
+        </div>
+        <script>
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          window.deferredPrompt = e;
+          const btn = document.getElementById('pwa-install-btn');
+          if (btn) btn.style.display = 'block';
+        });
+        const btn = document.getElementById('pwa-install-btn');
+        if (btn) {
+          btn.addEventListener('click', async () => {
+            if (window.deferredPrompt) {
+              window.deferredPrompt.prompt();
+              await window.deferredPrompt.userChoice;
+              window.deferredPrompt = null;
+              btn.style.display = 'none';
+            }
+          });
+        }
+        </script>""",
+        unsafe_allow_html=True
+    )
+
     # Quick Starter Chips in Simple English
     c_s1, c_s2, c_s3, c_s4 = st.columns(4)
     quick_query = None
