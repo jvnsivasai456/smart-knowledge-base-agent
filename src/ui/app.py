@@ -138,7 +138,7 @@ st.set_page_config(
 clean_css = """<style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
-#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stBottomBlockContainer"] {
+#MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"] {
     visibility: hidden;
     display: none !important;
 }
@@ -157,11 +157,65 @@ p, span, li, label, div, td, th, .stMarkdown, .stText {
 
 .block-container {
     padding-top: 1.2rem !important;
-    padding-bottom: 3.5rem !important;
+    padding-bottom: 7.5rem !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     max-width: 980px !important;
     margin: 0 auto !important;
+}
+
+/* Pinned Bottom Search Bar Styling (Search go DOWN) */
+[data-testid="stBottomBlockContainer"] {
+    visibility: visible !important;
+    display: block !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 25%, #FFFFFF 100%) !important;
+    padding-bottom: 1.2rem !important;
+    padding-top: 0.8rem !important;
+    max-width: 980px !important;
+    margin: 0 auto !important;
+}
+
+[data-testid="stChatInput"] {
+    border: 1.5px solid #CBD5E1 !important;
+    border-radius: 32px !important;
+    background: #F8FAFC !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
+    padding: 4px 8px 4px 16px !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stChatInput"]:focus-within {
+    border-color: #2563EB !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 4px 22px rgba(0, 0, 0, 0.08) !important;
+    background: #FFFFFF !important;
+}
+[data-testid="stChatInput"] textarea {
+    color: #0F172A !important;
+    font-size: 1.02rem !important;
+    font-weight: 500 !important;
+    padding-top: 10px !important;
+}
+[data-testid="stChatInput"] textarea::placeholder {
+    color: #64748B !important;
+    font-size: 0.98rem !important;
+    font-weight: 450 !important;
+}
+[data-testid="stChatInput"] button {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+    color: #FFFFFF !important;
+    border-radius: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35) !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stChatInput"] button:hover {
+    background: #1E40AF !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5) !important;
+}
+[data-testid="stChatInput"] button svg {
+    fill: #FFFFFF !important;
 }
 
 /* Clean 2D Header for "Smart Knowledge Base Agent" */
@@ -670,39 +724,8 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # ====================================================
 with tab_chat:
     # ---------------------------------------------------------
-    # GOOGLE GEMINI STYLE TOP SEARCH BAR (UP ONLY)
+    # QUICK PROMPT CHIPS & ACTIONS (AT TOP)
     # ---------------------------------------------------------
-    st.markdown('<div class="gemini-search-container">', unsafe_allow_html=True)
-    with st.form("top_search_form", clear_on_submit=True):
-        col_spark, col_search_box, col_search_btn = st.columns([0.38, 5.2, 1.25])
-        with col_spark:
-            st.markdown(
-                """<div class="gemini-sparkle-box">
-                  <svg class="gemini-sparkle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0C12 6.627 6.627 12 0 12C6.627 12 12 17.373 12 24C12 17.373 17.373 12 24 12C17.373 12 12 6.627 12 0Z" fill="url(#geminiSparkGrad)"/>
-                    <defs>
-                      <linearGradient id="geminiSparkGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stop-color="#4285F4"/>
-                        <stop offset="50%" stop-color="#9B72CB"/>
-                        <stop offset="100%" stop-color="#D96570"/>
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>""",
-                unsafe_allow_html=True
-            )
-        with col_search_box:
-            search_query = st.text_input(
-                "Ask Gemini",
-                placeholder="Ask Gemini anything about your documents...",
-                label_visibility="collapsed",
-                key="top_search_query"
-            )
-        with col_search_btn:
-            submit_search = st.form_submit_button("Ask ➔", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Gemini Prompt Suggestion Chips & Clear Action
     st.markdown('<div class="gemini-chips-container">', unsafe_allow_html=True)
     col_chip1, col_chip2, col_chip3, col_chip4, col_clear = st.columns([1, 1, 1, 1, 0.55])
     quick_prompt = None
@@ -725,21 +748,6 @@ with tab_chat:
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Gemini Muted Grounding Note
-    st.markdown(
-        """<div class="gemini-disclaimer">
-          <span class="gemini-grad-text">✦ Gemini Agent</span> &bull; Answers synthesized in natural language with verified citations
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-    # Determine Active Prompt
-    active_prompt = None
-    if submit_search and search_query.strip():
-        active_prompt = search_query.strip()
-    elif quick_prompt:
-        active_prompt = quick_prompt
-
     # Initialize Chat History
     if "messages" not in st.session_state:
         st.session_state.messages = [
@@ -747,57 +755,15 @@ with tab_chat:
                 "role": "assistant",
                 "content": (
                     "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
-                    "Type any question in the search bar above or tap one of the quick starter chips to explore your knowledge library in natural language!"
+                    "Ask any question in the search bar below or tap one of the quick starter chips above to explore your knowledge library in natural language!"
                 ),
                 "sources": []
             }
         ]
 
-    # Process Active Query
-    if active_prompt:
-        st.session_state.messages.append({"role": "user", "content": active_prompt})
-        
-        with st.spinner("Smart Agent synthesizing answer..."):
-            try:
-                search_depth = st.session_state.get("top_k", 4)
-                
-                chat_payload = {
-                    "query": active_prompt,
-                    "top_k": search_depth,
-                    "api_key": st.session_state.get("llm_api_key", ""),
-                    "provider": st.session_state.get("llm_provider", "local")
-                }
-                
-                chat_res = requests.post(
-                    f"{API_HOST}/chat",
-                    json=chat_payload,
-                    timeout=35
-                )
-                
-                if chat_res.status_code == 200:
-                    data = chat_res.json()
-                    answer_text = data.get("answer", "")
-                    sources = data.get("sources", [])
-                    
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": answer_text,
-                        "sources": sources
-                    })
-                else:
-                    err = f"⚠️ Server Error ({chat_res.status_code}): {chat_res.text}"
-                    st.session_state.messages.append({"role": "assistant", "content": err})
-                    
-            except requests.exceptions.ConnectionError:
-                err = "⚠️ Backend API is offline. Please start the backend with `python main.py` on port 8000."
-                st.session_state.messages.append({"role": "assistant", "content": err})
-            except Exception as e:
-                err = f"⚠️ Error: {str(e)}"
-                st.session_state.messages.append({"role": "assistant", "content": err})
-
-    st.markdown('<div style="margin-top: 1.2rem;"></div>', unsafe_allow_html=True)
-
-    # Render Conversation Messages
+    # ---------------------------------------------------------
+    # RENDER CONVERSATION MESSAGES & ANSWERS (GIVE ANSWER UP)
+    # ---------------------------------------------------------
     for msg in st.session_state.messages:
         avatar = "🧠" if msg["role"] == "assistant" else "👤"
         with st.chat_message(msg["role"], avatar=avatar):
@@ -823,6 +789,80 @@ with tab_chat:
                             unsafe_allow_html=True
                         )
                         st.info(src.get("content", ""))
+
+    # ---------------------------------------------------------
+    # SEARCH BAR DOWN (Pinned At Bottom, Answers Displayed UP)
+    # ---------------------------------------------------------
+    user_query = st.chat_input("✦ Ask Gemini anything about your documents...")
+    active_prompt = quick_prompt if quick_prompt else user_query
+
+    if active_prompt:
+        st.session_state.messages.append({"role": "user", "content": active_prompt})
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(active_prompt)
+
+        with st.chat_message("assistant", avatar="🧠"):
+            with st.spinner("Smart Agent synthesizing answer..."):
+                try:
+                    search_depth = st.session_state.get("top_k", 4)
+                    
+                    chat_payload = {
+                        "query": active_prompt,
+                        "top_k": search_depth,
+                        "api_key": st.session_state.get("llm_api_key", ""),
+                        "provider": st.session_state.get("llm_provider", "local")
+                    }
+                    
+                    chat_res = requests.post(
+                        f"{API_HOST}/chat",
+                        json=chat_payload,
+                        timeout=35
+                    )
+                    
+                    if chat_res.status_code == 200:
+                        data = chat_res.json()
+                        answer_text = data.get("answer", "")
+                        sources = data.get("sources", [])
+                        
+                        st.markdown(answer_text)
+                        
+                        if sources:
+                            with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
+                                for idx, src in enumerate(sources, 1):
+                                    source_file = os.path.basename(src.get("source_id", "Document"))
+                                    meta = get_unique_doc_metadata(source_file)
+                                    score = src.get("score", 0.0)
+                                    chunk_idx = src.get("chunk_index", 0)
+                                    match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
+                                    badge_color = "#059669" if match_pct >= 80 else "#2563EB"
+                                    
+                                    st.markdown(
+                                        f"""<div style="margin-bottom: 6px;">
+                                        <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                                        <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
+                                        </div>""",
+                                        unsafe_allow_html=True
+                                    )
+                                    st.info(src.get("content", ""))
+                                    
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": answer_text,
+                            "sources": sources
+                        })
+                    else:
+                        err = f"⚠️ Server Error ({chat_res.status_code}): {chat_res.text}"
+                        st.error(err)
+                        st.session_state.messages.append({"role": "assistant", "content": err})
+                        
+                except requests.exceptions.ConnectionError:
+                    err = "⚠️ Backend API is offline. Please start the backend with `python main.py` on port 8000."
+                    st.error(err)
+                    st.session_state.messages.append({"role": "assistant", "content": err})
+                except Exception as e:
+                    err = f"⚠️ Error: {str(e)}"
+                    st.error(err)
+                    st.session_state.messages.append({"role": "assistant", "content": err})
 
 # ====================================================
 # TAB 2: KNOWLEDGE LIBRARY & DOCUMENT INGESTION
