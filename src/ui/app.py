@@ -22,8 +22,8 @@ if os.path.exists(ICON_PATH):
 
 # Mobile Web App PWA Manifest
 pwa_manifest = {
-    "name": "Gemini AI Agent",
-    "short_name": "Gemini",
+    "name": "Smart Knowledge Base Agent",
+    "short_name": "SmartKB Agent",
     "description": "Smart Knowledge Base AI Assistant",
     "start_url": "/",
     "display": "standalone",
@@ -119,8 +119,8 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
 
 # Streamlit Page Config - Responsive Layout (Auto-sidebar on mobile)
 st.set_page_config(
-    page_title="Gemini",
-    page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "✦",
+    page_title="Smart Knowledge Base Agent",
+    page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "🧠",
     layout="wide",
     initial_sidebar_state="auto"
 )
@@ -501,7 +501,7 @@ pwa_tags = f"""
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Gemini">
+<meta name="apple-mobile-web-app-title" content="SmartKB Agent">
 <link rel="apple-touch-icon" href="data:image/png;base64,{icon_b64}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 """
@@ -515,7 +515,7 @@ if "active_view" not in st.session_state:
     st.session_state["active_view"] = "chat"
 
 if "active_chat_title" not in st.session_state:
-    st.session_state["active_chat_title"] = "Chennai Doctor Dataset for Website"
+    st.session_state["active_chat_title"] = "Smart Knowledge Base Agent"
 
 if "llm_provider" not in st.session_state:
     st.session_state["llm_provider"] = "local"
@@ -563,12 +563,15 @@ gemini_sparkle_svg = """
 # LEFT SIDEBAR: AUTHENTIC GOOGLE GEMINI NAVIGATION
 # ====================================================
 with st.sidebar:
-    # Gemini Header with brand & icons
+    # Smart KB Agent Header with brand & icons
     st.markdown(
         f"""<div class="gemini-sidebar-header">
           <div class="gemini-brand">
-            {gemini_sparkle_svg}
-            <span class="gemini-brand-text">Gemini</span>
+            <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #4F46E5 0%, #2563EB 50%, #0284C7 100%); display: flex; align-items: center; justify-content: center; font-size: 15px; color: white;">🧠</div>
+            <div>
+              <span class="gemini-brand-text" style="font-size: 1.05rem; font-weight: 750;">Smart KB</span>
+              <span style="font-size: 0.68rem; font-weight: 700; background: #EEF2FF; color: #4F46E5; padding: 2px 6px; border-radius: 12px; border: 1px solid #C7D2FE; margin-left: 4px;">AGENT</span>
+            </div>
           </div>
           <div class="gemini-sidebar-icons">
             <span>🔍</span>
@@ -697,7 +700,7 @@ col_title, col_actions = st.columns([1.7, 1.3])
 with col_title:
     st.markdown(
         f"""<div class="gemini-top-bar">
-          <div class="gemini-chat-title">{gemini_sparkle_svg} <span>{st.session_state['active_chat_title']}</span></div>
+          <div class="gemini-chat-title"><span style="font-size: 1.35rem;">🧠</span> <span>{st.session_state['active_chat_title']}</span> <span style="font-size: 0.70rem; font-weight: 750; background: #EEF2FF; color: #4F46E5; padding: 2px 8px; border-radius: 9999px; border: 1px solid #C7D2FE;">AGENT</span></div>
         </div>""",
         unsafe_allow_html=True
     )
@@ -720,7 +723,7 @@ with col_actions:
 
 
 # ====================================================
-# VIEW 1: GEMINI CHAT INTERFACE (MATCHING SCREENSHOT)
+# VIEW 1: SMART KNOWLEDGE BASE AGENT CHAT INTERFACE
 # ====================================================
 if st.session_state["active_view"] == "chat":
     # Direct Mobile Install Helper Banner (Always Visible & Interactive)
@@ -730,7 +733,7 @@ if st.session_state["active_view"] == "chat":
             <div style="display: flex; align-items: center; gap: 10px;">
               <span style="font-size: 1.6rem;">📲</span>
               <div>
-                <div style="font-size: 0.95rem; font-weight: 700; color: #1F1F1F;">Install App on Your Phone</div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #1F1F1F;">Install Smart Knowledge Base Agent on Your Phone</div>
                 <div style="font-size: 0.78rem; color: #444746;">No Play Store needed &bull; Installs directly to your home screen</div>
               </div>
             </div>
@@ -820,7 +823,7 @@ if st.session_state["active_view"] == "chat":
             with st.chat_message("user", avatar="👤"):
                 st.markdown(f"**{msg['content']}**")
         else:
-            with st.chat_message("assistant", avatar="✦"):
+            with st.chat_message("assistant", avatar="🧠"):
                 # Render JSON / Code box if present
                 if msg.get("code_snippet"):
                     st.markdown(
@@ -884,7 +887,7 @@ if st.session_state["active_view"] == "chat":
     # ---------------------------------------------------------
     # PINNED GEMINI INPUT CAPSULE (SEARCH DOWN)
     # ---------------------------------------------------------
-    user_query = st.chat_input("Ask Gemini in simple English...")
+    user_query = st.chat_input("Ask Smart Knowledge Base Agent in simple English...")
     active_query = quick_query if quick_query else user_query
 
     if active_query and active_query.strip():
@@ -897,8 +900,8 @@ if st.session_state["active_view"] == "chat":
         with st.chat_message("user", avatar="👤"):
             st.markdown(f"**{chosen_prompt}**")
 
-        with st.chat_message("assistant", avatar="✦"):
-            with st.spinner("Gemini is explaining in simple English..."):
+        with st.chat_message("assistant", avatar="🧠"):
+            with st.spinner("Smart Knowledge Base Agent is explaining in simple English..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
                     chat_payload = {
@@ -966,8 +969,8 @@ if st.session_state["active_view"] == "chat":
                     st.error(err)
                     st.session_state.messages.append({"role": "assistant", "content": err})
 
-    # Centered Gemini Disclaimer below chat input
-    st.markdown('<div class="gemini-disclaimer-text">Gemini is AI and can make mistakes. Verify important info.</div>', unsafe_allow_html=True)
+    # Centered Disclaimer below chat input
+    st.markdown('<div class="gemini-disclaimer-text">Smart Knowledge Base Agent is an AI assistant and can make mistakes. Verify important info.</div>', unsafe_allow_html=True)
 
 
 # ====================================================
@@ -1092,7 +1095,7 @@ elif st.session_state["active_view"] == "library":
 # VIEW 3: CONFIGURATION, AI ENGINE & SETTINGS
 # ====================================================
 elif st.session_state["active_view"] == "settings":
-    st.subheader("⚙️ Gemini Engine Configuration")
+    st.subheader("⚙️ Smart Knowledge Base Agent Configuration")
     st.caption("Configure AI providers, search precision, and mobile home screen access.")
     
     col_prov1, col_prov2 = st.columns([1.5, 2])
@@ -1157,7 +1160,7 @@ elif st.session_state["active_view"] == "settings":
     st.markdown("---")
     st.subheader("🔌 System Diagnostics")
     st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
-    st.markdown(f"- **Agent Identity:** `Google Gemini Smart Knowledge Base`")
+    st.markdown(f"- **Agent Identity:** `Smart Knowledge Base Agent 2.0`")
     st.markdown(f"- **Natural Language Engine:** `{provider_format[st.session_state['llm_provider']]}`")
     st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
     st.markdown(f"- **Indexed Documents:** `{len(indexed_docs)}`")
