@@ -27,7 +27,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
         return {
             "symbol": "📊",
             "badge": "Statistics & Math",
-            "color": "#F59E0B",
+            "color": "#D97706",
             "bg": "rgba(245, 158, 11, 0.12)",
             "border": "rgba(245, 158, 11, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1))"
@@ -36,7 +36,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
         return {
             "symbol": "🥽",
             "badge": "Augmented Reality",
-            "color": "#EC4899",
+            "color": "#DB2777",
             "bg": "rgba(236, 72, 153, 0.12)",
             "border": "rgba(236, 72, 153, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(219, 39, 119, 0.1))"
@@ -45,7 +45,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
         return {
             "symbol": "🎮",
             "badge": "Game Engine",
-            "color": "#818CF8",
+            "color": "#4F46E5",
             "bg": "rgba(99, 102, 241, 0.12)",
             "border": "rgba(99, 102, 241, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.1))"
@@ -54,25 +54,25 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
         return {
             "symbol": "🛡️",
             "badge": "Cybersecurity",
-            "color": "#10B981",
+            "color": "#059669",
             "bg": "rgba(16, 185, 129, 0.12)",
             "border": "rgba(16, 185, 129, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1))"
         }
-    elif any(k in fname_lower for k in ["ai", "neural", "ml", "deep", "embed", "gpt"]):
+    elif any(k in fname_lower for k in ["doctor", "hospital", "clinic", "health", "medical"]):
         return {
-            "symbol": "⚡",
-            "badge": "Machine Learning",
-            "color": "#C084FC",
-            "bg": "rgba(168, 85, 247, 0.12)",
-            "border": "rgba(168, 85, 247, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.1))"
+            "symbol": "🩺",
+            "badge": "Healthcare & Clinic",
+            "color": "#2563EB",
+            "bg": "rgba(37, 99, 235, 0.12)",
+            "border": "rgba(37, 99, 235, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(37, 99, 235, 0.25), rgba(29, 78, 216, 0.1))"
         }
     elif ftype.upper() == "PDF":
         return {
             "symbol": "📕",
             "badge": "PDF Document",
-            "color": "#EF4444",
+            "color": "#DC2626",
             "bg": "rgba(239, 68, 68, 0.12)",
             "border": "rgba(239, 68, 68, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.1))"
@@ -81,743 +81,718 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
         return {
             "symbol": "📘",
             "badge": "Word Document",
-            "color": "#38BDF8",
+            "color": "#0284C7",
             "bg": "rgba(56, 189, 248, 0.12)",
             "border": "rgba(56, 189, 248, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(37, 99, 235, 0.1))"
-        }
-    elif ftype.upper() == "TXT":
-        return {
-            "symbol": "📄",
-            "badge": "Text File",
-            "color": "#94A3B8",
-            "bg": "rgba(148, 163, 184, 0.12)",
-            "border": "rgba(148, 163, 184, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(100, 116, 139, 0.1))"
         }
     else:
         return {
             "symbol": "📑",
             "badge": "Knowledge File",
-            "color": "#A855F7",
+            "color": "#7C3AED",
             "bg": "rgba(168, 85, 247, 0.12)",
             "border": "rgba(168, 85, 247, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(147, 51, 234, 0.1))"
         }
 
-# Mobile PWA Manifest
-pwa_manifest = {
-    "name": "Smart Knowledge Base Agent",
-    "short_name": "SmartKBAgent",
-    "description": "Next-Gen Natural Language AI Knowledge Base Agent",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#0B0F19",
-    "theme_color": "#6366F1",
-    "orientation": "portrait",
-    "icons": [
-        {
-            "src": f"data:image/png;base64,{icon_b64}" if icon_b64 else "https://api.iconify.design/fluent-emoji:brain.svg",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }
-    ]
-}
-manifest_b64 = base64.b64encode(json.dumps(pwa_manifest).encode('utf-8')).decode('utf-8')
-
-# Streamlit Page Config
+# Streamlit Page Config - Gemini Light Layout
 st.set_page_config(
-    page_title="Smart Knowledge Base Agent",
-    page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "🧠",
+    page_title="Gemini",
+    page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "✦",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
-# Custom Ultra-Modern Styling with Custom Typography & Ergonomic Search Placement
-clean_css = """<style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+# Custom Authentic Google Gemini Theme & Typography
+gemini_css = """<style>
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
 
 #MainMenu, footer, header, .stDeployButton, [data-testid="stToolbar"], [data-testid="stDecoration"] {
     visibility: hidden;
     display: none !important;
 }
+
 html, body, [class*="css"] {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #0F172A !important;
+    font-family: 'Google Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    background-color: #FFFFFF !important;
+    color: #1F1F1F !important;
 }
 
-/* Universal High-Contrast Crisp Typography for All Normal Text */
-p, span, li, label, div, td, th, .stMarkdown, .stText {
-    color: #0F172A;
-    text-shadow: none !important;
+/* =========================================================
+   GOOGLE GEMINI SIDEBAR STYLING
+   ========================================================= */
+[data-testid="stSidebar"] {
+    background-color: #F0F4F9 !important;
+    border-right: 1px solid #E3E8EE !important;
+    min-width: 270px !important;
+    max-width: 300px !important;
+}
+[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+    background-color: #F0F4F9 !important;
+    padding-top: 0.8rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
 }
 
+.gemini-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.6rem 1rem 0.6rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.6rem;
+}
+.gemini-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+}
+.gemini-brand-text {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #1F1F1F;
+    letter-spacing: -0.01em;
+}
+.gemini-brand-icon {
+    width: 26px;
+    height: 26px;
+}
+.gemini-sidebar-icons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #444746;
+    font-size: 1.05rem;
+}
+
+/* Sidebar Action Buttons & Navigation Pills */
+.sidebar-action-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    border-radius: 9999px;
+    color: #1F1F1F;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 4px;
+}
+.sidebar-action-pill:hover {
+    background-color: #E1E8F2;
+}
+.sidebar-action-pill.active {
+    background-color: #D3E3FD;
+    color: #041E49;
+    font-weight: 600;
+}
+
+.sidebar-section-title {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #72777A;
+    padding: 12px 12px 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.recent-chat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border-radius: 9999px;
+    font-size: 0.88rem;
+    color: #444746;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.15s ease;
+    margin-bottom: 3px;
+}
+.recent-chat-item:hover {
+    background: #E1E8F2;
+    color: #1F1F1F;
+}
+.recent-chat-item.active {
+    background: #E8EDF5;
+    color: #041E49;
+    font-weight: 600;
+}
+
+/* User Account Profile Footer in Sidebar */
+.gemini-user-profile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-top: 1px solid #E3E8EE;
+    margin-top: 1.5rem;
+    border-radius: 12px;
+    background: transparent;
+}
+.gemini-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.gemini-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4285F4 0%, #9B72CB 50%, #D96570 100%);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+.gemini-user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F1F1F;
+    line-height: 1.1;
+}
+.gemini-user-badge {
+    font-size: 0.72rem;
+    color: #5E5E5E;
+    font-weight: 500;
+}
+
+/* =========================================================
+   MAIN VIEW & TOP NAVIGATION
+   ========================================================= */
 .block-container {
-    padding-top: 1.2rem !important;
-    padding-bottom: 7.5rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: 980px !important;
+    padding-top: 1rem !important;
+    padding-bottom: 8.5rem !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    max-width: 950px !important;
     margin: 0 auto !important;
 }
 
-/* Pinned Bottom Search Bar Styling (Search go DOWN) */
+.gemini-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #F1F5F9;
+    margin-bottom: 1.5rem;
+}
+.gemini-chat-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #1F1F1F;
+    letter-spacing: -0.015em;
+}
+.gemini-model-badge {
+    background: #F0F4F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 9999px;
+    padding: 5px 14px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #1F1F1F;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.gemini-model-badge:hover {
+    background: #E2E8F0;
+}
+
+/* =========================================================
+   EXACT GEMINI CHAT RESPONSE FORMATTING
+   ========================================================= */
+.gemini-response-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1F1F1F;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+.gemini-response-body {
+    font-size: 0.98rem;
+    color: #1F1F1F;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Code & JSON Box */
+.gemini-code-container {
+    background: #181C20;
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 1rem 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.gemini-code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #212529;
+    color: #C4C7C5;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #2D3135;
+}
+.gemini-code-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.gemini-code-body {
+    padding: 14px 18px;
+    color: #E3E3E3;
+    font-family: 'Roboto Mono', Consolas, monospace;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Gemini Quoted Prompt Card */
+.gemini-prompt-quote {
+    border-left: 2px dashed #CBD5E1;
+    background: #F8FAFC;
+    padding: 14px 18px;
+    border-radius: 0 12px 12px 0;
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+/* Gemini Action Footer (Thumbs Up, Down, Retry, Copy, More) */
+.gemini-action-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #5E5E5E;
+    font-size: 1.05rem;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.gemini-action-btn {
+    cursor: pointer;
+    transition: color 0.15s ease;
+    user-select: none;
+}
+.gemini-action-btn:hover {
+    color: #1F1F1F;
+}
+
+/* =========================================================
+   FLOATING GEMINI PILL SEARCH BAR (PINNED BOTTOM)
+   ========================================================= */
 [data-testid="stBottomBlockContainer"] {
     visibility: visible !important;
     display: block !important;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 25%, #FFFFFF 100%) !important;
-    padding-bottom: 1.2rem !important;
-    padding-top: 0.8rem !important;
-    max-width: 980px !important;
+    padding-bottom: 0.6rem !important;
+    padding-top: 0.6rem !important;
+    max-width: 950px !important;
     margin: 0 auto !important;
 }
 
 [data-testid="stChatInput"] {
-    border: 1.5px solid #CBD5E1 !important;
-    border-radius: 32px !important;
-    background: #F8FAFC !important;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
-    padding: 4px 8px 4px 16px !important;
+    border: 1px solid #D3D7DC !important;
+    border-radius: 9999px !important;
+    background: #F0F4F9 !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+    padding: 6px 16px 6px 20px !important;
     transition: all 0.2s ease !important;
 }
 [data-testid="stChatInput"]:focus-within {
-    border-color: #2563EB !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 4px 22px rgba(0, 0, 0, 0.08) !important;
+    border-color: #A8C7FA !important;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.15), 0 4px 18px rgba(0, 0, 0, 0.08) !important;
     background: #FFFFFF !important;
 }
 [data-testid="stChatInput"] textarea {
-    color: #0F172A !important;
+    color: #1F1F1F !important;
     font-size: 1.02rem !important;
-    font-weight: 500 !important;
-    padding-top: 10px !important;
+    font-weight: 450 !important;
+    padding-top: 8px !important;
 }
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #64748B !important;
-    font-size: 0.98rem !important;
-    font-weight: 450 !important;
+    color: #5E5E5E !important;
+    font-size: 1.0rem !important;
+    font-weight: 400 !important;
 }
 [data-testid="stChatInput"] button {
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-    color: #FFFFFF !important;
+    background: transparent !important;
+    color: #444746 !important;
     border-radius: 50% !important;
     width: 38px !important;
     height: 38px !important;
     border: none !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35) !important;
+    box-shadow: none !important;
     transition: all 0.2s ease !important;
 }
 [data-testid="stChatInput"] button:hover {
-    background: #1E40AF !important;
+    background: #E1E8F2 !important;
+    color: #1F1F1F !important;
     transform: scale(1.05) !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5) !important;
 }
 [data-testid="stChatInput"] button svg {
-    fill: #FFFFFF !important;
+    fill: #1F1F1F !important;
 }
 
-/* Clean 2D Header for "Smart Knowledge Base Agent" */
-.hero-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.95rem;
-    margin-bottom: 0.25rem;
-}
-.hero-title-2d {
-    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 2.15rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.025em !important;
-    line-height: 1.2 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 0.55rem !important;
-}
-.title-main-2d {
-    color: #0F172A !important;
-    font-weight: 800 !important;
-    text-shadow: none !important;
-}
-.title-agent-2d {
-    background: linear-gradient(135deg, #4F46E5 0%, #2563EB 50%, #0284C7 100%);
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    font-weight: 800 !important;
-    text-shadow: none !important;
-}
-.agent-tag-2d {
-    font-size: 0.72rem !important;
-    font-weight: 750 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    background: #EEF2FF !important;
-    color: #4F46E5 !important;
-    -webkit-text-fill-color: #4F46E5 !important;
-    border: 1px solid #C7D2FE !important;
-    padding: 3px 10px !important;
-    border-radius: 9999px !important;
-    vertical-align: middle !important;
-}
-.app-brand-icon-2d {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.18);
-    border: 1px solid #E2E8F0;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.hero-subtitle {
-    font-size: 0.92rem !important;
-    color: #475569 !important;
-    margin-bottom: 1.2rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.6rem !important;
-    font-weight: 550 !important;
-    text-shadow: none !important;
-}
-.hero-subtitle span {
-    color: #475569 !important;
-    text-shadow: none !important;
-}
-
-.status-badge-online {
-    background: #ECFDF5 !important;
-    color: #065F46 !important;
-    border: 1px solid #A7F3D0 !important;
-    padding: 5px 14px !important;
-    border-radius: 9999px !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-}
-.status-badge-offline {
-    background: #FEF2F2 !important;
-    color: #B91C1C !important;
-    border: 1px solid #FECACA !important;
-    padding: 5px 14px !important;
-    border-radius: 9999px !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-}
-.nlg-pill {
-    background: #EEF2FF !important;
-    color: #4338CA !important;
-    border: 1px solid #C7D2FE !important;
-    padding: 3px 10px !important;
-    border-radius: 9999px !important;
-    font-size: 0.72rem !important;
-    font-weight: 650 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-}
-
-/* Google Gemini Search Bar (Clean 2D Styling) */
-.gemini-search-container {
-    margin-bottom: 0.65rem;
-    position: relative;
-    width: 100%;
-}
-.gemini-search-container div[data-testid="stForm"] {
-    background: #F8FAFC !important;
-    border: 1.5px solid #CBD5E1 !important;
-    border-radius: 32px !important;
-    padding: 6px 14px 6px 16px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-    transition: all 0.2s ease !important;
-    margin-bottom: 0.45rem !important;
-}
-.gemini-search-container div[data-testid="stForm"]:hover {
-    border-color: #94A3B8 !important;
-    background: #FFFFFF !important;
-}
-.gemini-search-container div[data-testid="stForm"]:focus-within {
-    border-color: #2563EB !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05) !important;
-    background: #FFFFFF !important;
-}
-.gemini-search-container div[data-testid="stHorizontalBlock"] {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 8px !important;
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
-.gemini-search-container div[data-testid="stColumn"] {
-    min-width: unset !important;
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
-.gemini-search-container div[data-testid="stColumn"]:nth-child(1) {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    padding: 0 !important;
-}
-.gemini-search-container div[data-testid="stColumn"]:nth-child(2) {
-    flex: 1 1 auto !important;
-    width: 100% !important;
-}
-.gemini-search-container div[data-testid="stColumn"]:nth-child(3) {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    padding: 0 !important;
-}
-
-/* Gemini Sparkle Icon */
-.gemini-sparkle-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 44px;
-    user-select: none;
-}
-.gemini-sparkle-svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* Seamless Inner Input */
-.gemini-search-container [data-baseweb="input"],
-.gemini-search-container [data-baseweb="base-input"],
-.gemini-search-container div[data-testid="stTextInput"] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-.gemini-search-container div[data-testid="stTextInput"] input {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    color: #0F172A !important;
-    font-size: 1.02rem !important;
-    font-weight: 500 !important;
-    padding: 8px 6px !important;
-    height: 46px !important;
-}
-.gemini-search-container div[data-testid="stTextInput"] input::placeholder {
-    color: #64748B !important;
-    font-size: 0.98rem !important;
-    font-weight: 400 !important;
-}
-.gemini-search-container div[data-testid="stTextInput"] input:focus {
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    background: transparent !important;
-}
-
-/* Gemini Blue Submit Button */
-.gemini-search-container div[data-testid="stFormSubmitButton"] {
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-}
-.gemini-search-container div[data-testid="stFormSubmitButton"] button {
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 22px !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    padding: 0 18px !important;
-    font-size: 0.92rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.01em !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35) !important;
-    transition: all 0.2s ease !important;
-}
-.gemini-search-container div[data-testid="stFormSubmitButton"] button:hover {
-    transform: translateY(-1px) scale(1.02) !important;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5) !important;
-    background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
-}
-.gemini-search-container div[data-testid="stFormSubmitButton"] button:active {
-    transform: translateY(1px) scale(0.98) !important;
-}
-
-/* Gemini Suggestion Chips Container (Clearly Visible Buttons) */
-.gemini-chips-container {
-    margin-bottom: 0.45rem;
-}
-.gemini-chips-container button {
-    background: #FFFFFF !important;
-    border: 1.5px solid #CBD5E1 !important;
-    border-radius: 9999px !important;
-    color: #1E293B !important;
-    font-size: 0.84rem !important;
-    font-weight: 600 !important;
-    padding: 6px 14px !important;
-    min-height: 36px !important;
-    height: 36px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-    transition: all 0.2s ease !important;
-}
-.gemini-chips-container button:hover {
-    background: #EFF6FF !important;
-    border-color: #2563EB !important;
-    color: #1D4ED8 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15) !important;
-}
-
-/* Clear Button */
-.gemini-chips-container div[data-testid="stColumn"]:last-child button {
-    background: #FEF2F2 !important;
-    border-color: #FECACA !important;
-    color: #DC2626 !important;
-}
-.gemini-chips-container div[data-testid="stColumn"]:last-child button:hover {
-    background: #FEE2E2 !important;
-    border-color: #F87171 !important;
-    color: #B91C1C !important;
-}
-
-/* Gemini Grounding Disclaimer */
-.gemini-disclaimer {
+.gemini-disclaimer-text {
     text-align: center;
-    font-size: 0.78rem;
-    color: #64748B !important;
+    font-size: 0.74rem;
+    color: #72777A;
     margin-top: 4px;
-    margin-bottom: 1.1rem;
-    font-weight: 500;
-}
-.gemini-grad-text {
-    color: #2563EB !important;
-    font-weight: 700 !important;
-}
-
-/* Navigation Tabs */
-[data-baseweb="tab-list"] {
-    background: #F1F5F9 !important;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 14px !important;
-    padding: 4px !important;
-    gap: 6px !important;
-    margin-bottom: 1.3rem !important;
-}
-[data-baseweb="tab"] {
-    border-radius: 10px !important;
-    padding: 8px 18px !important;
-    font-weight: 600 !important;
-    font-size: 0.92rem !important;
-    border: none !important;
-    color: #475569 !important;
-    transition: all 0.2s ease !important;
-}
-[data-baseweb="tab"]:hover {
-    color: #0F172A !important;
-    background: rgba(255, 255, 255, 0.7) !important;
-}
-[aria-selected="true"] {
-    background: #FFFFFF !important;
-    color: #4338CA !important;
-    border: 1px solid #CBD5E1 !important;
-    font-weight: 700 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-    text-shadow: none !important;
-}
-
-/* Chat Messages */
-[data-testid="stChatMessage"] {
-    border-radius: 16px !important;
-    padding: 1.1rem 1.4rem !important;
-    margin-bottom: 1rem !important;
-    border: 1px solid #E2E8F0 !important;
-    background: #FFFFFF !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-    color: #0F172A !important;
-}
-[data-testid="stChatMessage"] p,
-[data-testid="stChatMessage"] span,
-[data-testid="stChatMessage"] li {
-    color: #0F172A !important;
-    font-size: 1.01rem !important;
-    line-height: 1.65 !important;
-    text-shadow: none !important;
-}
-[data-testid="stChatMessage"] strong,
-[data-testid="stChatMessage"] b {
-    color: #0F172A !important;
-    font-weight: 750 !important;
-    text-shadow: none !important;
-}
-[data-testid="stChatMessage"] code {
-    color: #0284C7 !important;
-    background: #F0F9FF !important;
-    border: 1px solid #BAE6FD !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    padding: 2px 6px !important;
-}
-
-/* Document Cards */
-.doc-card {
-    background: #FFFFFF !important;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 14px !important;
-    padding: 14px 18px !important;
-    margin-bottom: 10px !important;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.15s ease;
-}
-.doc-card:hover {
-    border-color: #94A3B8 !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
-}
-.doc-card strong, .doc-card div, .doc-card span {
-    color: #0F172A !important;
-}
-button {
-    min-height: 40px !important;
-    border-radius: 12px !important;
-    font-weight: 600 !important;
-    transition: all 0.2s ease !important;
-}
-.unique-icon-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    flex-shrink: 0;
-}
-.doc-topic-pill {
-    font-size: 0.72rem;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    font-weight: 600;
-    display: inline-block;
-}
-@media (max-width: 768px) {
-    .hero-title-2d { font-size: 1.6rem !important; }
-    .hero-subtitle { font-size: 0.82rem; }
-    .block-container { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
+    margin-bottom: 2px;
 }
 </style>"""
-st.markdown(clean_css, unsafe_allow_html=True)
+
+st.markdown(gemini_css, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# BACKEND HEALTH & STATS CHECK
+# SYSTEM STATE & ACTIVE VIEW ROUTING
 # ----------------------------------------------------
+if "active_view" not in st.session_state:
+    st.session_state["active_view"] = "chat"
+
+if "active_chat_title" not in st.session_state:
+    st.session_state["active_chat_title"] = "Chennai Doctor Dataset for Website"
+
+if "llm_provider" not in st.session_state:
+    st.session_state["llm_provider"] = "local"
+
+if "llm_api_key" not in st.session_state:
+    st.session_state["llm_api_key"] = ""
+
+if "top_k" not in st.session_state:
+    st.session_state["top_k"] = 4
+
+# Check backend health & fetch documents
 api_healthy = False
-latency_ms = 0
+indexed_docs = []
 try:
-    t0 = time.time()
-    health_resp = requests.get(f"{API_HOST}/health", timeout=2)
-    latency_ms = int((time.time() - t0) * 1000)
-    if health_resp.status_code == 200:
+    health_res = requests.get(f"{API_HOST}/health", timeout=2)
+    if health_res.status_code == 200:
         api_healthy = True
 except Exception:
     api_healthy = False
 
-# Fetch currently indexed documents
-indexed_docs = []
 if api_healthy:
     try:
-        doc_resp = requests.get(f"{API_HOST}/documents", timeout=3)
-        if doc_resp.status_code == 200:
-            indexed_docs = doc_resp.json().get("documents", [])
+        docs_res = requests.get(f"{API_HOST}/documents", timeout=3)
+        if docs_res.status_code == 200:
+            indexed_docs = docs_res.json().get("documents", [])
     except Exception:
-        pass
+        indexed_docs = []
 
-# Initialize session state for natural language settings
-if "llm_provider" not in st.session_state:
-    st.session_state["llm_provider"] = "local"
-if "llm_api_key" not in st.session_state:
-    st.session_state["llm_api_key"] = ""
-if "top_k" not in st.session_state:
-    st.session_state["top_k"] = 4
+# Google Gemini Sparkle SVG Logo
+gemini_sparkle_svg = """
+<svg class="gemini-brand-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M14 0C14 7.73199 7.73199 14 0 14C7.73199 14 14 20.268 14 28C14 20.268 20.268 14 28 14C20.268 14 14 7.73199 14 0Z" fill="url(#gemini_grad)"/>
+  <defs>
+    <linearGradient id="gemini_grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4285F4"/>
+      <stop offset="35%" stop-color="#9B72CB"/>
+      <stop offset="70%" stop-color="#D96570"/>
+      <stop offset="100%" stop-color="#F2994A"/>
+    </linearGradient>
+  </defs>
+</svg>
+"""
 
-# ----------------------------------------------------
-# TOP HEADER & BRANDING (UPDATED TEXT STYLE)
-# ----------------------------------------------------
-col_title, col_stat = st.columns([3.5, 1.2])
-
-with col_title:
-    brand_html = f'<img src="data:image/png;base64,{icon_b64}" class="app-brand-icon-2d"/>' if icon_b64 else '<span>🔮</span>'
+# ====================================================
+# LEFT SIDEBAR: AUTHENTIC GOOGLE GEMINI NAVIGATION
+# ====================================================
+with st.sidebar:
+    # Gemini Header with brand & icons
     st.markdown(
-        f"""<div class="hero-title-wrapper">
-          {brand_html}
-          <div class="hero-title-2d">
-            <span class="title-main-2d">Smart Knowledge Base</span>
-            <span class="title-agent-2d">Agent</span>
-            <span class="agent-tag-2d">AI Agent</span>
+        f"""<div class="gemini-sidebar-header">
+          <div class="gemini-brand">
+            {gemini_sparkle_svg}
+            <span class="gemini-brand-text">Gemini</span>
           </div>
-        </div>""", 
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        """<div class="hero-subtitle">
-          <span>⚡ Natural Language RAG</span> &bull; 
-          <span>🧠 Vector Search</span> &bull; 
-          <span>📊 Semantic Synthesis</span>
-        </div>""", 
+          <div class="gemini-sidebar-icons">
+            <span>🔍</span>
+            <span>◨</span>
+          </div>
+        </div>""",
         unsafe_allow_html=True
     )
 
-with col_stat:
-    provider_labels = {
-        "local": "⚡ Local NLG",
-        "gemini": "🌟 Gemini AI",
-        "groq": "🚀 Groq Llama-3",
-        "openai": "🤖 GPT-4o",
-        "ollama": "💻 Ollama"
-    }
-    cur_provider_label = provider_labels.get(st.session_state["llm_provider"], "⚡ Local NLG")
-    
-    if api_healthy:
-        st.markdown(
-            f"""<div style="text-align: right; padding-top: 4px;">
-            <span class="status-badge-online">● Agent Active &bull; {latency_ms}ms</span>
-            <div style="margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; align-items: center;">
-              <span class="nlg-pill">{cur_provider_label}</span>
-              <span style="font-size: 11px; color: #64748B;">{len(indexed_docs)} docs indexed</span>
-            </div>
-            </div>""",
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            """<div style="text-align: right; padding-top: 6px;">
-            <span class="status-badge-offline">● Backend Offline</span>
-            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Run: `python main.py`</div>
-            </div>""",
-            unsafe_allow_html=True
-        )
+    # + New Chat Action Button
+    if st.button("✏️  New chat", use_container_width=True, type="primary"):
+        st.session_state.messages = []
+        st.session_state["active_chat_title"] = "New Conversation"
+        st.session_state["active_view"] = "chat"
+        st.rerun()
 
-# ----------------------------------------------------
-# THREE NAVIGATION TABS
-# ----------------------------------------------------
-tab_chat, tab_library, tab_controls = st.tabs([
-    "💬 AI Agent Chat",
-    f"📁 Knowledge Library ({len(indexed_docs)})",
-    "🎛️ Controls & Settings"
-])
+    st.markdown('<div style="margin-top: 8px;"></div>', unsafe_allow_html=True)
 
-# ====================================================
-# TAB 1: AI AGENT CHAT (ERGONOMIC TOP SEARCH BAR)
-# ====================================================
-with tab_chat:
-    # ---------------------------------------------------------
-    # QUICK PROMPT CHIPS & ACTIONS (AT TOP)
-    # ---------------------------------------------------------
-    st.markdown('<div class="gemini-chips-container">', unsafe_allow_html=True)
-    col_chip1, col_chip2, col_chip3, col_chip4, col_clear = st.columns([1, 1, 1, 1, 0.55])
-    quick_prompt = None
-
-    with col_chip1:
-        if st.button("✦ Explain Simply", use_container_width=True):
-            quick_prompt = "Explain the core concepts and topics in my documents in simple, everyday English."
-    with col_chip2:
-        if st.button("✦ Summarize All", use_container_width=True):
-            quick_prompt = "Provide a comprehensive executive summary of the main points across the uploaded documents."
-    with col_chip3:
-        if st.button("✦ F-Test Hypotheses", use_container_width=True):
-            quick_prompt = "What are the null and alternative hypotheses for the F-test and how are they calculated?"
-    with col_chip4:
-        if st.button("✦ Vuforia & Unity", use_container_width=True):
-            quick_prompt = "What is Vuforia and how does it integrate with GameObjects and Image Targets in Unity?"
-    with col_clear:
-        if st.button("🧹 Clear", use_container_width=True, help="Clear conversation"):
-            st.session_state.messages = []
+    # Top Menu Items (Matching Screenshot)
+    col_nav1, col_nav2 = st.columns(2)
+    with col_nav1:
+        if st.button("🎨 Images", use_container_width=True):
+            st.session_state["active_view"] = "chat"
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    with col_nav2:
+        if st.button("⏰ Scheduled", use_container_width=True):
+            st.toast("No scheduled tasks yet.")
 
-    # Initialize Chat History
-    if "messages" not in st.session_state:
+    col_nav3, col_nav4 = st.columns(2)
+    with col_nav3:
+        if st.button("🎓 Students", use_container_width=True):
+            st.session_state["active_view"] = "chat"
+            st.rerun()
+    with col_nav4:
+        if st.button("⋯ More", use_container_width=True):
+            st.session_state["active_view"] = "settings"
+            st.rerun()
+
+    st.markdown('<div style="margin-top: 14px;"></div>', unsafe_allow_html=True)
+
+    # Section 1: Notebooks (Knowledge Base Documents)
+    st.markdown(
+        """<div class="sidebar-section-title">
+          <span>Notebooks</span>
+          <span style="font-size: 0.75rem; color: #2563EB; cursor: pointer;">✦</span>
+        </div>""",
+        unsafe_allow_html=True
+    )
+
+    if st.button("➕ New notebook / Add Doc", use_container_width=True):
+        st.session_state["active_view"] = "library"
+        st.rerun()
+
+    # Dynamic or default notebooks
+    if indexed_docs:
+        for d in indexed_docs[:3]:
+            fname = d.get("filename") or os.path.basename(d.get("source_id", "Doc"))
+            meta = get_unique_doc_metadata(fname, d.get("source_type", ""))
+            short_name = (fname[:24] + '...') if len(fname) > 24 else fname
+            if st.button(f"{meta['symbol']} {short_name}", key=f"nb_{fname}", use_container_width=True):
+                st.session_state["active_chat_title"] = fname
+                st.session_state["active_view"] = "chat"
+                st.rerun()
+    else:
+        # Default sample notebooks from screenshot
+        sample_notebooks = [
+            ("📘", "IoT Management and Security..."),
+            ("📗", "Finite Automata and Regular..."),
+            ("📙", "Computer Architecture: Reg...")
+        ]
+        for sym, name in sample_notebooks:
+            if st.button(f"{sym} {name}", key=f"snb_{name}", use_container_width=True):
+                st.session_state["active_chat_title"] = name
+                st.session_state["active_view"] = "chat"
+                st.rerun()
+
+    st.markdown('<div style="margin-top: 16px;"></div>', unsafe_allow_html=True)
+
+    # Section 2: Recent Chats ("All")
+    st.markdown(
+        """<div class="sidebar-section-title">
+          <span>All</span>
+          <span>🝖</span>
+        </div>""",
+        unsafe_allow_html=True
+    )
+
+    recent_topics = [
+        "Chennai Doctor Dataset for Website",
+        "Efficient Algorithm Complexity Goal",
+        "Understanding the Term Pro",
+        "Antigravity IDE Screenshot Overview",
+        "Song Lyrics Search Assistance"
+    ]
+
+    for topic in recent_topics:
+        is_active = (st.session_state.get("active_chat_title") == topic)
+        btn_label = f"💬 {topic}" if not is_active else f"✦ {topic}"
+        if st.button(btn_label, key=f"rec_{topic}", use_container_width=True):
+            st.session_state["active_chat_title"] = topic
+            st.session_state["active_view"] = "chat"
+            st.rerun()
+
+    # User Profile / Account Card at Sidebar Footer
+    st.markdown(
+        """<div class="gemini-user-profile">
+          <div class="gemini-user-info">
+            <div class="gemini-user-avatar">S</div>
+            <div>
+              <div class="gemini-user-name">Sivasaigolla</div>
+              <div class="gemini-user-badge">Pro &bull; Online</div>
+            </div>
+          </div>
+          <div style="font-size: 1.15rem; color: #444746; cursor: pointer;">⚙️</div>
+        </div>""",
+        unsafe_allow_html=True
+    )
+    if st.button("⚙️ Open Settings & Models", use_container_width=True):
+        st.session_state["active_view"] = "settings"
+        st.rerun()
+
+
+# ====================================================
+# TOP BAR (ACTIVE CHAT TITLE & VIEW CONTROLS)
+# ====================================================
+col_title, col_actions = st.columns([3, 1.6])
+with col_title:
+    st.markdown(
+        f"""<div class="gemini-top-bar">
+          <div class="gemini-chat-title">{st.session_state['active_chat_title']}</div>
+        </div>""",
+        unsafe_allow_html=True
+    )
+
+with col_actions:
+    c_btn1, c_btn2, c_btn3 = st.columns([1, 1.1, 0.9])
+    with c_btn1:
+        if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state["active_view"] == "chat" else "secondary"):
+            st.session_state["active_view"] = "chat"
+            st.rerun()
+    with c_btn2:
+        doc_count = len(indexed_docs)
+        if st.button(f"📁 Docs ({doc_count})", use_container_width=True, type="primary" if st.session_state["active_view"] == "library" else "secondary"):
+            st.session_state["active_view"] = "library"
+            st.rerun()
+    with c_btn3:
+        if st.button("⚙️ Config", use_container_width=True, type="primary" if st.session_state["active_view"] == "settings" else "secondary"):
+            st.session_state["active_view"] = "settings"
+            st.rerun()
+
+
+# ====================================================
+# VIEW 1: GEMINI CHAT INTERFACE (MATCHING SCREENSHOT)
+# ====================================================
+if st.session_state["active_view"] == "chat":
+    # Initialize Messages with the Exact Screenshot Example if brand new
+    if "messages" not in st.session_state or not st.session_state.messages:
         st.session_state.messages = [
             {
                 "role": "assistant",
+                "is_example": True,
                 "content": (
-                    "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
-                    "Ask any question in the search bar below or tap one of the quick starter chips above to explore your knowledge library in natural language!"
+                    "**Prompt for Antigravity (Location & Distance Search)**\n\n"
+                    "Now that your data has explicit addresses, landmarks, and coordinates, you can ask Antigravity to build a \"Search by Distance\" feature. Try this prompt:"
+                ),
+                "code_snippet": '[\n  {\n    "consultation_fee_inr": 800,\n    "rating": 4.6\n  }\n]',
+                "prompt_quote": (
+                    '"I am updating my doctor appointment app database. Here is a JSON array of doctors that now includes a '
+                    'nested \'location\' object with \'full_address\', \'landmark\', and latitude/longitude \'coordinates\'. '
+                    'Please update my SQLAlchemy models to store this location data. Then, write a function that calculates '
+                    'the distance between a user\'s latitude/longitude and the clinic\'s coordinates, and sorts the doctors from nearest to farthest."'
                 ),
                 "sources": []
             }
         ]
 
-    # ---------------------------------------------------------
-    # RENDER CONVERSATION MESSAGES & ANSWERS (GIVE ANSWER UP)
-    # ---------------------------------------------------------
+    # Render Conversation Messages matching Google Gemini Style
     for msg in st.session_state.messages:
-        avatar = "🧠" if msg["role"] == "assistant" else "👤"
-        with st.chat_message(msg["role"], avatar=avatar):
-            st.markdown(msg["content"])
-            
-            # Source Citations Card with Unique Document Symbols
-            if msg.get("sources"):
-                with st.expander(f"📚 Verified Sources ({len(msg['sources'])} relevant chunks)", expanded=False):
-                    for idx, src in enumerate(msg["sources"], 1):
-                        source_file = os.path.basename(src.get("source_id", "Document"))
-                        meta = get_unique_doc_metadata(source_file)
-                        score = src.get("score", 0.0)
-                        chunk_idx = src.get("chunk_index", 0)
-                        
-                        match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
-                        badge_color = "#059669" if match_pct >= 80 else "#2563EB"
-                        
-                        st.markdown(
-                            f"""<div style="margin-bottom: 6px;">
-                            <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
-                            <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
-                            </div>""",
-                            unsafe_allow_html=True
-                        )
-                        st.info(src.get("content", ""))
+        if msg["role"] == "user":
+            with st.chat_message("user", avatar="👤"):
+                st.markdown(f"**{msg['content']}**")
+        else:
+            with st.chat_message("assistant", avatar="✦"):
+                # Render JSON / Code box if present
+                if msg.get("code_snippet"):
+                    st.markdown(
+                        f"""<div class="gemini-code-container">
+                          <div class="gemini-code-header">
+                            <span>JSON</span>
+                            <div class="gemini-code-actions">
+                              <span>📥</span>
+                              <span>📋</span>
+                            </div>
+                          </div>
+                          <div class="gemini-code-body">{msg['code_snippet']}</div>
+                        </div>""",
+                        unsafe_allow_html=True
+                    )
+
+                # Render Main Explanation / Response
+                st.markdown(msg["content"])
+
+                # Render Prompt Callout Quote if present
+                if msg.get("prompt_quote"):
+                    st.markdown(
+                        f"""<div class="gemini-prompt-quote">
+                          {msg['prompt_quote']}
+                        </div>""",
+                        unsafe_allow_html=True
+                    )
+
+                # Gemini Feedback Action Row: Thumbs Up, Down, Retry, Copy, More
+                st.markdown(
+                    """<div class="gemini-action-row">
+                      <span class="gemini-action-btn" title="Good response">👍</span>
+                      <span class="gemini-action-btn" title="Bad response">👎</span>
+                      <span class="gemini-action-btn" title="Regenerate">🔄</span>
+                      <span class="gemini-action-btn" title="Copy text">📋</span>
+                      <span class="gemini-action-btn" title="More options">⋯</span>
+                    </div>""",
+                    unsafe_allow_html=True
+                )
+
+                # Verified Sources Expander
+                if msg.get("sources"):
+                    with st.expander(f"📚 Verified Sources ({len(msg['sources'])} relevant chunks)", expanded=False):
+                        for idx, src in enumerate(msg["sources"], 1):
+                            source_file = os.path.basename(src.get("source_id", "Document"))
+                            meta = get_unique_doc_metadata(source_file)
+                            score = src.get("score", 0.0)
+                            chunk_idx = src.get("chunk_index", 0)
+                            match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
+                            badge_color = "#059669" if match_pct >= 80 else "#2563EB"
+                            
+                            st.markdown(
+                                f"""<div style="margin-bottom: 6px;">
+                                <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                                <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
+                                </div>""",
+                                unsafe_allow_html=True
+                            )
+                            st.info(src.get("content", ""))
 
     # ---------------------------------------------------------
-    # SEARCH BAR DOWN (Pinned At Bottom, Answers Displayed UP)
+    # PINNED GEMINI INPUT CAPSULE (SEARCH DOWN)
     # ---------------------------------------------------------
-    user_query = st.chat_input("✦ Ask Gemini anything about your documents...")
-    active_prompt = quick_prompt if quick_prompt else user_query
+    user_query = st.chat_input("Ask Gemini")
 
-    if active_prompt:
-        st.session_state.messages.append({"role": "user", "content": active_prompt})
+    if user_query and user_query.strip():
+        # Update chat title if still default
+        if st.session_state["active_chat_title"] == "New Conversation":
+            st.session_state["active_chat_title"] = user_query.strip()[:35]
+
+        st.session_state.messages.append({"role": "user", "content": user_query.strip()})
         with st.chat_message("user", avatar="👤"):
-            st.markdown(active_prompt)
+            st.markdown(f"**{user_query.strip()}**")
 
-        with st.chat_message("assistant", avatar="🧠"):
-            with st.spinner("Smart Agent synthesizing answer..."):
+        with st.chat_message("assistant", avatar="✦"):
+            with st.spinner("Gemini is synthesizing answer..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
-                    
                     chat_payload = {
-                        "query": active_prompt,
+                        "query": user_query.strip(),
                         "top_k": search_depth,
                         "api_key": st.session_state.get("llm_api_key", ""),
                         "provider": st.session_state.get("llm_provider", "local")
                     }
                     
-                    chat_res = requests.post(
-                        f"{API_HOST}/chat",
-                        json=chat_payload,
-                        timeout=35
-                    )
+                    chat_res = requests.post(f"{API_HOST}/chat", json=chat_payload, timeout=35)
                     
                     if chat_res.status_code == 200:
                         data = chat_res.json()
@@ -845,6 +820,17 @@ with tab_chat:
                                     )
                                     st.info(src.get("content", ""))
                                     
+                        st.markdown(
+                            """<div class="gemini-action-row">
+                              <span class="gemini-action-btn">👍</span>
+                              <span class="gemini-action-btn">👎</span>
+                              <span class="gemini-action-btn">🔄</span>
+                              <span class="gemini-action-btn">📋</span>
+                              <span class="gemini-action-btn">⋯</span>
+                            </div>""",
+                            unsafe_allow_html=True
+                        )
+
                         st.session_state.messages.append({
                             "role": "assistant",
                             "content": answer_text,
@@ -864,12 +850,16 @@ with tab_chat:
                     st.error(err)
                     st.session_state.messages.append({"role": "assistant", "content": err})
 
+    # Centered Gemini Disclaimer below chat input
+    st.markdown('<div class="gemini-disclaimer-text">Gemini is AI and can make mistakes. Verify important info.</div>', unsafe_allow_html=True)
+
+
 # ====================================================
-# TAB 2: KNOWLEDGE LIBRARY & DOCUMENT INGESTION
+# VIEW 2: NOTEBOOKS & DOCUMENT INGESTION
 # ====================================================
-with tab_library:
-    st.subheader("📤 Document Ingestion Dropzone")
-    st.caption("Upload files to extract text, generate 384-d vector embeddings, and assign unique topic icon symbols.")
+elif st.session_state["active_view"] == "library":
+    st.subheader("📚 Notebooks & Document Ingestion")
+    st.caption("Upload files to generate vector embeddings in ChromaDB and assign custom topic icon symbols.")
     
     new_files = st.file_uploader(
         "Drop PDF, DOCX, or TXT files here:",
@@ -902,7 +892,7 @@ with tab_library:
                 st.error("Backend API is currently offline.")
                 
     with col_resync_btn:
-        if st.button("🔄 Resync & Refresh Library", use_container_width=True):
+        if st.button("🔄 Resync Library", use_container_width=True):
             if api_healthy:
                 try:
                     requests.post(f"{API_HOST}/resync", timeout=5)
@@ -912,17 +902,16 @@ with tab_library:
             st.rerun()
 
     st.markdown("---")
-    st.subheader(f"📚 Currently Indexed Corpus ({len(indexed_docs)} documents)")
+    st.subheader(f"📑 Currently Indexed Notebooks ({len(indexed_docs)})")
 
     if not indexed_docs:
-        st.info("No documents indexed yet. Drag and drop your first file above to get started!")
+        st.info("No documents indexed yet. Upload your first file above to get started!")
     else:
         for doc in indexed_docs:
             src_path = doc.get("source_id", "Unknown")
             fname = doc.get("filename") or os.path.basename(src_path)
             ftype = doc.get("source_type", "txt").upper()
             
-            # Resolve unique icon & badge styling
             meta = get_unique_doc_metadata(fname, ftype)
             fhash = doc.get("file_hash", "")[:12]
             indexed_at = doc.get("last_indexed", "Recently")[:19].replace("T", " ")
@@ -940,25 +929,25 @@ with tab_library:
             col_card, col_del = st.columns([5, 1.2])
             with col_card:
                 st.markdown(
-                    f"""<div class="doc-card" style="margin-bottom: 0px;">
+                    f"""<div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                       <div style="display: flex; align-items: center; gap: 14px;">
-                        <div class="unique-icon-box" style="background: {meta['gradient']}; border: 1px solid {meta['border']};">
+                        <div style="font-size: 1.6rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: {meta['gradient']}; border-radius: 10px; border: 1px solid {meta['border']};">
                           {meta['symbol']}
                         </div>
                         <div>
                           <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
                             <span>{fname}</span>
-                            <span class="doc-topic-pill" style="background: {meta['bg']}; color: {meta['color']}; border: 1px solid {meta['border']};">
+                            <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: {meta['bg']}; color: {meta['color']}; border: 1px solid {meta['border']}; font-weight: 600;">
                               {meta['badge']}
                             </span>
                           </div>
-                          <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">
+                          <div style="font-size: 0.78rem; color: #64748B; margin-top: 4px;">
                             Format: <strong>{ftype}</strong> {size_str} &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
                           </div>
                         </div>
                       </div>
                       <div>
-                        <span style="background: rgba(99, 102, 241, 0.15); color: #818CF8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;">
+                        <span style="background: rgba(37, 99, 235, 0.1); color: #2563EB; border: 1px solid rgba(37, 99, 235, 0.25); padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;">
                           ChromaDB Active
                         </span>
                       </div>
@@ -982,50 +971,13 @@ with tab_library:
                         st.error(f"Error: {e}")
             st.write("")
 
-# ====================================================
-# TAB 3: APP CONTROLS, SETTINGS & MOBILE
-# ====================================================
-with tab_controls:
-    st.subheader("🔮 Unique Branding & Icon Symbols")
-    st.caption("Custom high-definition icon symbols dynamically assigned to your documents and application:")
-    
-    col_sym1, col_sym2, col_sym3, col_sym4 = st.columns(4)
-    with col_sym1:
-        st.markdown("""
-        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">📊</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #F59E0B; margin-top: 4px;">Statistics & Math</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">F-Test, formulas, data</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym2:
-        st.markdown("""
-        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🥽</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #EC4899; margin-top: 4px;">Augmented Reality</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">Vuforia, targets, AR</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym3:
-        st.markdown("""
-        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🎮</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #818CF8; margin-top: 4px;">Game Engine</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">Unity, scripts, objects</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym4:
-        st.markdown("""
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🛡️</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #10B981; margin-top: 4px;">Cybersecurity</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">IDS, networks, safety</div>
-        </div>
-        """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.subheader("🧠 Natural Language Engine Configuration")
-    st.caption("Choose how natural language answers are formulated:")
+# ====================================================
+# VIEW 3: CONFIGURATION, AI ENGINE & SETTINGS
+# ====================================================
+elif st.session_state["active_view"] == "settings":
+    st.subheader("⚙️ Gemini Engine Configuration")
+    st.caption("Configure AI providers, search precision, and mobile home screen access.")
     
     col_prov1, col_prov2 = st.columns([1.5, 2])
     with col_prov1:
@@ -1069,14 +1021,6 @@ with tab_controls:
     )
     
     st.markdown("---")
-    st.subheader("🧹 Chat Session Controls")
-    if st.button("🗑️ Clear Conversation History", use_container_width=True):
-        st.session_state.messages = []
-        st.success("Chat history cleared!")
-        time.sleep(0.5)
-        st.rerun()
-
-    st.markdown("---")
     st.subheader("📱 Install on Mobile Device")
     st.caption("Scan this QR code with your iPhone or Android camera to open and install the app on your home screen:")
     
@@ -1097,11 +1041,9 @@ with tab_controls:
     st.markdown("---")
     st.subheader("🔌 System Diagnostics")
     st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
-    st.markdown(f"- **Agent Identity:** `Smart Knowledge Base Agent 2.0`")
+    st.markdown(f"- **Agent Identity:** `Google Gemini Smart Knowledge Base`")
     st.markdown(f"- **Natural Language Engine:** `{provider_format[st.session_state['llm_provider']]}`")
     st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
-    if api_healthy:
-        st.markdown(f"- **API Latency:** `{latency_ms} ms`")
-        st.markdown(f"- **Indexed Documents:** `{len(indexed_docs)}`")
+    st.markdown(f"- **Indexed Documents:** `{len(indexed_docs)}`")
     st.markdown(f"- **Vector Database:** `ChromaDB Persistent (data/chroma_db)`")
     st.markdown(f"- **Metadata Database:** `SQLite (data/metadata.sqlite)`")
