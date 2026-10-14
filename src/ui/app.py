@@ -723,35 +723,53 @@ with col_actions:
 # VIEW 1: GEMINI CHAT INTERFACE (MATCHING SCREENSHOT)
 # ====================================================
 if st.session_state["active_view"] == "chat":
-    # Direct Mobile Install Helper Banner
+    # Direct Mobile Install Helper Banner (Always Visible & Interactive)
     st.markdown(
-        """<div id="pwa-install-banner" style="background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border: 1px solid #C7D2FE; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 1.3rem;">📲</span>
-            <div>
-              <div style="font-size: 0.88rem; font-weight: 700; color: #1E1B4B;">Direct Mobile Install Link:</div>
-              <div style="font-size: 0.76rem; color: #4338CA;">Type in phone browser: <code style="background: white; padding: 2px 6px; border-radius: 4px; font-weight: 700;">http://192.168.1.53:8501</code></div>
+        r"""<div id="pwa-install-banner" style="background: #F0F4F9; border: 1.5px solid #CBD5E1; border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.6rem;">📲</span>
+              <div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #1F1F1F;">Install App on Your Phone</div>
+                <div style="font-size: 0.78rem; color: #444746;">No Play Store needed &bull; Installs directly to your home screen</div>
+              </div>
             </div>
+            <button id="pwa-install-btn" onclick="triggerPWAInstall()" style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); color: #FFFFFF; border: none; border-radius: 22px; padding: 8px 18px; font-weight: 700; font-size: 0.86rem; cursor: pointer; box-shadow: 0 2px 8px rgba(37,99,235,0.3); transition: transform 0.15s ease;">
+              📥 Install App Now
+            </button>
           </div>
-          <button id="pwa-install-btn" style="background: #2563EB; color: white; border: none; border-radius: 20px; padding: 6px 14px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: none;">Direct Install</button>
+          
+          <div id="install-instructions" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #CBD5E1; font-size: 0.82rem; color: #334155; line-height: 1.5;">
+            <div style="margin-bottom: 4px;"><strong>🤖 On Android (Chrome):</strong> Tap the <strong>3 dots (⋮)</strong> in the top-right ➔ tap <strong>"Install app"</strong> (or <em>"Add to Home screen"</em>).</div>
+            <div><strong>🍎 On iPhone (Safari):</strong> Tap the <strong>Share button ($\uparrow$)</strong> at the bottom ➔ tap <strong>"Add to Home Screen"</strong>.</div>
+          </div>
         </div>
         <script>
+        window.deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault();
           window.deferredPrompt = e;
-          const btn = document.getElementById('pwa-install-btn');
-          if (btn) btn.style.display = 'block';
         });
-        const btn = document.getElementById('pwa-install-btn');
-        if (btn) {
-          btn.addEventListener('click', async () => {
-            if (window.deferredPrompt) {
-              window.deferredPrompt.prompt();
-              await window.deferredPrompt.userChoice;
-              window.deferredPrompt = null;
-              btn.style.display = 'none';
+
+        async function triggerPWAInstall() {
+          if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            const { outcome } = await window.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              const b = document.getElementById('pwa-install-banner');
+              if (b) b.style.display = 'none';
             }
-          });
+            window.deferredPrompt = null;
+          } else {
+            // Highlight the browser menu instructions
+            const inst = document.getElementById('install-instructions');
+            if (inst) {
+              inst.style.background = '#EEF2FF';
+              inst.style.borderRadius = '8px';
+              inst.style.padding = '8px';
+              alert("To install:\\n\\n• Android (Chrome): Tap the 3 dots (⋮) in the top-right corner and select 'Install app' or 'Add to Home screen'.\\n\\n• iPhone (Safari): Tap the Share button (↑) and select 'Add to Home Screen'.");
+            }
+          }
         }
         </script>""",
         unsafe_allow_html=True
