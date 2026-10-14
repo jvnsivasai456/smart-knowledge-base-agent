@@ -20,6 +20,27 @@ if os.path.exists(ICON_PATH):
     except Exception:
         icon_b64 = ""
 
+# Mobile Web App PWA Manifest
+pwa_manifest = {
+    "name": "Gemini AI Agent",
+    "short_name": "Gemini",
+    "description": "Smart Knowledge Base AI Assistant",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": f"data:image/png;base64,{icon_b64}" if icon_b64 else "https://api.iconify.design/fluent-emoji:brain.svg",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
+manifest_b64 = base64.b64encode(json.dumps(pwa_manifest).encode('utf-8')).decode('utf-8')
+
 # Unique Document Icon & Metadata Resolver
 def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
     fname_lower = filename.lower()
@@ -96,15 +117,15 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(147, 51, 234, 0.1))"
         }
 
-# Streamlit Page Config - Gemini Light Layout
+# Streamlit Page Config - Responsive Layout (Auto-sidebar on mobile)
 st.set_page_config(
     page_title="Gemini",
     page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "✦",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
-# Custom Authentic Google Gemini Theme & Typography
+# Custom Authentic Google Gemini Theme & Typography + Mobile App Enhancements
 gemini_css = """<style>
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
 
@@ -117,6 +138,8 @@ html, body, [class*="css"] {
     font-family: 'Google Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     background-color: #FFFFFF !important;
     color: #1F1F1F !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 /* =========================================================
@@ -135,11 +158,33 @@ html, body, [class*="css"] {
     padding-right: 0.75rem !important;
 }
 
+/* Mobile Sidebar Toggle Button */
+[data-testid="stSidebarCollapsedControl"] {
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    top: 0.65rem !important;
+    left: 0.65rem !important;
+    background: #F0F4F9 !important;
+    border: 1px solid #D3D7DC !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    z-index: 999999 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+[data-testid="stSidebarCollapsedControl"] svg {
+    fill: #1F1F1F !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
 .gemini-sidebar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.4rem 0.6rem 1rem 0.6rem;
+    padding: 0.4rem 0.6rem 0.8rem 0.6rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     margin-bottom: 0.6rem;
 }
@@ -167,66 +212,16 @@ html, body, [class*="css"] {
     font-size: 1.05rem;
 }
 
-/* Sidebar Action Buttons & Navigation Pills */
-.sidebar-action-pill {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 14px;
-    border-radius: 9999px;
-    color: #1F1F1F;
-    font-size: 0.92rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-    cursor: pointer;
-    text-decoration: none;
-    margin-bottom: 4px;
-}
-.sidebar-action-pill:hover {
-    background-color: #E1E8F2;
-}
-.sidebar-action-pill.active {
-    background-color: #D3E3FD;
-    color: #041E49;
-    font-weight: 600;
-}
-
 .sidebar-section-title {
     font-size: 0.76rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: #72777A;
-    padding: 12px 12px 6px 12px;
+    padding: 10px 10px 4px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.recent-chat-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 12px;
-    border-radius: 9999px;
-    font-size: 0.88rem;
-    color: #444746;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: background 0.15s ease;
-    margin-bottom: 3px;
-}
-.recent-chat-item:hover {
-    background: #E1E8F2;
-    color: #1F1F1F;
-}
-.recent-chat-item.active {
-    background: #E8EDF5;
-    color: #041E49;
-    font-weight: 600;
 }
 
 /* User Account Profile Footer in Sidebar */
@@ -236,7 +231,7 @@ html, body, [class*="css"] {
     justify-content: space-between;
     padding: 10px 12px;
     border-top: 1px solid #E3E8EE;
-    margin-top: 1.5rem;
+    margin-top: 1.2rem;
     border-radius: 12px;
     background: transparent;
 }
@@ -285,58 +280,30 @@ html, body, [class*="css"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 1rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px solid #F1F5F9;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 .gemini-chat-title {
     font-size: 1.35rem;
     font-weight: 600;
     color: #1F1F1F;
     letter-spacing: -0.015em;
-}
-.gemini-model-badge {
-    background: #F0F4F9;
-    border: 1px solid #E2E8F0;
-    border-radius: 9999px;
-    padding: 5px 14px;
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: #1F1F1F;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    cursor: pointer;
-}
-.gemini-model-badge:hover {
-    background: #E2E8F0;
+    gap: 8px;
 }
 
 /* =========================================================
    EXACT GEMINI CHAT RESPONSE FORMATTING
    ========================================================= */
-.gemini-response-heading {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1F1F1F;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-}
-.gemini-response-body {
-    font-size: 0.98rem;
-    color: #1F1F1F;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-}
-
-/* Code & JSON Box */
 .gemini-code-container {
     background: #181C20;
     border-radius: 16px;
     overflow: hidden;
     margin: 1rem 0;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
 }
 .gemini-code-header {
     display: flex;
@@ -363,6 +330,8 @@ html, body, [class*="css"] {
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Gemini Quoted Prompt Card */
@@ -403,7 +372,7 @@ html, body, [class*="css"] {
     visibility: visible !important;
     display: block !important;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 25%, #FFFFFF 100%) !important;
-    padding-bottom: 0.6rem !important;
+    padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0.6rem)) !important;
     padding-top: 0.6rem !important;
     max-width: 950px !important;
     margin: 0 auto !important;
@@ -424,7 +393,7 @@ html, body, [class*="css"] {
 }
 [data-testid="stChatInput"] textarea {
     color: #1F1F1F !important;
-    font-size: 1.02rem !important;
+    font-size: 16px !important; /* Critical: Prevents automatic zoom on iPhone & Android */
     font-weight: 450 !important;
     padding-top: 8px !important;
 }
@@ -459,9 +428,85 @@ html, body, [class*="css"] {
     margin-top: 4px;
     margin-bottom: 2px;
 }
+
+/* =========================================================
+   MOBILE RESPONSIVENESS & TOUCH OPTIMIZATIONS (< 768px)
+   ========================================================= */
+@media (max-width: 768px) {
+    .block-container {
+        padding-top: 0.5rem !important;
+        padding-bottom: 7.2rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        max-width: 100% !important;
+    }
+
+    .gemini-chat-title {
+        font-size: 1.12rem !important;
+        line-height: 1.25 !important;
+    }
+
+    /* Full width bottom input on mobile */
+    [data-testid="stBottomBlockContainer"] {
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0.5rem)) !important;
+        padding-left: 0.4rem !important;
+        padding-right: 0.4rem !important;
+        padding-top: 0.4rem !important;
+        width: 100% !important;
+    }
+    [data-testid="stChatInput"] {
+        padding: 4px 10px 4px 16px !important;
+    }
+
+    /* Touch target sizes for action icons */
+    .gemini-action-row {
+        gap: 22px !important;
+        font-size: 1.25rem !important;
+        padding: 8px 4px !important;
+    }
+    .gemini-action-btn {
+        padding: 4px 6px !important;
+    }
+
+    /* Mobile Code Snippets */
+    .gemini-code-container {
+        border-radius: 12px !important;
+        margin: 0.6rem 0 !important;
+    }
+    .gemini-code-header {
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+    }
+    .gemini-code-body {
+        font-size: 0.82rem !important;
+        padding: 10px 12px !important;
+    }
+
+    /* Mobile navigation buttons */
+    div[data-testid="stColumn"] button {
+        min-height: 38px !important;
+        padding: 4px 6px !important;
+        font-size: 0.8rem !important;
+    }
+
+    .gemini-disclaimer-text {
+        font-size: 0.68rem !important;
+        margin-top: 2px !important;
+    }
+}
 </style>"""
 
-st.markdown(gemini_css, unsafe_allow_html=True)
+pwa_tags = f"""
+<link rel="manifest" href="data:application/manifest+json;base64,{manifest_b64}">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Gemini">
+<link rel="apple-touch-icon" href="data:image/png;base64,{icon_b64}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+"""
+
+st.markdown(gemini_css + pwa_tags, unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # SYSTEM STATE & ACTIVE VIEW ROUTING
@@ -540,7 +585,7 @@ with st.sidebar:
         st.session_state["active_view"] = "chat"
         st.rerun()
 
-    st.markdown('<div style="margin-top: 8px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 6px;"></div>', unsafe_allow_html=True)
 
     # Top Menu Items (Matching Screenshot)
     col_nav1, col_nav2 = st.columns(2)
@@ -562,13 +607,13 @@ with st.sidebar:
             st.session_state["active_view"] = "settings"
             st.rerun()
 
-    st.markdown('<div style="margin-top: 14px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
     # Section 1: Notebooks (Knowledge Base Documents)
     st.markdown(
         """<div class="sidebar-section-title">
           <span>Notebooks</span>
-          <span style="font-size: 0.75rem; color: #2563EB; cursor: pointer;">✦</span>
+          <span style="font-size: 0.75rem; color: #2563EB;">✦</span>
         </div>""",
         unsafe_allow_html=True
     )
@@ -582,17 +627,16 @@ with st.sidebar:
         for d in indexed_docs[:3]:
             fname = d.get("filename") or os.path.basename(d.get("source_id", "Doc"))
             meta = get_unique_doc_metadata(fname, d.get("source_type", ""))
-            short_name = (fname[:24] + '...') if len(fname) > 24 else fname
+            short_name = (fname[:22] + '...') if len(fname) > 22 else fname
             if st.button(f"{meta['symbol']} {short_name}", key=f"nb_{fname}", use_container_width=True):
                 st.session_state["active_chat_title"] = fname
                 st.session_state["active_view"] = "chat"
                 st.rerun()
     else:
-        # Default sample notebooks from screenshot
         sample_notebooks = [
-            ("📘", "IoT Management and Security..."),
-            ("📗", "Finite Automata and Regular..."),
-            ("📙", "Computer Architecture: Reg...")
+            ("📘", "IoT Management and Sec..."),
+            ("📗", "Finite Automata and Reg..."),
+            ("📙", "Computer Architecture: R...")
         ]
         for sym, name in sample_notebooks:
             if st.button(f"{sym} {name}", key=f"snb_{name}", use_container_width=True):
@@ -600,7 +644,7 @@ with st.sidebar:
                 st.session_state["active_view"] = "chat"
                 st.rerun()
 
-    st.markdown('<div style="margin-top: 16px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 12px;"></div>', unsafe_allow_html=True)
 
     # Section 2: Recent Chats ("All")
     st.markdown(
@@ -647,19 +691,19 @@ with st.sidebar:
 
 
 # ====================================================
-# TOP BAR (ACTIVE CHAT TITLE & VIEW CONTROLS)
+# RESPONSIVE TOP BAR (ACTIVE CHAT TITLE & VIEW SWITCHERS)
 # ====================================================
-col_title, col_actions = st.columns([3, 1.6])
+col_title, col_actions = st.columns([1.7, 1.3])
 with col_title:
     st.markdown(
         f"""<div class="gemini-top-bar">
-          <div class="gemini-chat-title">{st.session_state['active_chat_title']}</div>
+          <div class="gemini-chat-title">{gemini_sparkle_svg} <span>{st.session_state['active_chat_title']}</span></div>
         </div>""",
         unsafe_allow_html=True
     )
 
 with col_actions:
-    c_btn1, c_btn2, c_btn3 = st.columns([1, 1.1, 0.9])
+    c_btn1, c_btn2, c_btn3 = st.columns([1, 1.15, 0.95])
     with c_btn1:
         if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state["active_view"] == "chat" else "secondary"):
             st.session_state["active_view"] = "chat"
@@ -670,7 +714,7 @@ with col_actions:
             st.session_state["active_view"] = "library"
             st.rerun()
     with c_btn3:
-        if st.button("⚙️ Config", use_container_width=True, type="primary" if st.session_state["active_view"] == "settings" else "secondary"):
+        if st.button("⚙️ Setup", use_container_width=True, type="primary" if st.session_state["active_view"] == "settings" else "secondary"):
             st.session_state["active_view"] = "settings"
             st.rerun()
 
@@ -775,7 +819,7 @@ if st.session_state["active_view"] == "chat":
     if user_query and user_query.strip():
         # Update chat title if still default
         if st.session_state["active_chat_title"] == "New Conversation":
-            st.session_state["active_chat_title"] = user_query.strip()[:35]
+            st.session_state["active_chat_title"] = user_query.strip()[:32]
 
         st.session_state.messages.append({"role": "user", "content": user_query.strip()})
         with st.chat_message("user", avatar="👤"):
@@ -926,29 +970,29 @@ elif st.session_state["active_view"] == "library":
                 else:
                     size_str = f"&bull; Size: <strong>{size_bytes/(1024*1024):.1f} MB</strong>"
             
-            col_card, col_del = st.columns([5, 1.2])
+            col_card, col_del = st.columns([4, 1.2])
             with col_card:
                 st.markdown(
-                    f"""<div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                      <div style="display: flex; align-items: center; gap: 14px;">
-                        <div style="font-size: 1.6rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: {meta['gradient']}; border-radius: 10px; border: 1px solid {meta['border']};">
+                    f"""<div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 1.5rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: {meta['gradient']}; border-radius: 10px; border: 1px solid {meta['border']};">
                           {meta['symbol']}
                         </div>
                         <div>
-                          <div style="font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 8px;">
+                          <div style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <span>{fname}</span>
-                            <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: {meta['bg']}; color: {meta['color']}; border: 1px solid {meta['border']}; font-weight: 600;">
+                            <span style="font-size: 0.70rem; padding: 2px 7px; border-radius: 9999px; background: {meta['bg']}; color: {meta['color']}; border: 1px solid {meta['border']}; font-weight: 600;">
                               {meta['badge']}
                             </span>
                           </div>
-                          <div style="font-size: 0.78rem; color: #64748B; margin-top: 4px;">
-                            Format: <strong>{ftype}</strong> {size_str} &bull; SHA-256: <code>{fhash}...</code> &bull; Indexed: {indexed_at}
+                          <div style="font-size: 0.76rem; color: #64748B; margin-top: 3px;">
+                            Format: <strong>{ftype}</strong> {size_str} &bull; SHA: <code>{fhash}...</code>
                           </div>
                         </div>
                       </div>
                       <div>
-                        <span style="background: rgba(37, 99, 235, 0.1); color: #2563EB; border: 1px solid rgba(37, 99, 235, 0.25); padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;">
-                          ChromaDB Active
+                        <span style="background: rgba(37, 99, 235, 0.1); color: #2563EB; border: 1px solid rgba(37, 99, 235, 0.25); padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600;">
+                          Active
                         </span>
                       </div>
                     </div>""",
@@ -1034,7 +1078,7 @@ elif st.session_state["active_view"] == "settings":
         st.code("http://192.168.1.53:8501", language="text")
         st.caption("Ensure your phone is connected to the same Wi-Fi network.")
         st.markdown("""
-        * **iPhone (Safari)**: Tap Share ➔ *Add to Home Screen*.
+        * **iPhone (Safari)**: Tap Share (box with arrow $\\uparrow$) ➔ *Add to Home Screen*.
         * **Android (Chrome)**: Tap Menu (⋮) ➔ *Install app* or *Add to Home screen*.
         """)
 
