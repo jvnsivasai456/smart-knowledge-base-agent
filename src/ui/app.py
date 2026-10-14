@@ -723,6 +723,24 @@ with col_actions:
 # VIEW 1: GEMINI CHAT INTERFACE (MATCHING SCREENSHOT)
 # ====================================================
 if st.session_state["active_view"] == "chat":
+    # Quick Starter Chips in Simple English
+    c_s1, c_s2, c_s3, c_s4 = st.columns(4)
+    quick_query = None
+    with c_s1:
+        if st.button("✦ Explain Simply", key="q_simple", use_container_width=True):
+            quick_query = "Explain the key concepts in my documents in simple everyday English."
+    with c_s2:
+        if st.button("✦ Simple Summary", key="q_sum", use_container_width=True):
+            quick_query = "Give me a simple summary of all documents."
+    with c_s3:
+        if st.button("✦ F-Test in Plain Words", key="q_ftest", use_container_width=True):
+            quick_query = "What is the F-test and its hypotheses? Explain in simple words."
+    with c_s4:
+        if st.button("✦ Vuforia & Unity Simply", key="q_vuf", use_container_width=True):
+            quick_query = "What is Vuforia and Unity GameObjects? Explain simply."
+
+    st.markdown('<div style="margin-bottom: 0.6rem;"></div>', unsafe_allow_html=True)
+
     # Initialize Messages with the Exact Screenshot Example if brand new
     if "messages" not in st.session_state or not st.session_state.messages:
         st.session_state.messages = [
@@ -814,23 +832,25 @@ if st.session_state["active_view"] == "chat":
     # ---------------------------------------------------------
     # PINNED GEMINI INPUT CAPSULE (SEARCH DOWN)
     # ---------------------------------------------------------
-    user_query = st.chat_input("Ask Gemini")
+    user_query = st.chat_input("Ask Gemini in simple English...")
+    active_query = quick_query if quick_query else user_query
 
-    if user_query and user_query.strip():
+    if active_query and active_query.strip():
+        chosen_prompt = active_query.strip()
         # Update chat title if still default
         if st.session_state["active_chat_title"] == "New Conversation":
-            st.session_state["active_chat_title"] = user_query.strip()[:32]
+            st.session_state["active_chat_title"] = chosen_prompt[:32]
 
-        st.session_state.messages.append({"role": "user", "content": user_query.strip()})
+        st.session_state.messages.append({"role": "user", "content": chosen_prompt})
         with st.chat_message("user", avatar="👤"):
-            st.markdown(f"**{user_query.strip()}**")
+            st.markdown(f"**{chosen_prompt}**")
 
         with st.chat_message("assistant", avatar="✦"):
-            with st.spinner("Gemini is synthesizing answer..."):
+            with st.spinner("Gemini is explaining in simple English..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
                     chat_payload = {
-                        "query": user_query.strip(),
+                        "query": chosen_prompt,
                         "top_k": search_depth,
                         "api_key": st.session_state.get("llm_api_key", ""),
                         "provider": st.session_state.get("llm_provider", "local")

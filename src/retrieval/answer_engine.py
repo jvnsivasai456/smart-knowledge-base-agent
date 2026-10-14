@@ -78,18 +78,18 @@ class AnswerEngine:
 
         q_clean = re.sub(r'[^\w\s]', '', query.lower().strip())
         if any(w in q_clean for w in ["thanks", "thank you", "thx", "great", "awesome", "cool"]):
-            answer = "😊 **You're very welcome!**\n\nFeel free to ask any other questions about your documents in natural language, or upload new files in the **Knowledge Library** tab anytime."
+            answer = "😊 **You're very welcome!**\n\nAsk me any other question about your documents in simple English anytime!"
         elif any(w in q_clean for w in ["bye", "goodbye"]):
-            answer = "👋 **Goodbye!** Have a wonderful day, and come back whenever you need natural language insights from your documents."
+            answer = "👋 **Goodbye!** Have a wonderful day!"
         else:
             answer = (
-                "👋 **Hello! I'm your Natural Language Knowledge Base Assistant.**\n\n"
-                "I use semantic embeddings and natural language synthesis to understand your documents and converse with you naturally."
+                "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
+                "I explain everything from your uploaded documents in **simple, easy English**!"
                 f"{doc_list_text}\n\n"
-                "**How you can interact:**\n"
-                "- 💬 Ask questions in everyday natural language (e.g. *'What is Vuforia?'* or *'How does the F-test work?'*)\n"
-                "- 📋 Click **'Summarize Documents'** for an executive overview.\n"
-                "- ⚙️ Use the built-in local Natural Language engine or plug in your Gemini/Groq/OpenAI key in Controls."
+                "**What you can do:**\n"
+                "- 💬 Ask any question in simple words (e.g., *'What is Vuforia?'* or *'Explain F-test simply'*)\n"
+                "- 📋 Ask me to summarize your documents\n"
+                "- 📁 Upload more documents anytime"
             )
             
         return {
