@@ -13,7 +13,7 @@ API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
 pwa_manifest = {
     "name": "Smart Knowledge Base",
     "short_name": "SmartKB",
-    "description": "Next-Gen AI Semantic Knowledge Base Assistant",
+    "description": "Next-Gen Natural Language AI Semantic Knowledge Base Assistant",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0B0F19",
@@ -93,6 +93,18 @@ html, body, [class*="css"] {
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
+}
+.nlg-pill {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818CF8;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 [data-baseweb="tab-list"] {
     background: rgba(255, 255, 255, 0.03);
@@ -183,21 +195,44 @@ if api_healthy:
     except Exception:
         pass
 
+# Initialize session state for natural language settings
+if "llm_provider" not in st.session_state:
+    st.session_state["llm_provider"] = "local"
+if "llm_api_key" not in st.session_state:
+    st.session_state["llm_api_key"] = ""
+if "top_k" not in st.session_state:
+    st.session_state["top_k"] = 4
+
 # ----------------------------------------------------
 # TOP HEADER & CONTROL DASHBOARD
 # ----------------------------------------------------
-col_title, col_stat = st.columns([3, 1.2])
+col_title, col_stat = st.columns([3, 1.3])
 
 with col_title:
     st.markdown('<div class="hero-title">🧠 Smart Knowledge Base</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-subtitle">Semantic Search • Multi-Format Ingestion • Vector RAG Engine</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="hero-subtitle">Natural Language AI • Semantic Search • ChromaDB Vector RAG</div>', 
+        unsafe_allow_html=True
+    )
 
 with col_stat:
+    provider_labels = {
+        "local": "⚡ Local NLG",
+        "gemini": "🌟 Gemini AI",
+        "groq": "🚀 Groq Llama-3",
+        "openai": "🤖 GPT-4o",
+        "ollama": "💻 Ollama"
+    }
+    cur_provider_label = provider_labels.get(st.session_state["llm_provider"], "⚡ Local NLG")
+    
     if api_healthy:
         st.markdown(
-            f"""<div style="text-align: right; padding-top: 6px;">
+            f"""<div style="text-align: right; padding-top: 4px;">
             <span class="status-badge-online">● Active &bull; {latency_ms}ms</span>
-            <div style="font-size: 11px; color: #64748B; margin-top: 4px;">{len(indexed_docs)} documents indexed</div>
+            <div style="margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; align-items: center;">
+              <span class="nlg-pill">{cur_provider_label}</span>
+              <span style="font-size: 11px; color: #64748B;">{len(indexed_docs)} docs</span>
+            </div>
             </div>""",
             unsafe_allow_html=True
         )
@@ -216,26 +251,29 @@ with col_stat:
 tab_chat, tab_library, tab_controls = st.tabs([
     "💬 AI Chat Assistant",
     f"📁 Knowledge Library ({len(indexed_docs)})",
-    "🎛️ Controls & Mobile"
+    "🎛️ Controls & Settings"
 ])
 
 # ====================================================
-# TAB 1: AI CHAT ASSISTANT
+# TAB 1: AI CHAT ASSISTANT (NATURAL LANGUAGE)
 # ====================================================
 with tab_chat:
-    # Quick Starter Prompt Chips
-    col_chip1, col_chip2, col_chip3 = st.columns(3)
+    # Quick Natural Language Prompt Chips
+    col_chip1, col_chip2, col_chip3, col_chip4 = st.columns(4)
     quick_prompt = None
 
     with col_chip1:
-        if st.button("📋 Summarize Documents", use_container_width=True):
-            quick_prompt = "Provide a comprehensive summary of the main points across the uploaded documents."
+        if st.button("💬 Explain Simply", use_container_width=True):
+            quick_prompt = "Explain the core concepts and topics in my documents in simple, everyday English."
     with col_chip2:
-        if st.button("🔍 Key Takeaways", use_container_width=True):
-            quick_prompt = "What are the most critical takeaways, findings, and conclusions?"
+        if st.button("📋 Executive Summary", use_container_width=True):
+            quick_prompt = "Provide a comprehensive summary of the main points across the uploaded documents."
     with col_chip3:
-        if st.button("💡 Core Concepts", use_container_width=True):
-            quick_prompt = "Identify and clearly explain the core concepts and definitions mentioned."
+        if st.button("🔍 F-Test Hypotheses", use_container_width=True):
+            quick_prompt = "What are the null and alternative hypotheses for the F-test and how are they calculated?"
+    with col_chip4:
+        if st.button("💡 Vuforia & Unity", use_container_width=True):
+            quick_prompt = "What is Vuforia and how does it integrate with GameObjects and Image Targets in Unity?"
 
     # Initialize Chat History
     if "messages" not in st.session_state:
@@ -243,9 +281,10 @@ with tab_chat:
             {
                 "role": "assistant",
                 "content": (
-                    "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
-                    "I have ingested your documents into ChromaDB vector embeddings. "
-                    "Ask me any question, or click one of the quick starter buttons above to explore!"
+                    "👋 **Hello! I'm your Natural Language Knowledge Base Assistant.**\n\n"
+                    "I converse with you in everyday English, using semantic vector embeddings and natural language synthesis "
+                    "to explain concepts, calculate formulas, and summarize your files.\n\n"
+                    "Ask me anything, or tap one of the quick starter buttons above to begin!"
                 ),
                 "sources": []
             }
@@ -278,7 +317,7 @@ with tab_chat:
                         st.info(src.get("content", ""))
 
     # Chat Input Box
-    user_input = st.chat_input("Ask anything about your documents...")
+    user_input = st.chat_input("Ask anything in natural language about your files...")
     active_prompt = quick_prompt if quick_prompt else user_input
 
     if active_prompt:
@@ -288,14 +327,22 @@ with tab_chat:
             st.markdown(active_prompt)
 
         with st.chat_message("assistant", avatar="🧠"):
-            with st.spinner("Synthesizing answer from semantic knowledge base..."):
+            with st.spinner("Generating natural language answer..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
-                    # Call smart /chat endpoint
+                    
+                    # Call smart natural language /chat endpoint
+                    chat_payload = {
+                        "query": active_prompt,
+                        "top_k": search_depth,
+                        "api_key": st.session_state.get("llm_api_key", ""),
+                        "provider": st.session_state.get("llm_provider", "local")
+                    }
+                    
                     chat_res = requests.post(
                         f"{API_HOST}/chat",
-                        json={"query": active_prompt, "top_k": search_depth},
-                        timeout=30
+                        json=chat_payload,
+                        timeout=35
                     )
                     
                     if chat_res.status_code == 200:
@@ -347,7 +394,7 @@ with tab_chat:
 # ====================================================
 with tab_library:
     st.subheader("📤 Document Ingestion Dropzone")
-    st.caption("Upload files to automatically extract text, generate 384-d vector embeddings, and index them in ChromaDB.")
+    st.caption("Upload files to extract text, generate 384-d vector embeddings, and enable natural language answering.")
     
     new_files = st.file_uploader(
         "Drop PDF, DOCX, or TXT files here:",
@@ -454,6 +501,41 @@ with tab_library:
 # TAB 3: APP CONTROLS, SETTINGS & MOBILE
 # ====================================================
 with tab_controls:
+    st.subheader("🧠 Natural Language Engine Configuration")
+    st.caption("Choose how natural language answers are formulated:")
+    
+    col_prov1, col_prov2 = st.columns([1.5, 2])
+    with col_prov1:
+        provider_options = ["local", "gemini", "groq", "openai", "ollama"]
+        provider_format = {
+            "local": "⚡ Local NLG (Offline & Private)",
+            "gemini": "🌟 Google Gemini API",
+            "groq": "🚀 Groq (Llama-3.1)",
+            "openai": "🤖 OpenAI (GPT-4o)",
+            "ollama": "💻 Local Ollama"
+        }
+        selected_prov = st.selectbox(
+            "AI Natural Language Model:",
+            options=provider_options,
+            format_func=lambda x: provider_format[x],
+            index=provider_options.index(st.session_state.get("llm_provider", "local"))
+        )
+        st.session_state["llm_provider"] = selected_prov
+
+    with col_prov2:
+        if selected_prov in ["gemini", "groq", "openai"]:
+            key_label = "Google Gemini API Key:" if selected_prov == "gemini" else "Groq API Key:" if selected_prov == "groq" else "OpenAI API Key:"
+            api_key_input = st.text_input(
+                key_label,
+                type="password",
+                value=st.session_state.get("llm_api_key", ""),
+                help="Optional. Leave blank to automatically use the built-in Local Natural Language engine."
+            )
+            st.session_state["llm_api_key"] = api_key_input
+        else:
+            st.info("💡 **Local NLG Active:** Operates 100% offline with zero external API keys needed. All synthesis happens locally on your computer.")
+
+    st.markdown("---")
     st.subheader("🎛️ Search Precision & Retrieval Depth")
     st.session_state["top_k"] = st.slider(
         "Top-K Chunks to Retrieve per Query:",
@@ -492,6 +574,7 @@ with tab_controls:
     st.markdown("---")
     st.subheader("🔌 System Diagnostics")
     st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
+    st.markdown(f"- **Natural Language Engine:** `{provider_format[st.session_state['llm_provider']]}`")
     st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
     if api_healthy:
         st.markdown(f"- **API Latency:** `{latency_ms} ms`")

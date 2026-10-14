@@ -17,6 +17,8 @@ from ..update_engine import DirectoryScanner, KnowledgeBaseUpdater, UpdateSchedu
 class ChatRequest(BaseModel):
     query: str
     top_k: Optional[int] = 4
+    api_key: Optional[str] = None
+    provider: Optional[str] = "local"
 
 # Global components registry
 components = {}
@@ -120,8 +122,14 @@ def chat(request: ChatRequest):
     # 2. Retrieve semantic context from vector store
     search_resp = retriever.search(request.query, top_k=top_k)
     
-    # 3. Synthesize direct, grounded answer
-    return answer_engine.synthesize(request.query, search_resp.results, docs)
+    # 3. Synthesize natural language answer
+    return answer_engine.synthesize(
+        request.query, 
+        search_resp.results, 
+        docs,
+        api_key=request.api_key,
+        provider=request.provider
+    )
 
 @app.get("/documents")
 def list_documents():
