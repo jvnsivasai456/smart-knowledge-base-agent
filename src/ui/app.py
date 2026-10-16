@@ -42,6 +42,23 @@ def trigger_backend_launch() -> bool:
     except Exception:
         return False
 
+def trigger_tunnel_launch() -> bool:
+    """Launch start_tunnel.py in background to establish mobile network tunnel."""
+    try:
+        py_bin = sys.executable
+        tunnel_py = os.path.join(PROJECT_ROOT, "start_tunnel.py")
+        creation_flags = 0
+        if os.name == "nt":
+            creation_flags = subprocess.CREATE_NO_WINDOW
+        subprocess.Popen(
+            [py_bin, tunnel_py],
+            cwd=PROJECT_ROOT,
+            creationflags=creation_flags
+        )
+        return True
+    except Exception:
+        return False
+
 def check_backend_health() -> tuple[bool, int]:
     """Check if the backend HTTP service is healthy and measure response latency."""
     try:
@@ -1262,19 +1279,56 @@ with tab_controls:
     st.subheader("📱 Install on Mobile Device")
     st.caption("Scan this QR code with your iPhone or Android camera to open and install the app on your home screen:")
     
+    # Read active mobile network tunnel URL if available
+    tunnel_file = os.path.join(PROJECT_ROOT, "tunnel_url.txt")
+    mobile_network_url = ""
+    if os.path.exists(tunnel_file):
+        try:
+            with open(tunnel_file, "r", encoding="utf-8") as f:
+                mobile_network_url = f.read().strip()
+        except Exception:
+            mobile_network_url = ""
+
+    active_mobile_url = mobile_network_url if mobile_network_url else "http://192.168.1.53:8501"
+
     col_qr, col_qr_info = st.columns([1, 2])
     with col_qr:
         qr_file = os.path.join(PROJECT_ROOT, "mobile_qr.png")
         if os.path.exists(qr_file):
-            st.image(qr_file, width=180)
+            st.image(qr_file, width=190)
     with col_qr_info:
-        st.markdown("**Mobile Network Link:**")
-        st.code("http://192.168.1.53:8501", language="text")
-        st.caption("Ensure your phone is connected to the same Wi-Fi network.")
+        if mobile_network_url:
+            st.markdown(
+                """<div style="margin-bottom: 6px;">
+                  <span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">
+                    ● Active on 4G / 5G Cellular Mobile Data
+                  </span>
+                </div>""",
+                unsafe_allow_html=True
+            )
+            st.markdown("**🌐 Public Mobile Network Link (Anywhere in the World):**")
+            st.code(mobile_network_url, language="text")
+            st.caption("✅ Works directly on your phone's cellular mobile data (4G/5G). No Wi-Fi required!")
+        else:
+            st.markdown("**Wi-Fi Network Link:**")
+            st.code("http://192.168.1.53:8501", language="text")
+            st.caption("Connect your phone to the same Wi-Fi network.")
+
         st.markdown("""
-        * **iPhone (Safari)**: Tap Share ➔ *Add to Home Screen*.
-        * **Android (Chrome)**: Tap Menu (⋮) ➔ *Install app* or *Add to Home screen*.
+        * **iPhone (Safari)**: Open link ➔ Tap Share (square with arrow) ➔ tap **Add to Home Screen**.
+        * **Android (Chrome)**: Open link ➔ Tap Menu (⋮) ➔ tap **Install app** or **Add to Home screen**.
         """)
+
+        col_tbtn, col_wifi_sub = st.columns([1.2, 1.5])
+        with col_tbtn:
+            if st.button("⚡ Restart Mobile Tunnel", use_container_width=True):
+                with st.spinner("Re-launching mobile network tunnel..."):
+                    trigger_tunnel_launch()
+                    time.sleep(3)
+                    st.rerun()
+        with col_wifi_sub:
+            if mobile_network_url:
+                st.caption(f"🏠 Wi-Fi fallback: `http://192.168.1.53:8501`")
 
     st.markdown("---")
     st.subheader("🖥️ Infrastructure & Services Manager")
@@ -1308,6 +1362,20 @@ with tab_controls:
               </div>
               <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
                 Port: <code>8501</code> &bull; Local & Mobile Web App UI
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
+
+        tunnel_badge = '<span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Active 🟢</span>' if mobile_network_url else '<span style="background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Standby 🟡</span>'
+        st.markdown(
+            f"""<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 0.92rem; color: #0F172A;">📱 Mobile Network Tunnel</div>
+                {tunnel_badge}
+              </div>
+              <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+                Access: <strong>Cloudflare HTTPS</strong> &bull; 4G/5G Cellular Data
               </div>
             </div>""",
             unsafe_allow_html=True
