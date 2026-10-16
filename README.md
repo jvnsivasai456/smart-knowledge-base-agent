@@ -1,4 +1,4 @@
-# Smart Knowledge Base Agent
+# Smart knowledge Base Agent
 
 A modular, smart document ingestion and retrieval system using Python, FastAPI, Streamlit, and ChromaDB.
 
