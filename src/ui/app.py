@@ -332,65 +332,81 @@ p, span, li, label, div, td, th, .stMarkdown, .stText {
 
 .block-container {
     padding-top: 1.2rem !important;
-    padding-bottom: 7.5rem !important;
+    padding-bottom: 130px !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     max-width: 980px !important;
     margin: 0 auto !important;
 }
 
-/* Pinned Bottom Search Bar Styling (Search go DOWN) */
-[data-testid="stBottomBlockContainer"] {
-    visibility: visible !important;
-    display: block !important;
+/* Pinned Bottom Search Bar Styling (Google Gemini Screenshot 2 Match) */
+[data-testid="stBottom"] {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 25%, #FFFFFF 100%) !important;
-    padding-bottom: 1.2rem !important;
+    padding-bottom: 1rem !important;
     padding-top: 0.8rem !important;
-    max-width: 980px !important;
-    margin: 0 auto !important;
 }
 
-[data-testid="stChatInput"] {
-    border: 1.5px solid #CBD5E1 !important;
-    border-radius: 32px !important;
-    background: #F8FAFC !important;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
-    padding: 4px 8px 4px 16px !important;
+div[data-testid="stChatInput"] {
+    position: fixed !important;
+    bottom: 24px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(880px, calc(100% - 32px)) !important;
+    z-index: 1000 !important;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 36px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.08) !important;
+    padding: 4px 8px 4px 18px !important;
     transition: all 0.2s ease !important;
 }
-[data-testid="stChatInput"]:focus-within {
-    border-color: #2563EB !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 4px 22px rgba(0, 0, 0, 0.08) !important;
+div[data-testid="stChatInput"]:focus-within {
+    border-color: #94A3B8 !important;
+    box-shadow: 0 6px 26px rgba(0, 0, 0, 0.12) !important;
     background: #FFFFFF !important;
 }
-[data-testid="stChatInput"] textarea {
+div[data-testid="stChatInput"] textarea {
     color: #0F172A !important;
-    font-size: 1.02rem !important;
-    font-weight: 500 !important;
+    font-size: 1.01rem !important;
+    font-weight: 450 !important;
     padding-top: 10px !important;
 }
-[data-testid="stChatInput"] textarea::placeholder {
+div[data-testid="stChatInput"] textarea::placeholder {
     color: #64748B !important;
     font-size: 0.98rem !important;
-    font-weight: 450 !important;
+    font-weight: 400 !important;
 }
-[data-testid="stChatInput"] button {
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+div[data-testid="stChatInput"] button {
+    background: #0F172A !important;
     color: #FFFFFF !important;
     border-radius: 50% !important;
-    width: 38px !important;
-    height: 38px !important;
+    width: 36px !important;
+    height: 36px !important;
     border: none !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
     transition: all 0.2s ease !important;
 }
-[data-testid="stChatInput"] button:hover {
-    background: #1E40AF !important;
+div[data-testid="stChatInput"] button:hover {
+    background: #334155 !important;
     transform: scale(1.05) !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
 }
-[data-testid="stChatInput"] button svg {
+div[data-testid="stChatInput"] button svg {
     fill: #FFFFFF !important;
+}
+
+/* Gemini Grounding Disclaimer Underneath Bottom Search Bar */
+div[data-testid="stChatInput"]::after {
+    content: "Gemini is AI and can make mistakes.";
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.74rem;
+    color: #64748B;
+    font-weight: 400;
+    pointer-events: none;
 }
 
 /* Clean 2D Header for "Smart Knowledge Base Agent" */
@@ -711,15 +727,39 @@ p, span, li, label, div, td, th, .stMarkdown, .stText {
     text-shadow: none !important;
 }
 
-/* Chat Messages */
+/* Google Gemini Clean Chat Messages (Matching Screenshot 2) */
 [data-testid="stChatMessage"] {
-    border-radius: 16px !important;
-    padding: 1.1rem 1.4rem !important;
+    border-radius: 20px !important;
+    padding: 0.85rem 1.2rem !important;
     margin-bottom: 1rem !important;
-    border: 1px solid #E2E8F0 !important;
-    background: #FFFFFF !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
     color: #0F172A !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+/* User Message - Right-Aligned Bubble (Screenshot 2 style) */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+    background: #F1F5F9 !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 24px !important;
+    max-width: 78% !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    padding: 0.75rem 1.3rem !important;
+}
+
+/* Assistant Message - Clean Left-Aligned Typography (Screenshot 2 style) */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]),
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.4rem 0.2rem !important;
+    max-width: 100% !important;
 }
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] span,
@@ -929,11 +969,12 @@ with tab_chat:
         ]
 
     # ---------------------------------------------------------
-    # RENDER CONVERSATION MESSAGES & ANSWERS (GIVE ANSWER UP)
+    # RENDER CONVERSATION MESSAGES & ANSWERS (AT TOP)
     # ---------------------------------------------------------
     for msg in st.session_state.messages:
-        avatar = "🧠" if msg["role"] == "assistant" else "👤"
-        with st.chat_message(msg["role"], avatar=avatar):
+        role = msg.get("role", "assistant")
+        avatar_val = "assistant" if role == "assistant" else "user"
+        with st.chat_message(role, avatar=avatar_val):
             st.markdown(msg["content"])
             
             # Source Citations Card with Unique Document Symbols
@@ -958,17 +999,17 @@ with tab_chat:
                         st.info(src.get("content", ""))
 
     # ---------------------------------------------------------
-    # SEARCH BAR DOWN (Pinned At Bottom, Answers Displayed UP)
+    # PINNED BOTTOM SEARCH BAR (SCREENSHOT 2 PLACEMENT)
     # ---------------------------------------------------------
     user_query = st.chat_input("✦ Ask Gemini anything about your documents...")
     active_prompt = quick_prompt if quick_prompt else user_query
 
     if active_prompt:
         st.session_state.messages.append({"role": "user", "content": active_prompt})
-        with st.chat_message("user", avatar="👤"):
+        with st.chat_message("user", avatar="user"):
             st.markdown(active_prompt)
 
-        with st.chat_message("assistant", avatar="🧠"):
+        with st.chat_message("assistant", avatar="assistant"):
             with st.spinner("Smart Agent synthesizing answer..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
@@ -1013,6 +1054,7 @@ with tab_chat:
                     err = f"⚠️ Error: {str(e)}"
                     st.error(err)
                     st.session_state.messages.append({"role": "assistant", "content": err})
+        st.rerun()
 
 # ====================================================
 # TAB 2: KNOWLEDGE LIBRARY & DOCUMENT INGESTION
