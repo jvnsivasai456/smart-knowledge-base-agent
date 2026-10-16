@@ -1,5 +1,5 @@
 @echo off
-title Smart Knowledge Base App Launcher
+title Smart Knowledge Base Agent
 cd /d "%~dp0"
 
 echo =======================================================
@@ -7,7 +7,7 @@ echo        Smart Knowledge Base Agent - App Launcher
 echo =======================================================
 echo.
 
-:: Check if virtual environment exists
+:: 1. Check if virtual environment exists
 if not exist "venv\Scripts\python.exe" (
     echo [!] Virtual environment not found. Creating venv...
     python -m venv venv
@@ -18,18 +18,27 @@ if not exist "venv\Scripts\python.exe" (
     call venv\Scripts\activate
 )
 
-echo [*] Starting FastAPI Backend (Port 8000)...
-start /b "" venv\Scripts\python.exe main.py
+:: 2. Check if FastAPI backend (Port 8000) is already running
+netstat -ano | findstr ":8000 " | findstr "LISTENING" >nul 2>&1
+if errorlevel 1 (
+    echo [*] Starting FastAPI Backend on Port 8000...
+    start /b "" venv\Scripts\python.exe main.py
+    timeout /t 2 /nobreak >nul
+) else (
+    echo [OK] FastAPI Backend is already active on Port 8000.
+)
 
-echo [*] Starting Streamlit App (Port 8501)...
-timeout /t 3 /nobreak >nul
+:: 3. Check if Streamlit UI (Port 8501) is already running
+netstat -ano | findstr ":8501 " | findstr "LISTENING" >nul 2>&1
+if errorlevel 1 (
+    echo [*] Starting Streamlit App on Port 8501...
+    start /b "" venv\Scripts\streamlit.exe run src/ui/app.py --server.address 0.0.0.0 --server.port 8501 --server.headless true
+    timeout /t 3 /nobreak >nul
+) else (
+    echo [OK] Streamlit UI is already active on Port 8501.
+)
 
-:: Open browser in standalone app window mode (Edge or Chrome if available, fallback to default browser)
-start /b "" venv\Scripts\streamlit.exe run src/ui/app.py --server.address 0.0.0.0 --server.port 8501 --server.headless true
-
-timeout /t 2 /nobreak >nul
-
-:: Launch browser in dedicated window mode
+:: 4. Launch browser in standalone app window mode
 if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (
     start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" --app=http://localhost:8501
 ) else if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (
@@ -42,14 +51,18 @@ echo.
 echo =======================================================
 echo    App is running!
 echo    Local URL:    http://localhost:8501
-echo    Network URL:  http://10.22.230.15:8501
+echo    Mobile / LAN: http://192.168.1.53:8501
 echo    Backend Docs: http://localhost:8000/docs
 echo =======================================================
 echo.
-echo Press any key to stop all background services and exit...
+echo Press any key to stop application services and exit...
 pause >nul
 
-echo [*] Stopping services...
-taskkill /F /IM python.exe /T 2>nul
-taskkill /F /IM streamlit.exe /T 2>nul
+echo [*] Stopping services safely on ports 8000 and 8501...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8000 " ^| findstr "LISTENING"') do (
+    taskkill /F /PID %%a 2>nul
+)
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8501 " ^| findstr "LISTENING"') do (
+    taskkill /F /PID %%a 2>nul
+)
 echo Done.

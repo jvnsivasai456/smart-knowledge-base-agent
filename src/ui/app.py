@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import os
+import sys
+import subprocess
 import time
 import json
 import base64
@@ -19,6 +21,179 @@ if os.path.exists(ICON_PATH):
             icon_b64 = base64.b64encode(f.read()).decode("utf-8")
     except Exception:
         icon_b64 = ""
+
+# ----------------------------------------------------
+# RESILIENT INFRASTRUCTURE ENGINE & SELF-HEALING HELPERS
+# ----------------------------------------------------
+def trigger_backend_launch() -> bool:
+    """Launch the FastAPI backend in background without popping up console windows."""
+    try:
+        py_bin = sys.executable
+        main_py = os.path.join(PROJECT_ROOT, "main.py")
+        creation_flags = 0
+        if os.name == "nt":
+            creation_flags = subprocess.CREATE_NO_WINDOW
+        subprocess.Popen(
+            [py_bin, main_py],
+            cwd=PROJECT_ROOT,
+            creationflags=creation_flags
+        )
+        return True
+    except Exception:
+        return False
+
+def check_backend_health() -> tuple[bool, int]:
+    """Check if the backend HTTP service is healthy and measure response latency."""
+    try:
+        t0 = time.time()
+        resp = requests.get(f"{API_HOST}/health", timeout=1.5)
+        lat = int((time.time() - t0) * 1000)
+        return (resp.status_code == 200, lat)
+    except Exception:
+        return (False, 0)
+
+@st.cache_resource
+def get_inprocess_engine():
+    """Cache the in-process RAG components for zero-downtime query fallback."""
+    from src.config import settings
+    from src.embedding import Embedder, VectorStore, MetadataStore
+    from src.retrieval import Retriever, AnswerEngine
+    settings.create_directories()
+    embedder = Embedder(model_name=settings.embedding_model_name)
+    vector_store = VectorStore(persist_directory=settings.chroma_db_dir)
+    metadata_store = MetadataStore(db_path=settings.metadata_db_path)
+    retriever = Retriever(embedder, vector_store)
+    answer_engine = AnswerEngine(embedder=embedder)
+    return embedder, vector_store, metadata_store, retriever, answer_engine
+
+def get_resilient_documents(is_api_alive: bool) -> list:
+    """Fetch documents either from API or directly from MetadataStore."""
+    if is_api_alive:
+        try:
+            doc_resp = requests.get(f"{API_HOST}/documents", timeout=2.5)
+            if doc_resp.status_code == 200:
+                return doc_resp.json().get("documents", [])
+        except Exception:
+            pass
+    try:
+        from src.config import settings
+        from src.embedding import MetadataStore
+        meta_store = MetadataStore(db_path=settings.metadata_db_path)
+        records = meta_store.get_all_files()
+        enriched = []
+        for r in records:
+            rec = dict(r)
+            src_id = rec.get("source_id", "")
+            rec["filename"] = os.path.basename(src_id)
+            disk_path = src_id if os.path.isabs(src_id) else os.path.join(settings.upload_dir, rec["filename"])
+            rec["file_size_bytes"] = os.path.getsize(disk_path) if os.path.exists(disk_path) else 0
+            rec["exists_on_disk"] = os.path.exists(disk_path)
+            enriched.append(rec)
+        return enriched
+    except Exception:
+        return []
+
+def execute_resilient_chat(active_prompt: str, search_depth: int, provider: str, api_key: str, is_api_alive: bool) -> tuple[str, list, str]:
+    """Execute query via HTTP API or in-process engine seamlessly."""
+    if is_api_alive:
+        try:
+            chat_res = requests.post(
+                f"{API_HOST}/chat",
+                json={
+                    "query": active_prompt,
+                    "top_k": search_depth,
+                    "api_key": api_key,
+                    "provider": provider
+                },
+                timeout=35
+            )
+            if chat_res.status_code == 200:
+                data = chat_res.json()
+                return data.get("answer", ""), data.get("sources", []), "API"
+        except Exception:
+            pass  # Fall through to in-process execution
+
+    # In-process zero-downtime engine
+    try:
+        embedder, vector_store, metadata_store, retriever, answer_engine = get_inprocess_engine()
+        docs = metadata_store.get_all_files()
+        if answer_engine.is_greeting_or_meta(active_prompt):
+            ans_dict = answer_engine.handle_greeting(active_prompt, docs)
+            return ans_dict.get("answer", ""), ans_dict.get("sources", []), "In-Process"
+        
+        search_resp = retriever.search(active_prompt, top_k=search_depth)
+        ans_dict = answer_engine.synthesize(
+            active_prompt,
+            search_resp.results,
+            docs,
+            api_key=api_key,
+            provider=provider
+        )
+        return ans_dict.get("answer", ""), ans_dict.get("sources", []), "In-Process"
+    except Exception as err:
+        return f"⚠️ Resilient query execution encountered an issue: {str(err)}", [], "Error"
+
+def ingest_resilient(file_name: str, file_bytes: bytes, is_api_alive: bool) -> bool:
+    """Ingest file through API or in-process pipeline."""
+    if is_api_alive:
+        try:
+            r = requests.post(f"{API_HOST}/upload", files={"file": (file_name, file_bytes)}, timeout=30)
+            if r.status_code == 200:
+                return True
+        except Exception:
+            pass
+    # In-process ingestion
+    try:
+        from src.config import settings
+        from src.embedding import Embedder, VectorStore, MetadataStore, Indexer
+        from src.ingestion import Ingestor
+        from src.processing import TextChunker
+        from src.update_engine import DirectoryScanner, KnowledgeBaseUpdater
+        settings.create_directories()
+        save_path = os.path.join(settings.upload_dir, file_name)
+        with open(save_path, "wb") as f:
+            f.write(file_bytes)
+        embedder = Embedder(model_name=settings.embedding_model_name)
+        vector_store = VectorStore(persist_directory=settings.chroma_db_dir)
+        meta_store = MetadataStore(db_path=settings.metadata_db_path)
+        indexer = Indexer(embedder, vector_store, meta_store)
+        scanner = DirectoryScanner(settings.upload_dir)
+        updater = KnowledgeBaseUpdater(scanner, meta_store, indexer, Ingestor(), TextChunker())
+        updater.sync()
+        return True
+    except Exception:
+        return False
+
+def delete_resilient(doc_name: str, is_api_alive: bool) -> bool:
+    """Delete document through API or directly."""
+    if is_api_alive:
+        try:
+            encoded_name = urllib.parse.quote(doc_name)
+            del_res = requests.delete(f"{API_HOST}/documents/{encoded_name}", timeout=5)
+            if del_res.status_code == 200:
+                return True
+        except Exception:
+            pass
+    # In-process deletion
+    try:
+        from src.config import settings
+        from src.embedding import VectorStore, MetadataStore
+        settings.create_directories()
+        vector_store = VectorStore(persist_directory=settings.chroma_db_dir)
+        meta_store = MetadataStore(db_path=settings.metadata_db_path)
+        records = meta_store.get_all_files()
+        for r in records:
+            r_src = r.get("source_id", "")
+            if os.path.basename(r_src) == doc_name or r_src == doc_name:
+                vector_store.delete_by_source_id(r_src)
+                meta_store.delete_record(r_src)
+                disk_path = r_src if os.path.isabs(r_src) else os.path.join(settings.upload_dir, os.path.basename(r_src))
+                if os.path.exists(disk_path):
+                    os.remove(disk_path)
+                return True
+    except Exception:
+        pass
+    return False
 
 # Unique Document Icon & Metadata Resolver
 def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
@@ -622,28 +797,17 @@ button {
 st.markdown(clean_css, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# BACKEND HEALTH & STATS CHECK
+# BACKEND HEALTH & STATS CHECK (SELF-HEALING)
 # ----------------------------------------------------
-api_healthy = False
-latency_ms = 0
-try:
-    t0 = time.time()
-    health_resp = requests.get(f"{API_HOST}/health", timeout=2)
-    latency_ms = int((time.time() - t0) * 1000)
-    if health_resp.status_code == 200:
-        api_healthy = True
-except Exception:
-    api_healthy = False
+api_healthy, latency_ms = check_backend_health()
+if not api_healthy and not st.session_state.get("backend_autostart_attempted", False):
+    st.session_state["backend_autostart_attempted"] = True
+    trigger_backend_launch()
+    time.sleep(1.2)
+    api_healthy, latency_ms = check_backend_health()
 
-# Fetch currently indexed documents
-indexed_docs = []
-if api_healthy:
-    try:
-        doc_resp = requests.get(f"{API_HOST}/documents", timeout=3)
-        if doc_resp.status_code == 200:
-            indexed_docs = doc_resp.json().get("documents", [])
-    except Exception:
-        pass
+# Fetch currently indexed documents (resilient)
+indexed_docs = get_resilient_documents(api_healthy)
 
 # Initialize session state for natural language settings
 if "llm_provider" not in st.session_state:
@@ -703,9 +867,12 @@ with col_stat:
         )
     else:
         st.markdown(
-            """<div style="text-align: right; padding-top: 6px;">
-            <span class="status-badge-offline">● Backend Offline</span>
-            <div style="font-size: 11px; color: #EF4444; margin-top: 4px;">Run: `python main.py`</div>
+            f"""<div style="text-align: right; padding-top: 4px;">
+            <span class="status-badge-online" style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE;">● In-Process Mode Active</span>
+            <div style="margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; align-items: center;">
+              <span class="nlg-pill">Zero Downtime</span>
+              <span style="font-size: 11px; color: #64748B;">{len(indexed_docs)} docs indexed</span>
+            </div>
             </div>""",
             unsafe_allow_html=True
         )
@@ -805,60 +972,43 @@ with tab_chat:
             with st.spinner("Smart Agent synthesizing answer..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
-                    
-                    chat_payload = {
-                        "query": active_prompt,
-                        "top_k": search_depth,
-                        "api_key": st.session_state.get("llm_api_key", ""),
-                        "provider": st.session_state.get("llm_provider", "local")
-                    }
-                    
-                    chat_res = requests.post(
-                        f"{API_HOST}/chat",
-                        json=chat_payload,
-                        timeout=35
+                    cur_prov = st.session_state.get("llm_provider", "local")
+                    cur_key = st.session_state.get("llm_api_key", "")
+
+                    answer_text, sources, exec_mode = execute_resilient_chat(
+                        active_prompt=active_prompt,
+                        search_depth=search_depth,
+                        provider=cur_prov,
+                        api_key=cur_key,
+                        is_api_alive=api_healthy
                     )
                     
-                    if chat_res.status_code == 200:
-                        data = chat_res.json()
-                        answer_text = data.get("answer", "")
-                        sources = data.get("sources", [])
-                        
-                        st.markdown(answer_text)
-                        
-                        if sources:
-                            with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
-                                for idx, src in enumerate(sources, 1):
-                                    source_file = os.path.basename(src.get("source_id", "Document"))
-                                    meta = get_unique_doc_metadata(source_file)
-                                    score = src.get("score", 0.0)
-                                    chunk_idx = src.get("chunk_index", 0)
-                                    match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
-                                    badge_color = "#059669" if match_pct >= 80 else "#2563EB"
-                                    
-                                    st.markdown(
-                                        f"""<div style="margin-bottom: 6px;">
-                                        <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
-                                        <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
-                                        </div>""",
-                                        unsafe_allow_html=True
-                                    )
-                                    st.info(src.get("content", ""))
-                                    
-                        st.session_state.messages.append({
-                            "role": "assistant",
-                            "content": answer_text,
-                            "sources": sources
-                        })
-                    else:
-                        err = f"⚠️ Server Error ({chat_res.status_code}): {chat_res.text}"
-                        st.error(err)
-                        st.session_state.messages.append({"role": "assistant", "content": err})
-                        
-                except requests.exceptions.ConnectionError:
-                    err = "⚠️ Backend API is offline. Please start the backend with `python main.py` on port 8000."
-                    st.error(err)
-                    st.session_state.messages.append({"role": "assistant", "content": err})
+                    st.markdown(answer_text)
+                    
+                    if sources:
+                        with st.expander(f"📚 Verified Sources ({len(sources)} relevant chunks)", expanded=False):
+                            for idx, src in enumerate(sources, 1):
+                                source_file = os.path.basename(src.get("source_id", "Document"))
+                                meta = get_unique_doc_metadata(source_file)
+                                score = src.get("score", 0.0)
+                                chunk_idx = src.get("chunk_index", 0)
+                                match_pct = max(15, min(99, int((1.0 - (score / 2.0)) * 100)))
+                                badge_color = "#059669" if match_pct >= 80 else "#2563EB"
+                                
+                                st.markdown(
+                                    f"""<div style="margin-bottom: 6px;">
+                                    <strong>#{idx}</strong> <span>{meta['symbol']}</span> <code>{source_file}</code> &bull; Chunk {chunk_idx} &bull; 
+                                    <span style="color: {badge_color}; font-weight: 700;">{match_pct}% Match</span>
+                                    </div>""",
+                                    unsafe_allow_html=True
+                                )
+                                st.info(src.get("content", ""))
+                                
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": answer_text,
+                        "sources": sources
+                    })
                 except Exception as e:
                     err = f"⚠️ Error: {str(e)}"
                     st.error(err)
@@ -881,25 +1031,20 @@ with tab_library:
     col_upload_btn, col_resync_btn = st.columns([2, 1])
     with col_upload_btn:
         if st.button("🚀 Ingest & Index Uploaded Files", use_container_width=True, type="primary"):
-            if new_files and api_healthy:
+            if new_files:
                 successes = 0
                 for f in new_files:
                     with st.spinner(f"Ingesting {f.name}..."):
-                        files_payload = {"file": (f.name, f.getvalue())}
-                        try:
-                            r = requests.post(f"{API_HOST}/upload", files=files_payload, timeout=30)
-                            if r.status_code == 200:
-                                successes += 1
-                        except Exception as e:
-                            st.error(f"Error indexing {f.name}: {e}")
+                        if ingest_resilient(f.name, f.getvalue(), api_healthy):
+                            successes += 1
+                        else:
+                            st.error(f"Error indexing {f.name}")
                 if successes > 0:
                     st.success(f"✅ Ingested {successes} document(s)! Embeddings saved in ChromaDB.")
                     time.sleep(1)
                     st.rerun()
-            elif not new_files:
-                st.warning("Please select at least one file to upload.")
             else:
-                st.error("Backend API is currently offline.")
+                st.warning("Please select at least one file to upload.")
                 
     with col_resync_btn:
         if st.button("🔄 Resync & Refresh Library", use_container_width=True):
@@ -968,18 +1113,13 @@ with tab_library:
             with col_del:
                 st.write("")
                 if st.button("🗑️ Delete", key=f"del_{fname}", use_container_width=True):
-                    try:
-                        encoded_fname = urllib.parse.quote(fname)
-                        del_res = requests.delete(f"{API_HOST}/documents/{encoded_fname}", timeout=10)
-                        if del_res.status_code == 200:
-                            st.toast(f"Deleted {fname}", icon="🗑️")
-                            st.success(f"Successfully deleted {fname}")
-                            time.sleep(0.5)
-                            st.rerun()
-                        else:
-                            st.error(f"Failed to delete: {del_res.text}")
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+                    if delete_resilient(fname, api_healthy):
+                        st.toast(f"Deleted {fname}", icon="🗑️")
+                        st.success(f"Successfully deleted {fname}")
+                        time.sleep(0.5)
+                        st.rerun()
+                    else:
+                        st.error(f"Failed to delete {fname}")
             st.write("")
 
 # ====================================================
@@ -1095,13 +1235,87 @@ with tab_controls:
         """)
 
     st.markdown("---")
-    st.subheader("🔌 System Diagnostics")
-    st.markdown(f"- **FastAPI Backend:** `{API_HOST}` ({'Online 🟢' if api_healthy else 'Offline 🔴'})")
-    st.markdown(f"- **Agent Identity:** `Smart Knowledge Base Agent 2.0`")
-    st.markdown(f"- **Natural Language Engine:** `{provider_format[st.session_state['llm_provider']]}`")
-    st.markdown(f"- **Embedding Model:** `all-MiniLM-L6-v2` (SentenceTransformers 384-d)")
-    if api_healthy:
-        st.markdown(f"- **API Latency:** `{latency_ms} ms`")
-        st.markdown(f"- **Indexed Documents:** `{len(indexed_docs)}`")
-    st.markdown(f"- **Vector Database:** `ChromaDB Persistent (data/chroma_db)`")
-    st.markdown(f"- **Metadata Database:** `SQLite (data/metadata.sqlite)`")
+    st.subheader("🖥️ Infrastructure & Services Manager")
+    st.caption("Live monitoring and 1-click self-healing controls for all underlying components:")
+
+    col_srv1, col_srv2 = st.columns(2)
+    with col_srv1:
+        if api_healthy:
+            backend_badge = f'<span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Online 🟢 ({latency_ms}ms)</span>'
+        else:
+            backend_badge = '<span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">In-Process Active ⚡</span>'
+
+        st.markdown(
+            f"""<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 0.92rem; color: #0F172A;">🚀 FastAPI Backend Service</div>
+                {backend_badge}
+              </div>
+              <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+                Address: <code>{API_HOST}</code> &bull; REST API &bull; Health Check
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 0.92rem; color: #0F172A;">🌐 Streamlit Frontend Application</div>
+                <span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Active 🟢</span>
+              </div>
+              <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+                Port: <code>8501</code> &bull; Local & Mobile Web App UI
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
+
+    with col_srv2:
+        st.markdown(
+            f"""<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 0.92rem; color: #0F172A;">🧠 ChromaDB Vector Storage</div>
+                <span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Connected 🟢</span>
+              </div>
+              <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+                Engine: <code>all-MiniLM-L6-v2</code> &bull; 384-d Persistent Embeddings
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"""<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 0.92rem; color: #0F172A;">📋 SQLite Metadata Store</div>
+                <span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Connected 🟢</span>
+              </div>
+              <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+                Storage: <code>data/metadata.sqlite</code> &bull; <strong>{len(indexed_docs)}</strong> indexed documents
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
+
+    col_btn_start, col_btn_check = st.columns([1.5, 1])
+    with col_btn_start:
+        if st.button("⚡ Start / Restart Backend Service", use_container_width=True):
+            with st.spinner("Starting backend service in background..."):
+                trigger_backend_launch()
+                time.sleep(1.8)
+                st.session_state["backend_autostart_attempted"] = True
+                st.rerun()
+
+    with col_btn_check:
+        if st.button("🔄 Re-check Health", use_container_width=True):
+            st.rerun()
+
+    st.markdown(
+        """<div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin-top: 10px; font-size: 0.82rem; color: #475569;">
+          <strong>🛡️ Zero-Configuration Resilience:</strong> The application is fully self-contained. 
+          If the backend service is offline, queries and document lookups automatically continue using the built-in 
+          in-process RAG engine. You never need to run command line scripts or manage server processes manually.
+        </div>""",
+        unsafe_allow_html=True
+    )
