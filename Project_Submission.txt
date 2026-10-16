@@ -1,0 +1,59 @@
+================================================================================
+                    PROJECT SUBMISSION: SMART KNOWLEDGE BASE AGENT
+================================================================================
+
+1. PROJECT REPOSITORY LINK (GITHUB):
+   https://github.com/jvnsivasai456/smart-knowledge-base-agent
+
+2. LIVE MOBILE WEB APP LINK:
+   https://accessory-wish-structure-span.trycloudflare.com
+   (Works on mobile cellular data 4G/5G and desktop browsers)
+
+--------------------------------------------------------------------------------
+3. PROJECT DETAILS:
+--------------------------------------------------------------------------------
+- Project Title: Smart Knowledge Base Agent
+- Author / Owner: jvnsivasai456
+- Technology Stack: Python, FastAPI, Streamlit, ChromaDB, SentenceTransformers, SQLite
+- Architecture: Retrieval-Augmented Generation (RAG) with Zero-Downtime Resilience
+
+--------------------------------------------------------------------------------
+4. KEY FEATURES:
+--------------------------------------------------------------------------------
+• Multi-Format Document Ingestion:
+  Upload and index PDF, DOCX, and TXT files with automatic text extraction.
+
+• Semantic Vector Search:
+  Generates 384-dimensional dense vector embeddings using 'all-MiniLM-L6-v2' 
+  and stores them in a persistent ChromaDB database.
+
+• Natural Language Answers with Citations:
+  Provides answers in clear, simple everyday English along with verified chunk 
+  citations, relevance match percentages, and unique document category badges.
+
+• Google Gemini-Style User Interface:
+  Clean pure-white theme with responsive mobile design, right-aligned user bubbles, 
+  and an ergonomic search bar that naturally flows below answers.
+
+• Self-Healing Zero-Downtime Infrastructure:
+  Automatic in-process fallback engine that continues answering queries even if the 
+  HTTP backend server is restarting.
+
+• Mobile Network Tunneling:
+  Built-in secure HTTPS Cloudflare Tunnel allowing the web app to be opened on mobile 
+  devices over cellular data (4G/5G) from anywhere in the world.
+
+--------------------------------------------------------------------------------
+5. HOW TO RUN LOCALLY:
+--------------------------------------------------------------------------------
+1. Clone the repository:
+   git clone https://github.com/jvnsivasai456/smart-knowledge-base-agent.git
+   cd smart-knowledge-base-agent
+
+2. Double-click "run_app.bat" or run:
+   python main.py                     (FastAPI Backend on port 8000)
+   streamlit run src/ui/app.py        (Streamlit UI on port 8501)
+
+3. Open in browser:
+   http://localhost:8501
+================================================================================
