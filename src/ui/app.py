@@ -304,8 +304,8 @@ pwa_manifest = {
     "description": "Next-Gen Natural Language AI Knowledge Base Agent",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0B0F19",
-    "theme_color": "#6366F1",
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
     "orientation": "portrait",
     "icons": [
         {
@@ -326,7 +326,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom Ultra-Modern Styling with Custom Typography & Ergonomic Search Placement
+# Custom Ultra-Modern White Styling with Custom Typography & Ergonomic Search Placement
 clean_css = """<style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
@@ -334,11 +334,44 @@ clean_css = """<style>
     visibility: hidden;
     display: none !important;
 }
+
+/* Force Pure White Background for Mobile and Desktop */
+html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+}
+
 html, body, [class*="css"] {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #0F172A !important;
+}
+
+/* Force Light/White theme against any mobile Dark Mode preference */
+@media (prefers-color-scheme: dark) {
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+    p, span, li, label, div, td, th, .stMarkdown, .stText {
+        color: #0F172A !important;
+    }
+    [data-testid="stChatInput"] {
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+    [data-testid="stChatInput"] textarea {
+        color: #0F172A !important;
+        background: #FFFFFF !important;
+    }
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+    }
 }
 
 /* Universal High-Contrast Crisp Typography for All Normal Text */
@@ -846,9 +879,41 @@ button {
     display: inline-block;
 }
 @media (max-width: 768px) {
-    .hero-title-2d { font-size: 1.6rem !important; }
-    .hero-subtitle { font-size: 0.82rem; }
-    .block-container { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
+    html, body, .stApp, [data-testid="stAppViewContainer"], .main {
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+    .hero-title-2d { font-size: 1.5rem !important; }
+    .hero-subtitle { font-size: 0.8rem !important; }
+    .block-container { 
+        padding-left: 0.65rem !important; 
+        padding-right: 0.65rem !important; 
+        padding-bottom: 120px !important;
+        background: #FFFFFF !important;
+    }
+    /* Mobile Crisp White Pinned Search Bar */
+    div[data-testid="stChatInput"] {
+        width: calc(100% - 20px) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        bottom: 16px !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid #E2E8F0 !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08) !important;
+        border-radius: 28px !important;
+    }
+    div[data-testid="stChatInput"] textarea {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        font-size: 0.96rem !important;
+    }
+    [data-testid="stBottom"] {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.96) 25%, #FFFFFF 100%) !important;
+    }
+    [data-testid="stChatMessage"] {
+        padding: 0.75rem 0.95rem !important;
+    }
 }
 </style>"""
 st.markdown(clean_css, unsafe_allow_html=True)
