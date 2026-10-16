@@ -382,37 +382,29 @@ p, span, li, label, div, td, th, .stMarkdown, .stText {
 
 .block-container {
     padding-top: 1.2rem !important;
-    padding-bottom: 130px !important;
+    padding-bottom: 2.5rem !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     max-width: 980px !important;
     margin: 0 auto !important;
 }
 
-/* Pinned Bottom Search Bar Styling (Google Gemini Screenshot 2 Match) */
-[data-testid="stBottom"] {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 25%, #FFFFFF 100%) !important;
-    padding-bottom: 1rem !important;
-    padding-top: 0.8rem !important;
-}
-
+/* Chat Input Bar - Moves Down Below Output Naturally */
 div[data-testid="stChatInput"] {
-    position: fixed !important;
-    bottom: 24px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: min(880px, calc(100% - 32px)) !important;
-    z-index: 1000 !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 880px !important;
+    margin: 1.5rem auto 2.5rem auto !important;
     border: 1.5px solid #E2E8F0 !important;
     border-radius: 36px !important;
     background: #FFFFFF !important;
-    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
     padding: 4px 8px 4px 18px !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.25s ease !important;
 }
 div[data-testid="stChatInput"]:focus-within {
     border-color: #94A3B8 !important;
-    box-shadow: 0 6px 26px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 6px 26px rgba(0, 0, 0, 0.1) !important;
     background: #FFFFFF !important;
 }
 div[data-testid="stChatInput"] textarea {
@@ -889,15 +881,17 @@ button {
     .block-container { 
         padding-left: 0.65rem !important; 
         padding-right: 0.65rem !important; 
-        padding-bottom: 120px !important;
+        padding-bottom: 2rem !important;
         background: #FFFFFF !important;
     }
-    /* Mobile Crisp White Pinned Search Bar */
+    /* Mobile White Input Bar that Moves Down with Output */
     div[data-testid="stChatInput"] {
-        width: calc(100% - 20px) !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        bottom: 16px !important;
+        position: relative !important;
+        width: 100% !important;
+        margin: 1.2rem auto 2.5rem auto !important;
+        bottom: unset !important;
+        left: unset !important;
+        transform: none !important;
         background: #FFFFFF !important;
         border: 1.5px solid #E2E8F0 !important;
         box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08) !important;
@@ -907,9 +901,6 @@ button {
         background: #FFFFFF !important;
         color: #0F172A !important;
         font-size: 0.96rem !important;
-    }
-    [data-testid="stBottom"] {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.96) 25%, #FFFFFF 100%) !important;
     }
     [data-testid="stChatMessage"] {
         padding: 0.75rem 0.95rem !important;
@@ -1137,6 +1128,26 @@ with tab_chat:
                     st.error(err)
                     st.session_state.messages.append({"role": "assistant", "content": err})
         st.rerun()
+
+    # Smooth auto-scroll anchor to follow input bar as it moves down
+    st.markdown(
+        """<div id="chat-bottom-anchor"></div>
+        <script>
+            (function() {
+                setTimeout(function() {
+                    var el = document.getElementById("chat-bottom-anchor");
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    }
+                    var main = window.parent.document.querySelector('.main') || window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+                    if (main) {
+                        main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+                    }
+                }, 80);
+            })();
+        </script>""",
+        unsafe_allow_html=True
+    )
 
 # ====================================================
 # TAB 2: KNOWLEDGE LIBRARY & DOCUMENT INGESTION
