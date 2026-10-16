@@ -52,3 +52,5 @@ uploads/
 model_cache/
 *.sqlite3
 data/
+cloudflared.exe
+tunnel_url.txt
