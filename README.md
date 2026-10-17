@@ -1,5 +1,10 @@
 # Smart knowledge Base Agent
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/jvnsivasai456/smart-knowledge-base-agent)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.65.0-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io)
+
 A modular, smart document ingestion and retrieval system using Python, FastAPI, Streamlit, and ChromaDB.
 
 ## Features
@@ -27,32 +32,44 @@ Create a `.env` file based on `.env.example`:
 
 ## How to Run
 
-### 1. Locally (Development)
+### 1. In GitHub (1-Click Cloud Execution via Codespaces)
+Click the **[Open in GitHub Codespaces](https://codespaces.new/jvnsivasai456/smart-knowledge-base-agent)** button to launch a fully configured cloud container. 
+- Python 3.11, all dependencies, and models are prepared automatically.
+- Both the **FastAPI Backend (port 8000)** and **Streamlit UI (port 8501)** launch automatically.
+- Accessible directly from your browser with port forwarding.
+
+### 2. Locally from Git
 ```bash
+# Clone the repository
+git clone https://github.com/jvnsivasai456/smart-knowledge-base-agent.git
+cd smart-knowledge-base-agent
+
+# Create virtual environment & install dependencies
 python -m venv venv
 # Windows: .\venv\Scripts\activate
 # Linux/Mac: source venv/bin/activate
 pip install -r requirements.txt
 
-# Run API
+# Start Backend API (Port 8000)
 python main.py
 
-# Run UI (in a separate terminal)
+# Start UI (Port 8501) in a separate terminal
 streamlit run src/ui/app.py
 ```
 
-### 2. Docker Compose
+### 3. Docker Compose
 ```bash
+git clone https://github.com/jvnsivasai456/smart-knowledge-base-agent.git
+cd smart-knowledge-base-agent
 docker-compose up --build
 ```
 - API will be at `http://localhost:8000`
 - UI will be at `http://localhost:8501`
 
-### 3. Generic Linux Server / Cloud VM
-You can deploy this via Docker on any cloud VM:
+### 4. Generic Linux Server / Cloud VM
 ```bash
-git clone <your-repo-url>
-cd smart_kb
+git clone https://github.com/jvnsivasai456/smart-knowledge-base-agent.git
+cd smart-knowledge-base-agent
 docker-compose up -d --build
 ```
 Ensure ports `8000` and `8501` are open in your server's firewall. 
