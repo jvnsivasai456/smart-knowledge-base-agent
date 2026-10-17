@@ -367,6 +367,7 @@ html, body, [class*="css"] {
         color: #0F172A !important;
         background: #FFFFFF !important;
     }
+    [data-testid="stChatMessage"]:has([aria-label*="user" i]),
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
     [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
         background: #F1F5F9 !important;
@@ -782,6 +783,7 @@ div[data-testid="stChatInput"]::after {
 }
 
 /* User Message - Right-Aligned Bubble (Screenshot 2 style) */
+[data-testid="stChatMessage"]:has([aria-label*="user" i]),
 [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
     background: #F1F5F9 !important;
@@ -795,6 +797,7 @@ div[data-testid="stChatInput"]::after {
 }
 
 /* Assistant Message - Clean Left-Aligned Typography (Screenshot 2 style) */
+[data-testid="stChatMessage"]:has([aria-label*="assistant" i]),
 [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]),
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
     background: transparent !important;
@@ -802,6 +805,51 @@ div[data-testid="stChatInput"]::after {
     box-shadow: none !important;
     padding: 0.4rem 0.2rem !important;
     max-width: 100% !important;
+}
+
+/* Beautiful Custom Avatar Symbols (Replacing old blocky red/orange icons) */
+[data-testid="stChatMessage"]:has([aria-label*="user" i]) [data-testid="stChatMessageAvatarCustom"],
+[data-testid="stChatMessage"]:has([aria-label*="user" i]) [data-testid="stChatMessageAvatarUser"],
+[data-testid="stChatMessageAvatarUser"] {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+    color: #FFFFFF !important;
+    border-radius: 50% !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35) !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="stChatMessage"]:has([aria-label*="user" i]) [data-testid="stChatMessageAvatarCustom"] span,
+[data-testid="stChatMessage"]:has([aria-label*="user" i]) [data-testid="stChatMessageAvatarUser"] span {
+    color: #FFFFFF !important;
+    font-size: 20px !important;
+}
+
+[data-testid="stChatMessage"]:has([aria-label*="assistant" i]) [data-testid="stChatMessageAvatarCustom"],
+[data-testid="stChatMessage"]:has([aria-label*="assistant" i]) [data-testid="stChatMessageAvatarAssistant"],
+[data-testid="stChatMessageAvatarAssistant"] {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%) !important;
+    color: #FFFFFF !important;
+    border-radius: 50% !important;
+    border: none !important;
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.38) !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="stChatMessage"]:has([aria-label*="assistant" i]) [data-testid="stChatMessageAvatarCustom"] span,
+[data-testid="stChatMessage"]:has([aria-label*="assistant" i]) [data-testid="stChatMessageAvatarAssistant"] span {
+    color: #FFFFFF !important;
+    font-size: 20px !important;
 }
 [data-testid="stChatMessage"] p,
 [data-testid="stChatMessage"] span,
@@ -1044,9 +1092,12 @@ with tab_chat:
     # ---------------------------------------------------------
     # RENDER CONVERSATION MESSAGES & ANSWERS (AT TOP)
     # ---------------------------------------------------------
+    USER_AVATAR = ":material/person:"
+    ASSISTANT_AVATAR = ":material/auto_awesome:"
+
     for msg in st.session_state.messages:
         role = msg.get("role", "assistant")
-        avatar_val = "assistant" if role == "assistant" else "user"
+        avatar_val = ASSISTANT_AVATAR if role == "assistant" else USER_AVATAR
         with st.chat_message(role, avatar=avatar_val):
             st.markdown(msg["content"])
             
@@ -1079,10 +1130,10 @@ with tab_chat:
 
     if active_prompt:
         st.session_state.messages.append({"role": "user", "content": active_prompt})
-        with st.chat_message("user", avatar="user"):
+        with st.chat_message("user", avatar=USER_AVATAR):
             st.markdown(active_prompt)
 
-        with st.chat_message("assistant", avatar="assistant"):
+        with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
             with st.spinner("Smart Agent synthesizing answer..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
