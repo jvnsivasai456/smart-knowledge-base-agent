@@ -13,14 +13,68 @@ API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
 
 # App Brand Icon path & Base64
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ICON_PATH = os.path.join(PROJECT_ROOT, "app_icon.png")
-icon_b64 = ""
-if os.path.exists(ICON_PATH):
+HOME_ICON_PATH = os.path.join(PROJECT_ROOT, "src", "ui", "assets", "home_icon.png")
+
+def load_or_generate_home_icon() -> tuple[str, str]:
+    """Ensure high-resolution Home Screen / PWA icon exists and return path and base64."""
     try:
-        with open(ICON_PATH, "rb") as f:
-            icon_b64 = base64.b64encode(f.read()).decode("utf-8")
+        os.makedirs(os.path.dirname(HOME_ICON_PATH), exist_ok=True)
+        if not os.path.exists(HOME_ICON_PATH):
+            import math
+            from PIL import Image, ImageDraw, ImageFilter
+            size = 512
+            canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            mask = Image.new('L', (size, size), 0)
+            ImageDraw.Draw(mask).rounded_rectangle([16, 16, size-16, size-16], radius=110, fill=255)
+            bg = Image.new('RGBA', (size, size))
+            bg_draw = ImageDraw.Draw(bg)
+            for i in range(size):
+                for j in range(size):
+                    t = (i + j) / (2.0 * size)
+                    if t < 0.5:
+                        f = t * 2.0
+                        r, g, b = int(30 + f * 7), int(27 + f * 72), int(75 + f * 160)
+                    else:
+                        f = (t - 0.5) * 2.0
+                        r, g, b = int(37 + f * 87), int(99 - f * 41), int(235 + f * 2)
+                    bg_draw.point((i, j), fill=(r, g, b, 255))
+            bg.putalpha(mask)
+            rim = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            ImageDraw.Draw(rim).rounded_rectangle([16, 16, size-16, size-16], radius=110, outline=(255, 255, 255, 70), width=4)
+            card = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            cd = ImageDraw.Draw(card)
+            cd.rounded_rectangle([100, 110, 360, 410], radius=36, fill=(255, 255, 255, 38), outline=(255, 255, 255, 90), width=3)
+            cd.rounded_rectangle([125, 135, 385, 435], radius=36, fill=(255, 255, 255, 230), outline=(255, 255, 255, 255), width=3)
+            cd.rounded_rectangle([165, 185, 345, 199], radius=7, fill=(79, 70, 229, 210))
+            cd.rounded_rectangle([165, 220, 320, 232], radius=6, fill=(148, 163, 184, 180))
+            cd.rounded_rectangle([165, 248, 335, 260], radius=6, fill=(148, 163, 184, 180))
+            cd.rounded_rectangle([165, 276, 280, 288], radius=6, fill=(148, 163, 184, 180))
+            cd.rounded_rectangle([165, 320, 245, 345], radius=8, fill=(37, 99, 235, 190))
+            star = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            sd = ImageDraw.Draw(star)
+            def draw_sparkle(d, cx, cy, rx, ry, fill):
+                pts = []
+                for s in range(48):
+                    ang = s * (2 * math.pi / 48)
+                    ca, sa = math.cos(ang), math.sin(ang)
+                    pts.append((cx + rx * (abs(ca) ** 2.2) * math.copysign(1, ca), cy + ry * (abs(sa) ** 2.2) * math.copysign(1, sa)))
+                d.polygon(pts, fill=fill)
+            glow = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            draw_sparkle(ImageDraw.Draw(glow), 345, 260, 115, 115, (236, 72, 153, 180))
+            glow = glow.filter(ImageFilter.GaussianBlur(18))
+            draw_sparkle(sd, 345, 260, 95, 95, (255, 255, 255, 255))
+            draw_sparkle(sd, 345, 260, 45, 45, (244, 114, 182, 220))
+            draw_sparkle(sd, 410, 150, 42, 42, (255, 255, 255, 240))
+            draw_sparkle(sd, 140, 390, 32, 32, (255, 255, 255, 220))
+            for layer in (bg, rim, card, glow, star):
+                canvas = Image.alpha_composite(canvas, layer)
+            canvas.save(HOME_ICON_PATH, 'PNG')
+        with open(HOME_ICON_PATH, "rb") as f:
+            return HOME_ICON_PATH, base64.b64encode(f.read()).decode("utf-8")
     except Exception:
-        icon_b64 = ""
+        return "", ""
+
+ICON_PATH, icon_b64 = load_or_generate_home_icon()
 
 # ----------------------------------------------------
 # RESILIENT INFRASTRUCTURE ENGINE & SELF-HEALING HELPERS
@@ -300,17 +354,17 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
 # Mobile PWA Manifest
 pwa_manifest = {
     "name": "Smart Knowledge Base Agent",
-    "short_name": "SmartKBAgent",
+    "short_name": "Smart KB",
     "description": "Next-Gen Natural Language AI Knowledge Base Agent",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#FFFFFF",
+    "theme_color": "#2563EB",
     "orientation": "portrait",
     "icons": [
         {
-            "src": f"data:image/png;base64,{icon_b64}" if icon_b64 else "https://api.iconify.design/fluent-emoji:brain.svg",
-            "sizes": "512x512",
+            "src": f"data:image/png;base64,{icon_b64}" if icon_b64 else "",
+            "sizes": "192x192 512x512",
             "type": "image/png",
             "purpose": "any maskable"
         }
@@ -321,7 +375,7 @@ manifest_b64 = base64.b64encode(json.dumps(pwa_manifest).encode('utf-8')).decode
 # Streamlit Page Config
 st.set_page_config(
     page_title="Smart Knowledge Base Agent",
-    page_icon=ICON_PATH if os.path.exists(ICON_PATH) else "🧠",
+    page_icon=ICON_PATH if (ICON_PATH and os.path.exists(ICON_PATH)) else "✦",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -958,6 +1012,70 @@ button {
 st.markdown(clean_css, unsafe_allow_html=True)
 
 # ----------------------------------------------------
+# PWA & HOME SCREEN ICON HEAD INJECTION (iOS & Android)
+# ----------------------------------------------------
+if icon_b64:
+    st.markdown(
+        f"""<script>
+        (function() {{
+            var iconUri = "data:image/png;base64,{icon_b64}";
+            
+            // 1. Apple Touch Icon for iOS Safari Home Screen
+            ['apple-touch-icon', 'apple-touch-icon-precomposed'].forEach(function(rel) {{
+                var l = document.querySelector('link[rel="' + rel + '"]');
+                if (!l) {{
+                    l = document.createElement('link');
+                    l.rel = rel;
+                    document.head.appendChild(l);
+                }}
+                l.href = iconUri;
+                l.setAttribute('sizes', '180x180');
+            }});
+
+            // 2. Favicons for Android Chrome & Desktop Browser
+            ['192x192', '512x512'].forEach(function(sz) {{
+                var f = document.createElement('link');
+                f.rel = 'icon';
+                f.type = 'image/png';
+                f.sizes = sz;
+                f.href = iconUri;
+                document.head.appendChild(f);
+            }});
+
+            // 3. Apple & Android PWA Meta Tags
+            var metas = [
+                {{ name: 'apple-mobile-web-app-capable', content: 'yes' }},
+                {{ name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }},
+                {{ name: 'apple-mobile-web-app-title', content: 'Smart KB' }},
+                {{ name: 'mobile-web-app-capable', content: 'yes' }},
+                {{ name: 'theme-color', content: '#2563EB' }},
+                {{ name: 'application-name', content: 'Smart Knowledge Base Agent' }}
+            ];
+            metas.forEach(function(m) {{
+                var el = document.querySelector('meta[name="' + m.name + '"]');
+                if (!el) {{
+                    el = document.createElement('meta');
+                    el.name = m.name;
+                    document.head.appendChild(el);
+                }}
+                el.content = m.content;
+            }});
+
+            // 4. Web App Manifest
+            var manifestUri = "data:application/manifest+json;base64,{manifest_b64}";
+            var mLink = document.querySelector('link[rel="manifest"]');
+            if (!mLink) {{
+                mLink = document.createElement('link');
+                mLink.rel = 'manifest';
+                document.head.appendChild(mLink);
+            }}
+            mLink.href = manifestUri;
+        }})();
+        </script>""",
+        unsafe_allow_html=True
+    )
+
+# ----------------------------------------------------
 # BACKEND HEALTH & STATS CHECK (SELF-HEALING)
 # ----------------------------------------------------
 api_healthy, latency_ms = check_backend_health()
@@ -1441,10 +1559,19 @@ with tab_controls:
             st.code("http://192.168.1.53:8501", language="text")
             st.caption("Connect your phone to the same Wi-Fi network.")
 
-        st.markdown("""
-        * **iPhone (Safari)**: Open link ➔ Tap Share (square with arrow) ➔ tap **Add to Home Screen**.
-        * **Android (Chrome)**: Open link ➔ Tap Menu (⋮) ➔ tap **Install app** or **Add to Home screen**.
-        """)
+        st.markdown(
+            f"""<div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 14px; padding: 12px 16px; margin: 12px 0; display: flex; align-items: center; gap: 14px;">
+              <img src="data:image/png;base64,{icon_b64}" style="width: 54px; height: 54px; border-radius: 14px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28); flex-shrink: 0;" alt="Home Screen Icon"/>
+              <div>
+                <strong style="color: #0F172A; font-size: 0.95rem;">📱 Home Screen App Icon Ready</strong>
+                <div style="font-size: 0.82rem; color: #475569; margin-top: 3px; line-height: 1.45;">
+                  • <b>iOS Safari</b>: Tap <b>Share</b> <span style="font-size: 1.05rem;">⎙</span> ➔ <b>Add to Home Screen</b><br/>
+                  • <b>Android Chrome</b>: Tap <b>Menu (⋮)</b> ➔ <b>Add to Home screen</b> or <b>Install App</b>
+                </div>
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
 
         col_tbtn, col_wifi_sub = st.columns([1.2, 1.5])
         with col_tbtn:
