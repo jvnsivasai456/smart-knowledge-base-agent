@@ -1,11 +1,14 @@
 # Smart knowledge Base Agent
 
+[![Deploy to Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/deploy?repository=jvnsivasai456/smart-knowledge-base-agent&branch=main&mainModule=src/ui/app.py)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/jvnsivasai456/smart-knowledge-base-agent)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.65.0-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io)
 
 A modular, smart document ingestion and retrieval system using Python, FastAPI, Streamlit, and ChromaDB.
+
+> **24/7 Cloud Deployment**: Run this app 24/7 in the cloud without needing your personal laptop turned on by clicking the **Deploy to Streamlit Cloud** badge above.
 
 ## Features
 - **Multi-Format Ingestion**: Supports PDF, DOCX, TXT, and HTML.

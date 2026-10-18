@@ -130,9 +130,32 @@ def get_inprocess_engine():
     from src.embedding import Embedder, VectorStore, MetadataStore
     from src.retrieval import Retriever, AnswerEngine
     settings.create_directories()
+
+    # Auto-seed sample documents if database is fresh (e.g., cloud deployment)
+    sample_dir = os.path.join(PROJECT_ROOT, "sample_docs")
+    if os.path.exists(sample_dir):
+        import shutil
+        for fn in os.listdir(sample_dir):
+            src_f = os.path.join(sample_dir, fn)
+            dst_f = os.path.join(settings.upload_dir, fn)
+            if not os.path.exists(dst_f):
+                try:
+                    shutil.copy2(src_f, dst_f)
+                except Exception:
+                    pass
+
     embedder = Embedder(model_name=settings.embedding_model_name)
     vector_store = VectorStore(persist_directory=settings.chroma_db_dir)
     metadata_store = MetadataStore(db_path=settings.metadata_db_path)
+
+    # Auto-index any unindexed files in upload_dir for instant search readiness
+    try:
+        from src.update_engine import Updater
+        updater = Updater(embedder, vector_store, metadata_store, upload_dir=settings.upload_dir)
+        updater.sync()
+    except Exception:
+        pass
+
     retriever = Retriever(embedder, vector_store)
     answer_engine = AnswerEngine(embedder=embedder)
     return embedder, vector_store, metadata_store, retriever, answer_engine
