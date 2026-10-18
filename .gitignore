@@ -54,3 +54,5 @@ model_cache/
 data/
 cloudflared.exe
 tunnel_url.txt
+app_icon.ico
+app_icon.png
