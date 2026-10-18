@@ -5,9 +5,12 @@
 1. PROJECT REPOSITORY LINK (GITHUB):
    https://github.com/jvnsivasai456/smart-knowledge-base-agent
 
-2. LIVE MOBILE WEB APP LINK:
+2. PERMANENT 24/7 CLOUD WEB APP LINK (WORKS ANYTIME WITHOUT LAPTOP):
+   https://smart-knowledge-base-agent.streamlit.app
+   (Hosted 24/7 on Streamlit Cloud directly from GitHub - accessible worldwide)
+
+   FALLBACK TUNNEL LINK:
    https://hold-associate-shift-pie.trycloudflare.com
-   (Works on mobile cellular data 4G/5G and desktop browsers)
 
 --------------------------------------------------------------------------------
 3. PROJECT DETAILS:
