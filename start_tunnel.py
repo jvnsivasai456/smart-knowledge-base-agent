@@ -38,41 +38,56 @@ def main():
         sys.exit(1)
 
     print("[*] Starting Cloudflare Tunnel for Mobile Network Access...")
-    cmd = [CLOUDFLARED, "tunnel", "--url", "http://127.0.0.1:8501"]
-    
-    proc = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
-        encoding="utf-8",
-        errors="replace"
-    )
 
-    url_found = False
+    # Terminate any stale cloudflared instances
+    if os.name == "nt":
+        try:
+            subprocess.run(["taskkill", "/F", "/IM", "cloudflared.exe"], capture_output=True)
+            time.sleep(1)
+        except Exception:
+            pass
+
+    cmd = [CLOUDFLARED, "tunnel", "--url", "http://127.0.0.1:8501"]
     tunnel_regex = re.compile(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com")
 
-    for line in iter(proc.stdout.readline, ''):
-        line = line.strip()
-        if not line:
-            continue
-        
-        match = tunnel_regex.search(line)
-        if match and not url_found:
-            url = match.group(0)
-            url_found = True
-            with open(URL_FILE, "w", encoding="utf-8") as f:
-                f.write(url)
-            print("=" * 60)
-            print("  [OK] Mobile Network Access Tunnel Active!")
-            print(f"  [OK] Public URL: {url}")
-            print("  [OK] Works on 4G, 5G, and any mobile data network worldwide.")
-            print("=" * 60)
-            generate_qr(url)
-            sys.stdout.flush()
+    while True:
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                encoding="utf-8",
+                errors="replace"
+            )
 
-    proc.wait()
+            url_found = False
+            for line in iter(proc.stdout.readline, ''):
+                line = line.strip()
+                if not line:
+                    continue
+                
+                match = tunnel_regex.search(line)
+                if match and not url_found:
+                    url = match.group(0)
+                    url_found = True
+                    with open(URL_FILE, "w", encoding="utf-8") as f:
+                        f.write(url)
+                    print("=" * 60)
+                    print("  [OK] Mobile Network Access Tunnel Active!")
+                    print(f"  [OK] Public URL: {url}")
+                    print("  [OK] Works on 4G, 5G, and any mobile data network worldwide.")
+                    print("=" * 60)
+                    generate_qr(url)
+                    sys.stdout.flush()
+
+            proc.wait()
+            print("[!] Cloudflare tunnel connection dropped. Reconnecting in 3 seconds...")
+            time.sleep(3)
+        except Exception as e:
+            print(f"[!] Tunnel loop error: {e}. Reconnecting in 5 seconds...")
+            time.sleep(5)
 
 if __name__ == "__main__":
     main()
