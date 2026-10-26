@@ -1,7 +1,20 @@
-import streamlit as st
-import requests
 import os
 import sys
+
+# Linux SQLite compatibility shim for ChromaDB in Streamlit Cloud / containers
+try:
+    __import__("pysqlite3")
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+except Exception:
+    pass
+
+# Ensure repository root is on sys.path regardless of execution working directory
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+import streamlit as st
+import requests
 import subprocess
 import time
 import json
@@ -12,8 +25,8 @@ import urllib.parse
 API_HOST = os.getenv("API_HOST", "http://127.0.0.1:8000")
 
 # App Brand Icon path & Base64
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 HOME_ICON_PATH = os.path.join(PROJECT_ROOT, "src", "ui", "assets", "home_icon.png")
+
 
 def load_or_generate_home_icon() -> tuple[str, str]:
     """Ensure high-resolution Home Screen / PWA icon exists and return path and base64."""

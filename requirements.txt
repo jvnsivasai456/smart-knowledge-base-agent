@@ -15,8 +15,9 @@ requests>=2.31.0
 numpy>=2.0.0
 sentence-transformers>=3.0.0
 
-# Vector Database
+# Vector Database & Linux SQLite Compatibility
 chromadb>=0.5.0
+pysqlite3-binary; sys_platform == 'linux'
 
 # Scheduler
 APScheduler>=3.10.4
