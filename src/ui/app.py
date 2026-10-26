@@ -1176,6 +1176,9 @@ with col_stat:
             <div style="margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; align-items: center;">
               <span class="nlg-pill">{cur_provider_label}</span>
               <span style="font-size: 11px; color: #64748B;">{len(indexed_docs)} docs indexed</span>
+              <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent" target="_blank" style="text-decoration: none; color: #0F172A; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; background: #F1F5F9; border: 1px solid #CBD5E1; padding: 2px 7px; border-radius: 6px;">
+                <svg height="11" width="11" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> GitHub
+              </a>
             </div>
             </div>""",
             unsafe_allow_html=True
@@ -1698,6 +1701,19 @@ with tab_controls:
             unsafe_allow_html=True
         )
 
+        st.markdown(
+            """<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 0.92rem; color: #0F172A;">🐙 GitHub Repository</div>
+                <span style="background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;">Synced 🟢</span>
+              </div>
+              <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+                Repo: <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent" target="_blank" style="color: #2563EB; font-weight: 600; text-decoration: none;">jvnsivasai456/smart-knowledge-base-agent</a> &bull; Branch: <code>main</code>
+              </div>
+            </div>""",
+            unsafe_allow_html=True
+        )
+
     col_btn_start, col_btn_check = st.columns([1.5, 1])
     with col_btn_start:
         if st.button("⚡ Start / Restart Backend Service", use_container_width=True):
@@ -1719,3 +1735,39 @@ with tab_controls:
         </div>""",
         unsafe_allow_html=True
     )
+
+# ----------------------------------------------------
+# GLOBAL BOTTOM FOOTER: GITHUB REPOSITORY & DOWNLOADS
+# ----------------------------------------------------
+st.markdown(
+    """
+    <div style="margin-top: 45px; padding: 26px 20px 22px 20px; border-top: 1px solid #E2E8F0; background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%); border-radius: 16px; text-align: center;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #0F172A; color: #FFFFFF !important; font-weight: 600; font-size: 0.9rem; padding: 9px 18px; border-radius: 9999px; text-decoration: none; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);">
+          <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>GitHub Repository</span>
+          <span style="background: rgba(255,255,255,0.22); font-size: 0.76rem; padding: 2px 8px; border-radius: 9999px; margin-left: 2px;">★ Star</span>
+        </a>
+        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/archive/refs/heads/main.zip" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          ⬇️ Download ZIP
+        </a>
+        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/blob/main/PROJECT_REPORT.md" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          📑 Step-by-Step Report
+        </a>
+        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/issues" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          💬 Issues
+        </a>
+      </div>
+      <div style="font-size: 0.84rem; color: #475569; font-weight: 500;">
+        Smart Knowledge Base Agent &bull; Open-Source AI Project by <a href="https://github.com/jvnsivasai456" target="_blank" style="color: #2563EB; font-weight: 700; text-decoration: none;">@jvnsivasai456</a>
+      </div>
+      <div style="font-size: 0.76rem; color: #94A3B8; margin-top: 6px;">
+        Clone: <code>git clone https://github.com/jvnsivasai456/smart-knowledge-base-agent.git</code>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
