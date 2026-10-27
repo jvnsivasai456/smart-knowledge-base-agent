@@ -53,3 +53,16 @@ def parse_html(url: str) -> tuple[str, str]:
     text = '\n'.join(chunk for chunk in chunks if chunk)
     
     return text, compute_hash(content)
+
+def parse_local_html(file_path: str) -> tuple[str, str]:
+    """Parse a local HTML file."""
+    with open(file_path, 'rb') as f:
+        content = f.read()
+    soup = BeautifulSoup(content, 'html.parser')
+    for script in soup(["script", "style"]):
+        script.extract()
+    text = soup.get_text(separator='\n')
+    lines = (line.strip() for line in text.splitlines())
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+    return text, compute_hash(content)

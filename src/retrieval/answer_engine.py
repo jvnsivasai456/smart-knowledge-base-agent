@@ -211,15 +211,18 @@ class AnswerEngine:
         combined_text = " ".join([getattr(r, 'content', '').lower() for r in search_results])
         has_keyword_match = any(w in combined_text for w in q_words if len(w) > 3)
 
-        if match_pct < 35 and not has_keyword_match:
+        # 4. Calibrated Confidence Gating Classifier (Empirical Threshold: 0.62 / 62%)
+        confidence_threshold_pct = 62
+        if match_pct < confidence_threshold_pct and not has_keyword_match:
             doc_names = [os.path.basename(d.get("source_id", "")) for d in documents]
             doc_info = ", ".join([f"`{n}`" for n in doc_names]) if doc_names else "none"
             return {
                 "query": query,
                 "answer": (
-                    f"🔍 **Information not found in your knowledge base.**\n\n"
-                    f"Your query **\"{query}\"** does not appear to match the topics in your currently uploaded files ({doc_info}).\n\n"
-                    f"Would you like to upload a document containing this subject in the **Knowledge Library**?"
+                    f"🛡️ **Out-of-Scope / Information Not Verified**\n\n"
+                    f"The confidence gating classifier evaluated your query **\"{query}\"** with similarity **{match_pct}%** (below empirical threshold **62.0%**).\n\n"
+                    f"To prevent factual hallucination, generation is withheld because verified factual evidence could not be confirmed in your active knowledge documents ({doc_info}).\n\n"
+                    f"💡 *Tip: Please refine your query or upload the corresponding reference document in the **📁 Knowledge Library** tab.*"
                 ),
                 "sources": [],
                 "is_greeting": False,

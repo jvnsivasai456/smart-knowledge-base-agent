@@ -1,6 +1,6 @@
 import os
 from .document import RawDocument, DocumentMetadata
-from .parsers import parse_txt, parse_pdf, parse_docx, parse_html
+from .parsers import parse_txt, parse_pdf, parse_docx, parse_html, parse_local_html
 
 class Ingestor:
     def ingest_file(self, file_path: str) -> RawDocument:
@@ -9,15 +9,18 @@ class Ingestor:
             raise FileNotFoundError(f"File not found: {file_path}")
             
         ext = os.path.splitext(file_path)[1].lower()
-        if ext == '.txt':
+        if ext in ['.txt', '.md', '.markdown']:
             text, file_hash = parse_txt(file_path)
-            source_type = 'txt'
+            source_type = 'md' if ext in ['.md', '.markdown'] else 'txt'
         elif ext == '.pdf':
             text, file_hash = parse_pdf(file_path)
             source_type = 'pdf'
         elif ext in ['.docx', '.doc']:
             text, file_hash = parse_docx(file_path)
             source_type = 'docx'
+        elif ext in ['.html', '.htm']:
+            text, file_hash = parse_local_html(file_path)
+            source_type = 'html'
         else:
             raise ValueError(f"Unsupported file extension: {ext}")
             

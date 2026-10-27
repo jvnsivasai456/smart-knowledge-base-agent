@@ -26,7 +26,7 @@ class DirectoryScanner:
                 ext = os.path.splitext(file_path)[1].lower()
                 
                 # Only track supported document types
-                if ext in ['.txt', '.pdf', '.docx', '.doc']:
+                if ext in ['.txt', '.pdf', '.docx', '.doc', '.md', '.markdown', '.html', '.htm']:
                     file_hash = compute_file_hash(file_path)
                     current_state[file_path] = file_hash
                     
