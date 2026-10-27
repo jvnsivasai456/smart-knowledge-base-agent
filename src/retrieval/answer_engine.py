@@ -84,7 +84,7 @@ class AnswerEngine:
         else:
             answer = (
                 "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
-                "I explain everything from your uploaded documents in **simple, easy English**!"
+                "I explain everything from your uploaded documents in **simple English**!"
                 f"{doc_list_text}\n\n"
                 "**What you can do:**\n"
                 "- 💬 Ask any question in simple words (e.g., *'What is Vuforia?'* or *'Explain F-test simply'*)\n"
