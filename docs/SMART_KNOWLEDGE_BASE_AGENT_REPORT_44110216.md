@@ -154,9 +154,9 @@ To resolve these challenges, the Smart Knowledge Base Agent implements a 100% of
 | Figure No. | Figure Name | Page No. |
 | :---: | :--- | :---: |
 | **4.1** | System Architecture of Smart Knowledge Base Agent (Five-Tier Local Design) | 25 |
-| **4.2** | Live Web Dashboard & Interactive AI Agent Chat Workspace (Smart Knowledge Base Agent) | 27 |
-| **4.3** | Knowledge Library & Side-by-Side Reading Desk Citation View | 28 |
-| **4.4** | Controls & Settings Administration Panel (FastAPI, ChromaDB & SQLite Health) | 28 |
+| **4.2** | Live Web Dashboard & Interactive AI Agent Chat Workspace (With 1-Click Starter Chips & Search Bar) | 27 |
+| **4.3** | Multi-Topic Document Classification Desk & Dynamic Icon Branding Cards | 28 |
+| **4.4** | Natural Language Engine Configuration & Offline Model Selection Panel | 28 |
 | **5.1** | Quantitative Evaluation Dashboard & Incremental Indexing Benchmark Metrics | 32 |
 
 ---
@@ -433,21 +433,30 @@ Prior to passing retrieved passages to the generative model, the confidence gate
 When a query passes the confidence gate, the orchestrator constructs an augmented system prompt injecting the top-3 fused chunks alongside strict attribution constraints: *"Answer strictly using the provided context. Every statement must cite its source document and page number. Do not extrapolate beyond the context."* The prompt is transmitted over localhost HTTP to LM Studio (`127.0.0.1:1234/v1`), running Google's Gemma 4 E4B model. The FastAPI `/chat` endpoint captures the model's streaming token output and relays it to the browser via Server-Sent Events (SSE), achieving an average Time-to-First-Token (TTFT) of under 450 ms and rendering live token generation velocity counters.
 
 #### 4.3.6 Streamlit Modern Web Dashboard & Interactive AI Agent Chat Workspace
-The client presentation interface delivers a streamlined, ergonomic workspace featuring:
-- **Top Search Bar & Natural Language Input:** Full keyboard navigation with 1-click prompt chips (*"✦ Explain Simply"*, *"✦ Summarize All"*, *"✦ Core Architecture"*, *"✦ Technical Specs"*).
-- **Real-Time Token Streaming:** Dynamic streaming answers synthesized in sub-15ms latency with inline verified attribution citations.
-- **2D Custom Brand Identity:** Clean white modern aesthetic with responsive layout for laptops, tablets, and mobile screens.
+The client presentation interface delivers a streamlined, ergonomic workspace as illustrated in Figure 4.2:
+- **Top Brand Navigation & Operational Metrics:** Real-time health status pills (*"● In-Process Mode Active"*, *"Zero Downtime"*, *"5 docs indexed"*) with direct access across three main workspace tabs: *💬 AI Agent Chat*, *📁 Knowledge Library (5)*, and *🎛️ Controls & Settings*.
+- **Quick-Starter Natural Language Prompt Chips:** Four instant conversational trigger chips (*"✦ Explain Simply"*, *"✦ Summarize All"*, *"✦ F-Test Hypotheses"*, and *"✦ Vuforia & Unity"*) accompanied by a one-click session cleaner.
+- **Centered Conversational Search Bar:** Ergonomic natural language search bar with shift+enter multiline support and immediate query execution.
+- **Global Deployment & Code Repository Footer:** Prominent bottom navigation bar containing direct 1-click buttons for GitHub Star, Code ZIP download, Step-by-Step project report, and issue reporting.
 
-#### 4.3.7 Knowledge Library & Side-by-Side Reading Desk Citation View
-The Knowledge Library tab provides deep visual inspection into all indexed knowledge assets:
-- Multi-format document cards with file type tags (PDF, DOCX, Markdown, HTML), chunk counts, and SHA-256 verification status.
-- Side-by-side reading desk view with highlighted passage overlays indicating the exact character offsets and document pages retrieved by the RAG pipeline.
+#### 4.3.7 Multi-Topic Document Classification Desk & Dynamic Icon Branding
+To organize heterogeneous documentation into intelligible semantic domains, the platform integrates an automated document classification subsystem as shown in Figure 4.3:
+- **Domain Topic Classification Cards:** Automatically categorizes indexed documents into distinct color-coded semantic domains:
+  1. *Statistics & Math:* Covers hypothesis testing, F-distribution calculations, and variance comparisons.
+  2. *Augmented Reality:* Covers Vuforia SDK, camera target tracking, and computer vision runtimes.
+  3. *Game Engine:* Covers Unity game objects, physics scripting, and component hierarchies.
+  4. *Cybersecurity:* Covers intrusion detection systems (IDS), packet analysis, and network defense specifications.
+- **High-Definition Dynamic Iconography:** Contextually assigns unique 3D/2D icons (📊, 🥽, 🎮, 🛡️) to matching document types.
 
-#### 4.3.8 Controls & Settings Administration Panel
-The Controls & Settings administration panel enables real-time system observability:
-- Live service health cards for FastAPI (Port 8000), Streamlit (Port 8501), ChromaDB, and SQLite.
-- One-click service restart and health re-check controls.
-- Zero-Configuration Resilience: Automatically falls back to the embedded in-process RAG engine if external daemons are offline.
+#### 4.3.8 Natural Language Engine Configuration & Offline Model Selection Panel
+The administration tier provides fine-grained control over generative synthesis and retrieval depth as depicted in Figure 4.4:
+- **Multi-Engine Execution Dropdown:** Allows the operator to dynamically toggle between five generative backends:
+  1. *Local NLG (Offline & Private):* 100% offline rule-based natural language generation running on localhost with zero external API dependencies.
+  2. *Google Gemini API:* Multimodal cloud synthesis.
+  3. *Groq (Llama-3.1):* Ultra-fast sub-second LLM inference.
+  4. *OpenAI (GPT-4o):* Advanced reasoning.
+  5. *Local Ollama:* Private self-hosted quantized models.
+- **Precision & Depth Slider:** Configures Top-K chunks to retrieve per query ($k \in [1, 10]$) to balance between contextual breadth and synthesis latency.
 
 ### 4.4 PROJECT MANAGEMENT AND WORK BREAKDOWN STRUCTURE (WBS)
 The development lifecycle spanned an eight-week intensive engineering timeframe structured according to the Work Breakdown Structure below:
