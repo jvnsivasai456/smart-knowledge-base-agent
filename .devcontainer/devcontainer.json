@@ -1,5 +1,5 @@
 {
-  "name": "Smart knowledge Base Agent",
+  "name": "Smart Knowledge Base Agent",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
   "features": {},
   "customizations": {
@@ -22,5 +22,5 @@
     }
   },
   "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
-  "postStartCommand": "nohup python main.py > backend.log 2>&1 & nohup streamlit run src/ui/app.py --server.port 8501 --server.address 0.0.0.0 > frontend.log 2>&1 &"
+  "postStartCommand": "bash start.sh > app.log 2>&1 &"
 }
