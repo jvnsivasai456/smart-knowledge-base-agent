@@ -21,6 +21,57 @@ class NaturalLanguageGenerator:
     def __init__(self, default_provider: str = "local"):
         self.default_provider = default_provider
 
+    def generate_with_metadata(
+        self,
+        query: str,
+        context_chunks: List[str],
+        doc_names: List[str],
+        api_key: Optional[str] = None,
+        provider: Optional[str] = None
+    ) -> tuple[str, str]:
+        """
+        Generate a fluid natural language response and return a tuple of (answer_text, engine_used).
+        Supported engine IDs: 'local', 'gemini', 'groq', 'openai', 'ollama'.
+        """
+        active_provider = (provider or os.getenv("LLM_PROVIDER") or self.default_provider).lower().strip()
+        effective_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
+
+        # 1. Try cloud LLM if configured and key is available
+        if active_provider in ["gemini", "google"] and effective_key:
+            try:
+                response = self._call_gemini(query, context_chunks, doc_names, effective_key)
+                if response:
+                    return response, "gemini"
+            except Exception as e:
+                logger.warning(f"Gemini API call failed, falling back to local NLG: {e}")
+
+        elif active_provider in ["groq"] and effective_key:
+            try:
+                response = self._call_groq(query, context_chunks, doc_names, effective_key)
+                if response:
+                    return response, "groq"
+            except Exception as e:
+                logger.warning(f"Groq API call failed, falling back to local NLG: {e}")
+
+        elif active_provider in ["openai"] and effective_key:
+            try:
+                response = self._call_openai(query, context_chunks, doc_names, effective_key)
+                if response:
+                    return response, "openai"
+            except Exception as e:
+                logger.warning(f"OpenAI API call failed, falling back to local NLG: {e}")
+
+        elif active_provider in ["ollama"]:
+            try:
+                response = self._call_ollama(query, context_chunks, doc_names)
+                if response:
+                    return response, "ollama"
+            except Exception as e:
+                logger.warning(f"Ollama call failed, falling back to local NLG: {e}")
+
+        # 2. Local Natural Language Synthesizer (Zero-API-key / Offline)
+        return self._synthesize_local(query, context_chunks, doc_names), "local"
+
     def generate(
         self,
         query: str,
@@ -32,44 +83,8 @@ class NaturalLanguageGenerator:
         """
         Generate a fluid, articulate natural language response based on the document context.
         """
-        active_provider = (provider or os.getenv("LLM_PROVIDER") or self.default_provider).lower().strip()
-        effective_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
-
-        # 1. Try cloud LLM if configured and key is available
-        if active_provider in ["gemini", "google"] and effective_key:
-            try:
-                response = self._call_gemini(query, context_chunks, doc_names, effective_key)
-                if response:
-                    return response
-            except Exception as e:
-                logger.warning(f"Gemini API call failed, falling back to local NLG: {e}")
-
-        elif active_provider in ["groq"] and effective_key:
-            try:
-                response = self._call_groq(query, context_chunks, doc_names, effective_key)
-                if response:
-                    return response
-            except Exception as e:
-                logger.warning(f"Groq API call failed, falling back to local NLG: {e}")
-
-        elif active_provider in ["openai"] and effective_key:
-            try:
-                response = self._call_openai(query, context_chunks, doc_names, effective_key)
-                if response:
-                    return response
-            except Exception as e:
-                logger.warning(f"OpenAI API call failed, falling back to local NLG: {e}")
-
-        elif active_provider in ["ollama"]:
-            try:
-                response = self._call_ollama(query, context_chunks, doc_names)
-                if response:
-                    return response
-            except Exception as e:
-                logger.warning(f"Ollama call failed, falling back to local NLG: {e}")
-
-        # 2. Local Natural Language Synthesizer (Zero-API-key / Offline)
-        return self._synthesize_local(query, context_chunks, doc_names)
+        ans, _ = self.generate_with_metadata(query, context_chunks, doc_names, api_key, provider)
+        return ans
 
     # -------------------------------------------------------------
     # CLOUD / LOCAL LLM REST CLIENTS (Zero external dependencies)

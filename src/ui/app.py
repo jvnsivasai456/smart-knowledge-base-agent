@@ -200,8 +200,9 @@ def get_resilient_documents(is_api_alive: bool) -> list:
     except Exception:
         return []
 
-def execute_resilient_chat(active_prompt: str, search_depth: int, provider: str, api_key: str, is_api_alive: bool) -> tuple[str, list, str]:
+def execute_resilient_chat(active_prompt: str, search_depth: int, provider: str, api_key: str, is_api_alive: bool) -> tuple[str, list, str, str]:
     """Execute query via HTTP API or in-process engine seamlessly."""
+    effective_provider = provider or "local"
     if is_api_alive:
         try:
             chat_res = requests.post(
@@ -210,13 +211,14 @@ def execute_resilient_chat(active_prompt: str, search_depth: int, provider: str,
                     "query": active_prompt,
                     "top_k": search_depth,
                     "api_key": api_key,
-                    "provider": provider
+                    "provider": effective_provider
                 },
                 timeout=35
             )
             if chat_res.status_code == 200:
                 data = chat_res.json()
-                return data.get("answer", ""), data.get("sources", []), "API"
+                engine_used = data.get("engine", effective_provider)
+                return data.get("answer", ""), data.get("sources", []), "API", engine_used
         except Exception:
             pass  # Fall through to in-process execution
 
@@ -226,7 +228,7 @@ def execute_resilient_chat(active_prompt: str, search_depth: int, provider: str,
         docs = metadata_store.get_all_files()
         if answer_engine.is_greeting_or_meta(active_prompt):
             ans_dict = answer_engine.handle_greeting(active_prompt, docs)
-            return ans_dict.get("answer", ""), ans_dict.get("sources", []), "In-Process"
+            return ans_dict.get("answer", ""), ans_dict.get("sources", []), "In-Process", ans_dict.get("engine", "local")
         
         search_resp = retriever.search(active_prompt, top_k=search_depth)
         ans_dict = answer_engine.synthesize(
@@ -234,11 +236,11 @@ def execute_resilient_chat(active_prompt: str, search_depth: int, provider: str,
             search_resp.results,
             docs,
             api_key=api_key,
-            provider=provider
+            provider=effective_provider
         )
-        return ans_dict.get("answer", ""), ans_dict.get("sources", []), "In-Process"
+        return ans_dict.get("answer", ""), ans_dict.get("sources", []), "In-Process", ans_dict.get("engine", effective_provider)
     except Exception as err:
-        return f"⚠️ Resilient query execution encountered an issue: {str(err)}", [], "Error"
+        return f"⚠️ Resilient query execution encountered an issue: {str(err)}", [], "Error", "local"
 
 def ingest_resilient(file_name: str, file_bytes: bytes, is_api_alive: bool) -> bool:
     """Ingest file through API or in-process pipeline."""
@@ -815,6 +817,38 @@ div[data-testid="stChatInput"]::after {
     color: #B91C1C !important;
 }
 
+/* AI Answer Engine Switcher Buttons */
+.engine-bar-container {
+    margin-bottom: 0.65rem;
+}
+.engine-bar-container button {
+    border-radius: 12px !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    padding: 6px 8px !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    transition: all 0.2s ease !important;
+}
+.engine-bar-container button[kind="primary"] {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+}
+.engine-bar-container button[kind="secondary"] {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    color: #334155 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+.engine-bar-container button[kind="secondary"]:hover {
+    background: #F1F5F9 !important;
+    border-color: #94A3B8 !important;
+    color: #0F172A !important;
+    transform: translateY(-1px) !important;
+}
+
 /* Gemini Grounding Disclaimer */
 .gemini-disclaimer {
     text-align: center;
@@ -1209,7 +1243,149 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # ====================================================
 with tab_chat:
     # ---------------------------------------------------------
-    # QUICK PROMPT CHIPS & ACTIONS (AT TOP)
+    # 🧠 AI ANSWER ENGINES BAR FOR SEARCH
+    # ---------------------------------------------------------
+    engine_catalog = {
+        "local": {
+            "name": "Local NLG",
+            "icon": "⚡",
+            "badge": "100% Offline",
+            "desc": "Built-in, zero-setup, private in-memory natural language synthesis.",
+            "status_text": "🟢 100% Offline & Private (Zero Key Required)",
+            "placeholder": "✦ Search with Local NLG Engine across your documents (Offline & Grounded)...",
+            "badge_color": "#059669",
+            "badge_bg": "rgba(5, 150, 105, 0.1)"
+        },
+        "gemini": {
+            "name": "Google Gemini",
+            "icon": "🌟",
+            "badge": "Gemini AI",
+            "desc": "Google Gemini-1.5-Flash / 2.0-Flash REST API.",
+            "status_text": "🌟 Google Gemini API (gemini-1.5-flash / gemini-2.0-flash)",
+            "placeholder": "✦ Search with Google Gemini AI across your documents (Fast & Smart)...",
+            "badge_color": "#2563EB",
+            "badge_bg": "rgba(37, 99, 235, 0.1)"
+        },
+        "groq": {
+            "name": "Groq Llama-3",
+            "icon": "🚀",
+            "badge": "Ultra-Fast LPU",
+            "desc": "Groq LPU high-speed inference running Llama-3.1-8B-Instant.",
+            "status_text": "🚀 Groq LPUs (Sub-second Llama-3.1-8B-Instant inference)",
+            "placeholder": "✦ Search with Groq Llama-3.1 Engine across your documents (Ultra-Fast)...",
+            "badge_color": "#D97706",
+            "badge_bg": "rgba(217, 119, 6, 0.1)"
+        },
+        "openai": {
+            "name": "OpenAI GPT-4o",
+            "icon": "🤖",
+            "badge": "GPT-4o Mini",
+            "desc": "OpenAI GPT-4o / GPT-4o-mini REST API.",
+            "status_text": "🤖 OpenAI GPT-4o (High-reasoning semantic synthesis)",
+            "placeholder": "✦ Search with OpenAI GPT-4o Engine across your documents...",
+            "badge_color": "#7C3AED",
+            "badge_bg": "rgba(124, 58, 237, 0.1)"
+        },
+        "ollama": {
+            "name": "Local Ollama",
+            "icon": "💻",
+            "badge": "Localhost",
+            "desc": "Local Ollama daemon running on http://localhost:11434.",
+            "status_text": "💻 Local Ollama (Local Daemon on Port 11434)",
+            "placeholder": "✦ Search with Local Ollama Engine across your documents (Private & Local)...",
+            "badge_color": "#0284C7",
+            "badge_bg": "rgba(2, 132, 199, 0.1)"
+        }
+    }
+
+    cur_provider = st.session_state.get("llm_provider", "local")
+
+    # Engine Selection Header & Buttons
+    st.markdown("""
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <div style="font-size: 0.90rem; font-weight: 750; color: #1E293B; display: flex; align-items: center; gap: 8px;">
+            <span>🧠 AI Answer Engines for Search</span>
+            <span style="font-size: 0.70rem; background: #EEF2FF; color: #4F46E5; padding: 2px 8px; border-radius: 9999px; font-weight: 600; border: 1px solid #C7D2FE;">Multi-Engine Active</span>
+        </div>
+        <div style="font-size: 0.76rem; color: #64748B;">
+            Instant Engine Switch &bull; Hybrid Okapi BM25 + Dense RRF Search
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="engine-bar-container">', unsafe_allow_html=True)
+    col_e1, col_e2, col_e3, col_e4, col_e5 = st.columns(5)
+    engine_list = ["local", "gemini", "groq", "openai", "ollama"]
+    for col, e_key in zip([col_e1, col_e2, col_e3, col_e4, col_e5], engine_list):
+        cfg = engine_catalog[e_key]
+        with col:
+            is_active = (cur_provider == e_key)
+            btn_title = f"{cfg['icon']} {cfg['name']}" + (" ✓" if is_active else "")
+            btn_kind = "primary" if is_active else "secondary"
+            if st.button(btn_title, key=f"sel_eng_{e_key}", use_container_width=True, type=btn_kind, help=cfg["desc"]):
+                st.session_state["llm_provider"] = e_key
+                st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Active Engine Status & Quick API Key Configurator
+    if cur_provider == "local":
+        st.markdown("""
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 6px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.80rem;">
+            <div>
+                <strong style="color: #059669;">⚡ Active Engine: Local NLG</strong> &bull; 
+                <span style="color: #334155;">100% offline, zero-API-key in-process natural language synthesis</span>
+            </div>
+            <span style="background: #10B981; color: white; border-radius: 9999px; padding: 1px 8px; font-size: 0.70rem; font-weight: 700;">100% OFFLINE</span>
+        </div>
+        """, unsafe_allow_html=True)
+    elif cur_provider in ["gemini", "groq", "openai"]:
+        engine_details = {
+            "gemini": ("Google Gemini API", "gemini-1.5-flash / gemini-2.0-flash", os.getenv("GEMINI_API_KEY")),
+            "groq": ("Groq LPUs", "llama-3.1-8b-instant", os.getenv("GROQ_API_KEY")),
+            "openai": ("OpenAI API", "gpt-4o-mini", os.getenv("OPENAI_API_KEY"))
+        }
+        eng_name, eng_model, eng_env = engine_details[cur_provider]
+        current_key = st.session_state.get("llm_api_key", "") or eng_env or ""
+        key_color = "#059669" if current_key else "#D97706"
+        key_status_label = "API Key Active" if current_key else "Key Optional (Falls back to Local NLG)"
+        
+        col_status_left, col_status_right = st.columns([2.5, 1.5])
+        with col_status_left:
+            st.markdown(f"""
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 6px 12px; margin-bottom: 8px; font-size: 0.80rem; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #2563EB;">{eng_name}</strong> &bull; <code style="font-size: 0.74rem;">{eng_model}</code>
+                </div>
+                <span style="color: {key_color}; font-weight: 700; font-size: 0.72rem;">● {key_status_label}</span>
+            </div>
+            """, unsafe_allow_html=True)
+        with col_status_right:
+            with st.expander(f"🔑 Configure {eng_name} Key", expanded=False):
+                entered_key = st.text_input(
+                    f"{eng_name} Key:",
+                    value=st.session_state.get("llm_api_key", ""),
+                    type="password",
+                    placeholder="Enter API key...",
+                    key="tab1_engine_key_input",
+                    label_visibility="collapsed",
+                    help="Session API key. If left blank, queries smoothly use the built-in Local NLG engine."
+                )
+                if entered_key != st.session_state.get("llm_api_key", ""):
+                    st.session_state["llm_api_key"] = entered_key
+                    st.rerun()
+    elif cur_provider == "ollama":
+        st.markdown("""
+        <div style="background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.25); border-radius: 10px; padding: 6px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.80rem;">
+            <div>
+                <strong style="color: #0284C7;">💻 Active Engine: Local Ollama</strong> &bull; 
+                <span style="color: #334155;">Connecting to <code>http://localhost:11434/api/generate</code> (Llama-3 / Mistral)</span>
+            </div>
+            <span style="background: #0284C7; color: white; border-radius: 9999px; padding: 1px 8px; font-size: 0.70rem; font-weight: 700;">PORT 11434</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ---------------------------------------------------------
+    # QUICK PROMPT CHIPS & ACTIONS (BELOW ENGINE SWITCHER)
     # ---------------------------------------------------------
     st.markdown('<div class="gemini-chips-container">', unsafe_allow_html=True)
     col_chip1, col_chip2, col_chip3, col_chip4, col_clear = st.columns([1, 1, 1, 1, 0.55])
@@ -1242,12 +1418,13 @@ with tab_chat:
                     "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
                     "Ask any question in the search bar below or tap one of the quick starter chips above to explore your knowledge library in natural language!"
                 ),
-                "sources": []
+                "sources": [],
+                "engine": "local"
             }
         ]
 
     # ---------------------------------------------------------
-    # RENDER CONVERSATION MESSAGES & ANSWERS (AT TOP)
+    # RENDER CONVERSATION MESSAGES & ANSWERS
     # ---------------------------------------------------------
     USER_AVATAR = ":material/person:"
     ASSISTANT_AVATAR = ":material/auto_awesome:"
@@ -1256,6 +1433,16 @@ with tab_chat:
         role = msg.get("role", "assistant")
         avatar_val = ASSISTANT_AVATAR if role == "assistant" else USER_AVATAR
         with st.chat_message(role, avatar=avatar_val):
+            # Engine attribution badge
+            engine_used = msg.get("engine")
+            if role == "assistant" and engine_used and engine_used in engine_catalog:
+                ecfg = engine_catalog[engine_used]
+                st.markdown(
+                    f"""<div style="display: inline-flex; align-items: center; gap: 6px; background: {ecfg['badge_bg']}; border: 1px solid {ecfg['badge_color']}40; border-radius: 9999px; padding: 2px 10px; margin-bottom: 8px; font-size: 0.74rem; font-weight: 600; color: {ecfg['badge_color']};">
+                        <span>{ecfg['icon']} Answered by {ecfg['name']} Engine</span> &bull; <span style="opacity: 0.85;">{ecfg['badge']}</span>
+                    </div>""",
+                    unsafe_allow_html=True
+                )
             st.markdown(msg["content"])
             
             # Source Citations Card with Unique Document Symbols
@@ -1280,9 +1467,10 @@ with tab_chat:
                         st.info(src.get("content", ""))
 
     # ---------------------------------------------------------
-    # PINNED BOTTOM SEARCH BAR (SCREENSHOT 2 PLACEMENT)
+    # DYNAMIC SEARCH INPUT BAR POWERED BY ACTIVE ENGINE
     # ---------------------------------------------------------
-    user_query = st.chat_input("✦ Ask Gemini anything about your documents...")
+    current_engine_cfg = engine_catalog.get(cur_provider, engine_catalog["local"])
+    user_query = st.chat_input(current_engine_cfg["placeholder"])
     active_prompt = quick_prompt if quick_prompt else user_query
 
     if active_prompt:
@@ -1291,13 +1479,13 @@ with tab_chat:
             st.markdown(active_prompt)
 
         with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
-            with st.spinner("Smart Agent synthesizing answer..."):
+            with st.spinner(f"Synthesizing answer with {current_engine_cfg['name']}..."):
                 try:
                     search_depth = st.session_state.get("top_k", 4)
                     cur_prov = st.session_state.get("llm_provider", "local")
                     cur_key = st.session_state.get("llm_api_key", "")
 
-                    answer_text, sources, exec_mode = execute_resilient_chat(
+                    answer_text, sources, exec_mode, actual_engine = execute_resilient_chat(
                         active_prompt=active_prompt,
                         search_depth=search_depth,
                         provider=cur_prov,
@@ -1305,6 +1493,14 @@ with tab_chat:
                         is_api_alive=api_healthy
                     )
                     
+                    # Display engine badge
+                    ecfg = engine_catalog.get(actual_engine, engine_catalog["local"])
+                    st.markdown(
+                        f"""<div style="display: inline-flex; align-items: center; gap: 6px; background: {ecfg['badge_bg']}; border: 1px solid {ecfg['badge_color']}40; border-radius: 9999px; padding: 2px 10px; margin-bottom: 8px; font-size: 0.74rem; font-weight: 600; color: {ecfg['badge_color']};">
+                            <span>{ecfg['icon']} Answered by {ecfg['name']} Engine</span> &bull; <span style="opacity: 0.85;">{ecfg['badge']}</span>
+                        </div>""",
+                        unsafe_allow_html=True
+                    )
                     st.markdown(answer_text)
                     
                     if sources:
@@ -1329,12 +1525,13 @@ with tab_chat:
                     st.session_state.messages.append({
                         "role": "assistant",
                         "content": answer_text,
-                        "sources": sources
+                        "sources": sources,
+                        "engine": actual_engine
                     })
                 except Exception as e:
                     err = f"⚠️ Error: {str(e)}"
                     st.error(err)
-                    st.session_state.messages.append({"role": "assistant", "content": err})
+                    st.session_state.messages.append({"role": "assistant", "content": err, "engine": "local"})
         st.rerun()
 
     # Smooth auto-scroll anchor to follow input bar as it moves down
@@ -1520,13 +1717,18 @@ with tab_controls:
             "openai": "🤖 OpenAI (GPT-4o)",
             "ollama": "💻 Local Ollama"
         }
+        curr_prov = st.session_state.get("llm_provider", "local")
+        curr_idx = provider_options.index(curr_prov) if curr_prov in provider_options else 0
         selected_prov = st.selectbox(
             "AI Natural Language Model:",
             options=provider_options,
             format_func=lambda x: provider_format[x],
-            index=provider_options.index(st.session_state.get("llm_provider", "local"))
+            index=curr_idx,
+            key="tab3_provider_selector"
         )
-        st.session_state["llm_provider"] = selected_prov
+        if selected_prov != st.session_state.get("llm_provider"):
+            st.session_state["llm_provider"] = selected_prov
+            st.rerun()
 
     with col_prov2:
         if selected_prov in ["gemini", "groq", "openai"]:
@@ -1535,9 +1737,12 @@ with tab_controls:
                 key_label,
                 type="password",
                 value=st.session_state.get("llm_api_key", ""),
+                key="tab3_api_key_input",
                 help="Optional. Leave blank to automatically use the built-in Local Natural Language engine."
             )
-            st.session_state["llm_api_key"] = api_key_input
+            if api_key_input != st.session_state.get("llm_api_key", ""):
+                st.session_state["llm_api_key"] = api_key_input
+                st.rerun()
         else:
             st.info("💡 **Local NLG Active:** Operates 100% offline with zero external API keys needed. All synthesis happens locally on your computer.")
 

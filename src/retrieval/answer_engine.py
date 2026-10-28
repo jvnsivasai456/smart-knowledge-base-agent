@@ -233,7 +233,7 @@ class AnswerEngine:
         chunk_texts = [getattr(r, 'content', '') for r in search_results]
         source_names = list({os.path.basename(getattr(r, 'source_id', 'Document')) for r in search_results})
         
-        nl_answer = self.nlg.generate(
+        nl_answer, actual_engine = self.nlg.generate_with_metadata(
             query=query,
             context_chunks=chunk_texts,
             doc_names=source_names,
@@ -272,5 +272,6 @@ class AnswerEngine:
             "answer": full_answer,
             "sources": sources_data,
             "is_greeting": False,
-            "confidence": float(match_pct / 100.0)
+            "confidence": float(match_pct / 100.0),
+            "engine": actual_engine
         }
