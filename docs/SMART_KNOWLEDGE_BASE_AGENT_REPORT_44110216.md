@@ -372,37 +372,38 @@ The system architecture cleanly connects five key local modules:
 5. **Confidence-Gated Answer Synthesis:** Fuses rank candidates via RRF, gates queries at 0.62 similarity threshold, and prompts local foundation models (Gemma 4 E4B) via LM Studio.
 
 ```text
-========================================================================================
-                          1. PRESENTATION TIER: USER INTERFACE
-      Streamlit Modern Web Dashboard  •  Mobile PWA & Touch  •  Zero Downtime Fallback
-      [ 💬 AI Agent Chat (Top Search) ]   [ 📁 Knowledge Library ]   [ 🎛️ Controls ]
-========================================================================================
-                                      │  ▲
-              HTTP REST & Streaming   │  │  (/upload, /search, /chat)
-                                      ▼  │
-========================================================================================
-                       2. API GATEWAY & APPLICATION SERVER
-               FastAPI Asynchronous Backend Engine (Port 8000 on localhost)
-========================================================================================
-                                      │
-                                      ▼
-========================================================================================
-                         3. CORE DUAL HYBRID RAG ENGINE
- ┌──────────────────────────┬──────────────────────────┬───────────────────────────────┐
- │ 3A. Ingestion & Watchdog │ 3B. Hybrid Dual Search   │ 3C. Synthesis & Confidence    │
- │ • PDF, DOCX, TXT, HTML   │ • ChromaDB Dense Vectors │ • Cosine Threshold Gate (0.62)│
- │ • 800/120 Sliding Chunks │ • Okapi BM25 Lexical     │ • 95.0% Hallucination Intercept│
- │ • SHA-256 Hash Differ    │ • RRF Formula: 1/(60+r)  │ • Local Gemma 4 E4B / Fallback│
- └──────────────────────────┴──────────────────────────┴───────────────────────────────┘
-                                      │
-                                      ▼
-========================================================================================
-                4. LOCAL DATA PERSISTENCE TIER (100% OFFLINE STORAGE)
- ┌──────────────────────────┬──────────────────────────┬───────────────────────────────┐
- │ 📁 sample_docs/ Directory│ 🧠 ChromaDB Vector Store │ 📋 SQLite Metadata Database   │
- │ Raw files & live watcher │ Persistent HNSW Index    │ Hashes, Offsets & Logs Ledger │
- └──────────────────────────┴──────────────────────────┴───────────────────────────────┘
-========================================================================================
+==================================================================================================
+                      FIG 4.1: SYSTEM ARCHITECTURE OF SMART KNOWLEDGE BASE AGENT
+==================================================================================================
+                                    ┌────────────────────────┐
+                                    │     User Interface     │
+                                    │ (Streamlit Web App /   │
+                                    │ Mobile PWA / Desktop)  │
+                                    └───────────┬──▲─────────┘
+                                                │  │ HTTP REST / Streaming
+                                    ┌───────────▼──┴─────────┐
+                                    │ FastAPI Backend Server │
+                                    │ (/upload, /search,     │
+                                    │  /chat, /documents)    │
+                                    └────┬───────┬───────┬───┘
+                 ┌───────────────────────┘       │       └────────────────────────┐
+                 ▼                               ▼                                ▼
+     ┌──────────────────────┐        ┌──────────────────────┐        ┌──────────────────────┐
+     │  Document Ingestion  │        │ Embedding Generator  │◄───────┤    Answer Engine     │
+     │   & Text Chunker     ├───────►│(SentenceTransformer  │        │ (Local NLG Fallback /│
+     │(PDF, DOCX, TXT, HTML)│        │   all-MiniLM-L6-v2)  │        │  Gemini, Groq, OAI)  │
+     └──────────▲───────────┘        └───────────┬──────────┘        └──────┬────────────┬──┘
+                │                                │                          │            │
+                ▼                                ▼                          │            │
+     ┌──────────────────────┐        ┌──────────────────────┐               │            │
+     │ Background Scheduler │        │ ChromaDB Vector Store│◄──────────────┘            │
+     │    (APScheduler)     │        │(384-D Dense Vectors  │                            ▼
+     │File Scan & SHA256Diff│        │      HNSW Index)     │                 ┌──────────────────────┐
+     └──────────────────────┘        └──────────────────────┘                 │   SQLite Database    │
+                                                                              │(File Hashes, Paths & │
+                                                                              │  Metadata Registry)  │
+                                                                              └──────────────────────┘
+==================================================================================================
 ```
 <div align="center"><b>Fig 4.1: System Architecture of Smart Knowledge Base Agent (Five-Tier Local Design)</b></div>
 

@@ -11,7 +11,6 @@ A modular, smart document ingestion and retrieval system using Python, FastAPI, 
 > **24/7 Cloud Deployment**: Run this app 24/7 in the cloud without needing your personal laptop turned on by clicking the **Deploy to Streamlit Cloud** badge above.
 
 ## Features
-- **Multi-Engine AI Search**: Interactive AI Answer Engine bar directly on the search interface supporting 5 answer engines: `⚡ Local NLG` (100% offline & private), `🌟 Google Gemini API`, `🚀 Groq (Llama-3.1 LPUs)`, `🤖 OpenAI (GPT-4o)`, and `💻 Local Ollama`.
 - **Hybrid Retrieval**: Combines Okapi BM25 keyword matching and dense vector embeddings fused via Reciprocal Rank Fusion ($k=60$) with a 62% confidence gate.
 - **Multi-Format Ingestion**: Supports PDF, DOCX, TXT, and HTML.
 - **Smart Chunking**: Overlapping context-aware chunks.
