@@ -1392,8 +1392,8 @@ with tab_chat:
     quick_prompt = None
 
     with col_chip1:
-        if st.button("✦ Explain Simply", use_container_width=True):
-            quick_prompt = "Explain the core concepts and topics in my documents in simple, everyday English."
+        if st.button("✦ Explain Concepts", use_container_width=True):
+            quick_prompt = "Provide a comprehensive, structured explanation of the core technical concepts and architectures in my documents."
     with col_chip2:
         if st.button("✦ Summarize All", use_container_width=True):
             quick_prompt = "Provide a comprehensive executive summary of the main points across the uploaded documents."

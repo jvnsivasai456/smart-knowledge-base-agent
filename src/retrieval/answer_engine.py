@@ -78,16 +78,16 @@ class AnswerEngine:
 
         q_clean = re.sub(r'[^\w\s]', '', query.lower().strip())
         if any(w in q_clean for w in ["thanks", "thank you", "thx", "great", "awesome", "cool"]):
-            answer = "😊 **You're very welcome!**\n\nAsk me any other question about your documents in simple English anytime!"
+            answer = "😊 **You're very welcome!**\n\nAsk me any question about your documents anytime!"
         elif any(w in q_clean for w in ["bye", "goodbye"]):
             answer = "👋 **Goodbye!** Have a wonderful day!"
         else:
             answer = (
                 "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
-                "I explain everything from your uploaded documents in **simple English**!"
+                "I analyze and synthesize accurate answers grounded directly in your uploaded technical documentation."
                 f"{doc_list_text}\n\n"
                 "**What you can do:**\n"
-                "- 💬 Ask any question in simple words (e.g., *'What is Vuforia?'* or *'Explain F-test simply'*)\n"
+                "- 💬 Ask technical inquiries regarding concepts, architectures, or calculations (e.g., *'What is Vuforia?'* or *'Formulate the F-test hypotheses'*)\n"
                 "- 📋 Ask me to summarize your documents\n"
                 "- 📁 Upload more documents anytime"
             )

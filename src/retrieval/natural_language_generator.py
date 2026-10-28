@@ -93,19 +93,19 @@ class NaturalLanguageGenerator:
         docs_str = ", ".join([f"`{d}`" for d in doc_names]) if doc_names else "indexed files"
         context_str = "\n\n---\n\n".join(context_chunks)
         return (
-            f"You are the Smart Knowledge Base Assistant. Your top goal is to explain things in VERY SIMPLE, CLEAR, AND EASY-TO-UNDERSTAND ENGLISH.\n"
+            f"You are the Smart Knowledge Base Assistant. Your goal is to deliver clear, precise, professional, and well-structured technical answers.\n"
             f"Answer the user's question accurately based ONLY on the following document context from {docs_str}.\n\n"
-            f"Guidelines for Simple English:\n"
-            f"- Always use simple, everyday English words. Avoid complicated, hard vocabulary and heavy academic jargon.\n"
-            f"- Keep sentences short, direct, and conversational (like explaining to a beginner or friend).\n"
-            f"- Break down complex points into clear, easy-to-read bullet points.\n"
-            f"- Start with a quick one-sentence simple explanation ('In simple words: ...').\n"
-            f"- If math formulas or technical terms appear, clearly explain what they mean in plain words.\n"
-            f"- Do not copy raw test numbers (like '1.', '2 Mark Answers') or disjointed fragments.\n"
-            f"- If the answer is not in the context, politely say: 'I could not find that information in your uploaded documents.'\n\n"
+            f"Response Guidelines:\n"
+            f"- Maintain a professional, academic, and articulate tone suitable for technical analysis.\n"
+            f"- Ground all explanations strictly in the provided document context with high factual accuracy.\n"
+            f"- Structure complex topics with clear headings, organized bullet points, and systematic breakdowns.\n"
+            f"- Begin with a concise, direct executive summary statement addressing the query.\n"
+            f"- When mathematical formulations, statistical tests, or technical architectures appear, provide formal definitions and contextual significance.\n"
+            f"- Exclude raw exam question numbers (such as '1.', '2 Mark Answers') and disjointed fragments.\n"
+            f"- If the requested information is absent from the provided context, state: 'The specified information is not available in the indexed document repository.'\n\n"
             f"DOCUMENT CONTEXT:\n{context_str}\n\n"
             f"USER QUESTION: {query}\n\n"
-            f"SIMPLE ENGLISH ANSWER:"
+            f"ANSWER:"
         )
 
     def _call_gemini(self, query: str, context_chunks: List[str], doc_names: List[str], api_key: str) -> Optional[str]:
@@ -215,57 +215,57 @@ class NaturalLanguageGenerator:
         return self._synthesize_definitions_and_concepts(q_lower, combined, doc_str)
 
     def _synthesize_ftest(self, q_lower: str, text: str, doc_str: str) -> str:
-        """Generate a simple, plain English explanation for F-test queries."""
+        """Generate a structured, rigorous technical explanation for F-test queries."""
         out = []
-        out.append("In simple words: An **F-test** is a math check used to compare two groups and see if their spread (variance) is equal or different.")
+        out.append("An **F-test** is a statistical hypothesis test used to evaluate whether the variances of two independent populations or sample sets are equal.")
         
         # Check if user asked about hypotheses
         if "null" in q_lower or "alternative" in q_lower or "hypothesis" in q_lower or "hypotheses" in q_lower:
-            out.append("\n### 🎯 The Two Hypotheses (In Simple English):")
-            out.append("* **Null Hypothesis ($H_0$):**\n  $$H_0 : \\sigma_1^2 = \\sigma_2^2$$\n  *What it means:* Both groups have the **same spread** (no real difference).")
-            out.append("* **Alternative Hypothesis ($H_1$):**\n  $$H_1 : \\sigma_1^2 \\neq \\sigma_2^2$$\n  *What it means:* The two groups have **different spread**.")
-            out.append("* **Test Type:** It is a **two-tailed test** because we check for any difference ($\\neq$) at the 5% level.")
+            out.append("\n### 🎯 Formal Hypothesis Formulation:")
+            out.append("* **Null Hypothesis ($H_0$):**\n  $$H_0 : \\sigma_1^2 = \\sigma_2^2$$\n  *Interpretation:* Both populations possess identical variances ($\\sigma_1^2 = \\sigma_2^2$).")
+            out.append("* **Alternative Hypothesis ($H_1$):**\n  $$H_1 : \\sigma_1^2 \\neq \\sigma_2^2$$\n  *Interpretation:* The variances of the two populations differ significantly ($\\sigma_1^2 \\neq \\sigma_2^2$).")
+            out.append("* **Test Type:** Two-tailed test evaluated at the standard $\\alpha = 0.05$ significance level.")
 
         # Check if user asked about calculation or decision
         if any(w in q_lower for w in ["calculate", "f-statistic", "statistic", "degrees of freedom", "critical", "decision", "conclusion", "solution", "solve"]):
-            out.append("\n### 🔢 Easy Step-by-Step Calculation:")
-            out.append("1. **Find Variances:**\n   - Group 1 spread: $s_1 = 8 \\implies s_1^2 = 64$ (from $15$ items)\n   - Group 2 spread: $s_2 = 5 \\implies s_2^2 = 25$ (from $12$ items)\n   *(Put the bigger number on top)*")
-            out.append("2. **Divide to Get F-Value:**\n   $$F = \\frac{64}{25} = 2.56$$")
-            out.append("3. **Degrees of Freedom ($df$):**\n   - Top group: $15 - 1 = 14$\n   - Bottom group: $12 - 1 = 11$")
-            out.append("4. **Cutoff Value from Table ($F_{\\text{crit}}$):**\n   The cutoff value is **$3.36$**.")
-            out.append("5. **Simple Final Decision:**\n   Since our calculated value ($2.56$) is **smaller than** the cutoff ($3.36$), we **accept** that both groups have equal spread. There is no significant difference.")
+            out.append("\n### 🔢 Step-by-Step Statistical Calculation:")
+            out.append("1. **Calculate Sample Variances:**\n   - Sample 1: $s_1 = 8 \\implies s_1^2 = 64$ ($n_1 = 15$)\n   - Sample 2: $s_2 = 5 \\implies s_2^2 = 25$ ($n_2 = 12$)\n   *(Assign the larger sample variance to the numerator)*")
+            out.append("2. **Compute the F-Statistic:**\n   $$F = \\frac{s_1^2}{s_2^2} = \\frac{64}{25} = 2.56$$")
+            out.append("3. **Determine Degrees of Freedom ($df$):**\n   - Numerator: $df_1 = n_1 - 1 = 15 - 1 = 14$\n   - Denominator: $df_2 = n_2 - 1 = 12 - 1 = 11$")
+            out.append("4. **Critical Value from F-Distribution Table ($F_{\\text{crit}}$):**\n   At $\\alpha = 0.05$, $F_{0.05}(14, 11) = \\mathbf{3.36}$.")
+            out.append("5. **Statistical Decision & Inference:**\n   Since the computed test statistic ($F = 2.56$) is strictly less than the critical threshold ($F_{\\text{crit}} = 3.36$), we **fail to reject (accept)** the null hypothesis $H_0$. There is no statistically significant difference between the two population variances.")
 
         return "\n\n".join(out)
 
     def _synthesize_lifecycle_methods(self, text: str) -> str:
-        """Simple English comparison of Unity script methods."""
+        """Comparative analysis of Unity MonoBehaviour script execution lifecycle methods."""
         return (
-            "Here is how scripts run in Unity, explained in simple English:\n\n"
-            "### 🔄 Unity Method Differences:\n"
-            "* **`Awake()`:** Runs **first**, the exact moment the object is loaded into the game. Use it to set up basic variables.\n"
-            "* **`Start()`:** Runs **second**, right before the game begins showing on screen. Use it to connect with other objects.\n"
-            "* **`Update()`:** Runs **continuously on every single frame** (like 60 times a second). Use it for player movement and keyboard inputs."
+            "The Unity MonoBehaviour runtime lifecycle executes initialization and update callbacks in a deterministic order:\n\n"
+            "### 🔄 Lifecycle Method Specifications:\n"
+            "* **`Awake()`:** Invoked **first** upon GameObject instantiation or scene loading, prior to any `Start` invocation. Utilized for internal state initialization and component referencing.\n"
+            "* **`Start()`:** Invoked on the frame when the script is enabled, just before any `Update` callbacks. Utilized for cross-object dependencies and external data acquisition.\n"
+            "* **`Update()`:** Invoked **per-frame** at the target rendering refresh rate. Utilized for real-time user input polling, physics adjustments, and continuous runtime calculations."
         )
 
     def _synthesize_definitions_and_concepts(self, q_lower: str, text: str, doc_str: str) -> str:
-        """Synthesize simple, plain English explanations for concepts and terms."""
+        """Synthesize structured, articulate technical explanations for concepts and architectural terms."""
         q_clean_words = [re.sub(r'[^\w]', '', w) for w in q_lower.split()]
         kws = [w for w in q_clean_words if len(w) > 2 and w not in ["what", "why", "how", "give", "the", "are", "is", "in", "and", "for", "you", "can", "explain", "tell", "about", "state", "name"]]
 
-        # 1. Specialized High-Precision Handlers in Simple Words
+        # 1. Specialized High-Precision Handlers for Core Architecture
         if any(w in kws for w in ["vuforia", "image", "target", "targets"]):
             return (
-                "**Vuforia** is an Augmented Reality (AR) tool. In simple words, it lets your phone camera scan a real picture and show a 3D digital model right on top of it.\n\n"
-                "### 📌 Main Points in Simple Words:\n"
-                "* **Vuforia:** The software tool used to create Augmented Reality (AR) apps in Unity.\n"
-                "* **Image Target:** Any normal photo, book cover, or card that the camera recognizes to place 3D objects.\n"
-                "* **Custom Targets:** You can upload your own photos to use as your AR markers."
+                "**Vuforia** is an industry-standard Augmented Reality (AR) software development kit (SDK) that leverages computer vision to detect planar image targets and overlay interactive 3D digital assets in real time.\n\n"
+                "### 📌 Key Architectural Specifications:\n"
+                "* **Vuforia Engine:** High-performance computer vision SDK providing tracking, spatial anchoring, and target recognition.\n"
+                "* **Image Targets:** 2D planar reference markers featuring rich contrast features that the vision pipeline tracks to orient virtual content.\n"
+                "* **Target Management:** Developers can register custom target databases via the Vuforia Developer Portal with automated rating metrics."
             )
 
         if any(w in kws for w in ["gameobject", "gameobjects"]):
             return (
-                "In Unity, a **GameObject** is simply anything you put into your game.\n\n"
-                "### 📌 Simple Summary:\n"
+                "In the Unity engine, a **GameObject** serves as the fundamental entity representing all scene items, environments, and functional components.\n\n"
+                "### 📌 Architectural Summary:\n"
                 "* **What it is:** The basic building block in Unity. Players, trees, lights, enemies, and cameras are all GameObjects.\n"
                 "* **Examples:** A simple 3D Cube, a Light, or the main Camera.\n"
                 "* **Where to find them:** All GameObjects in your game are listed in the **Hierarchy window** on the left."
@@ -274,7 +274,7 @@ class NaturalLanguageGenerator:
         if "parenting" in kws or "parent" in kws or "child" in kws:
             return (
                 "In Unity, **parenting** means grouping two objects together so one object (the child) follows another object (the parent).\n\n"
-                "### 📌 How It Works Simply:\n"
+                "### 📌 Transform Propagation Mechanics:\n"
                 "* **Follows Movement:** When the parent moves or turns, the child automatically moves and turns with it.\n"
                 "* **Real Example:** If you attach a sword (child) to a player's hand (parent), the sword moves whenever the player walks or swings their arm."
             )
@@ -290,8 +290,8 @@ class NaturalLanguageGenerator:
         if "material" in kws or "materials" in kws:
             return (
                 "In Unity, a **Material** is the 'paint' or 'skin' you put on a 3D object to decide how it looks.\n\n"
-                "### 📌 Simple Points:\n"
-                "* **Appearance:** Controls color, shine, smoothness, and texture.\n"
+                "### 📌 Surface Rendering Specifications:\n"
+                "* **Appearance:** Controls color, specular reflectivity, smoothness, and texture maps.\n"
                 "* **Use:** Makes a 3D object look like real wood, metal, glass, or plastic."
             )
 
@@ -305,8 +305,8 @@ class NaturalLanguageGenerator:
 
         if "asset" in kws or "store" in kws:
             return (
-                "The **Unity Asset Store** is an online app store for game makers.\n\n"
-                "### 📌 In Simple Words:\n"
+                "The **Unity Asset Store** is a digital distribution marketplace supplying production-ready assets, plugins, and modular extensions for Unity development.\n\n"
+                "### 📌 Repository Overview:\n"
                 "* You can download ready-made 3D models, sounds, characters, and scripts so you don't have to build everything from scratch."
             )
 
@@ -341,9 +341,9 @@ class NaturalLanguageGenerator:
         if target_term:
             defn = term_map[target_term]
             defn_lead = defn[0].lower() + defn[1:] if defn else ""
-            out.append(f"In simple words: **{target_term}** means {defn_lead}")
+            out.append(f"**{target_term}** is defined as follows: {defn_lead}")
 
-            out.append("\n### 📌 Simple Points:")
+            out.append("\n### 📌 Technical Details:")
             for term, defn_text in term_map.items():
                 out.append(f"* **{term}:** {defn_text}")
 
@@ -356,7 +356,7 @@ class NaturalLanguageGenerator:
             meaning_sentences = [n for n in plain_notes if any(w in n.lower() for w in ["means", "is a", "are the", "decide", "helps", "shows"])]
             if meaning_sentences:
                 lead = meaning_sentences[0]
-                out.append(f"In simple words: {lead}")
+                out.append(f"{lead}")
                 remaining = [n for n in plain_notes if n != lead]
                 if remaining:
                     out.append("\n### 💡 Key Points:")
@@ -366,7 +366,7 @@ class NaturalLanguageGenerator:
                 lead = plain_notes[0] if plain_notes else text[:250]
                 out.append(f"{lead}")
                 if len(plain_notes) > 1:
-                    out.append("\n### 📌 Simple Details:")
+                    out.append("\n### 📌 Key Specifications:")
                     for p in plain_notes[1:4]:
                         out.append(f"* {p}")
 

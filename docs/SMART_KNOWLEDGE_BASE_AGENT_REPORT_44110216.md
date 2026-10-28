@@ -435,7 +435,7 @@ When a query passes the confidence gate, the orchestrator constructs an augmente
 #### 4.3.6 Streamlit Modern Web Dashboard & Interactive AI Agent Chat Workspace
 The client presentation interface delivers a streamlined, ergonomic workspace as illustrated in Figure 4.2:
 - **Top Brand Navigation & Operational Metrics:** Real-time health status pills (*"● In-Process Mode Active"*, *"Zero Downtime"*, *"5 docs indexed"*) with direct access across three main workspace tabs: *💬 AI Agent Chat*, *📁 Knowledge Library (5)*, and *🎛️ Controls & Settings*.
-- **Quick-Starter Natural Language Prompt Chips:** Four instant conversational trigger chips (*"✦ Explain Simply"*, *"✦ Summarize All"*, *"✦ F-Test Hypotheses"*, and *"✦ Vuforia & Unity"*) accompanied by a one-click session cleaner.
+- **Quick-Starter Natural Language Prompt Chips:** Four instant conversational trigger chips (*"✦ Explain Concepts"*, *"✦ Summarize All"*, *"✦ F-Test Hypotheses"*, and *"✦ Vuforia & Unity"*) accompanied by a one-click session cleaner.
 - **Centered Conversational Search Bar:** Ergonomic natural language search bar with shift+enter multiline support and immediate query execution.
 - **Global Deployment & Code Repository Footer:** Prominent bottom navigation bar containing direct 1-click buttons for GitHub Star, Code ZIP download, Step-by-Step project report, and issue reporting.
 
