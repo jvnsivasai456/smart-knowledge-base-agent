@@ -15,7 +15,7 @@
 --------------------------------------------------------------------------------
 3. PROJECT DETAILS:
 --------------------------------------------------------------------------------
-- Project Title: Smart knowledge Base Agent
+- Project Title: Smart Knowledge Base Agent
 - Author / Owner: jvnsivasai456
 - Technology Stack: Python, FastAPI, Streamlit, ChromaDB, SentenceTransformers, SQLite
 - Architecture: Retrieval-Augmented Generation (RAG) with Zero-Downtime Resilience

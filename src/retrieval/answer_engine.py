@@ -83,7 +83,7 @@ class AnswerEngine:
             answer = "👋 **Goodbye!** Have a wonderful day!"
         else:
             answer = (
-                "👋 **Hello! I'm your Smart Knowledge Base Assistant.**\n\n"
+                "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
                 "I analyze and synthesize accurate answers grounded directly in your uploaded technical documentation."
                 f"{doc_list_text}\n\n"
                 "**What you can do:**\n"

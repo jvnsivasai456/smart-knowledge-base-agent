@@ -57,7 +57,7 @@ def main():
     
     # Create native Windows desktop window
     window = webview.create_window(
-        title="Smart Knowledge Base",
+        title="Smart Knowledge Base Agent",
         url="http://localhost:8501",
         width=1280,
         height=850,

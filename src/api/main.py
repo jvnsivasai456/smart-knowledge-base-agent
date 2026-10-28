@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
     # Clean up on shutdown
     scheduler.stop()
 
-app = FastAPI(title="Smart Knowledge Base API", lifespan=lifespan)
+app = FastAPI(title="Smart Knowledge Base Agent API", lifespan=lifespan)
 
 @app.get("/health")
 def health_check():

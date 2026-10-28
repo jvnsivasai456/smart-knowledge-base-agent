@@ -25,7 +25,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     try:
-        print(f"[*] Starting Smart Knowledge Base Backend on http://{settings.host}:{settings.port} ...")
+        print(f"[*] Starting Smart Knowledge Base Agent Backend on http://{settings.host}:{settings.port} ...")
         uvicorn.run("src.api.main:app", host=settings.host, port=settings.port, reload=False)
     except OSError as e:
         if "10048" in str(e) or "address already in use" in str(e).lower():

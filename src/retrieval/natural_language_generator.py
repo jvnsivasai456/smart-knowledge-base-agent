@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class NaturalLanguageGenerator:
     """
-    Natural Language Generation (NLG) engine for the Smart Knowledge Base.
+    Natural Language Generation (NLG) engine for the Smart Knowledge Base Agent.
     Supports:
     1. Google Gemini API (gemini-1.5-flash / gemini-2.0-flash) via REST
     2. Groq API (llama-3.1-8b-instant) via REST
@@ -93,7 +93,7 @@ class NaturalLanguageGenerator:
         docs_str = ", ".join([f"`{d}`" for d in doc_names]) if doc_names else "indexed files"
         context_str = "\n\n---\n\n".join(context_chunks)
         return (
-            f"You are a Smart Knowledge Base Assistant. Your role is to help users quickly find, understand, and apply information from the knowledge base.\n\n"
+            f"You are the Smart Knowledge Base Agent. Your role is to help users quickly find, understand, and apply information from the knowledge base.\n\n"
             f"Answer the user's question accurately based strictly on the following document context from {docs_str}.\n\n"
             f"Guidelines:\n"
             f"1. Tone: Warm, clear, concise, and professional. Avoid robotic intros like 'Based on the provided documents' or 'Here is the information you requested.'\n"
@@ -141,7 +141,7 @@ class NaturalLanguageGenerator:
         payload = {
             "model": "llama-3.1-8b-instant",
             "messages": [
-                {"role": "system", "content": "You are a helpful, articulate knowledge base assistant."},
+                {"role": "system", "content": "You are the Smart Knowledge Base Agent, an articulate and accurate assistant grounded strictly in document knowledge."},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.2
@@ -158,7 +158,7 @@ class NaturalLanguageGenerator:
         payload = {
             "model": "gpt-4o-mini",
             "messages": [
-                {"role": "system", "content": "You are a helpful, articulate knowledge base assistant."},
+                {"role": "system", "content": "You are the Smart Knowledge Base Agent, an articulate and accurate assistant grounded strictly in document knowledge."},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.2

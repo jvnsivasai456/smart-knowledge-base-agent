@@ -1,4 +1,4 @@
-# Smart knowledge Base Agent
+# Smart Knowledge Base Agent
 
 [![Deploy to Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/deploy?repository=jvnsivasai456/smart-knowledge-base-agent&branch=main&mainModule=src/ui/app.py)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/jvnsivasai456/smart-knowledge-base-agent)
