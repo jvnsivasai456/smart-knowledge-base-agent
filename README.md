@@ -29,11 +29,15 @@ A modular, smart document ingestion and retrieval system using Python, FastAPI, 
 ---
 
 ### 🎓 Academic Project Information
-* **Student Name:** `GOLLA JAYA VENKATA NAGA SIVA SAI`
-* **Register Number:** `44110216`
-* **Department:** Department of Computer Science and Engineering
+* **Students / Authors:** 
+  - `GOLLA JAYA VENKATA NAGA SIVA SAI (44110216)`
+  - `GUNDA BHARGAV (44110216)`
+  - `GANTA KARTHIKEYA (44110202)`
+* **Degree & Department:** Bachelor of Engineering (B.E.), Department of Computer Science and Engineering
 * **Institution:** Sathyabama Institute of Science and Technology (Deemed to be University), Chennai
-* **Internal Guides:** Dr. D. SARAVANAN, M.Tech, Ph.D. & Dr. L. LAKSHMANAN, M.E., Ph.D.
+* **Internal Guide:** `Ms. M. DEVIPRIYA`
+* **Head of the Department:** `Dr. L. LAKSHMANAN, M.E., Ph.D.`
+* **Academic Session:** July 2026 – November 2026
 * **Project Title:** Smart Knowledge Base Agent
 
 ---

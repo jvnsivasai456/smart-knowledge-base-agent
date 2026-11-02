@@ -4,17 +4,18 @@
 
 1. CANDIDATE & INSTITUTION DETAILS:
 --------------------------------------------------------------------------------
-- Student Name:        GOLLA JAYA VENKATA NAGA SIVA SAI
-- Register Number:     44110216
+- Students / Authors:  GOLLA JAYA VENKATA NAGA SIVA SAI (44110216)
+                       GUNDA BHARGAV (44110216)
+                       GANTA KARTHIKEYA (44110202)
 - Degree:              Bachelor of Engineering (B.E.)
 - Department:          Department of Computer Science and Engineering
 - School:              School of Computing
 - Institution:         Sathyabama Institute of Science and Technology
                        (Deemed to be University, Accredited "A++" by NAAC)
                        Jeppiaar Nagar, Rajiv Gandhi Salai, Chennai - 600119
-- Internal Guides:     Dr. D. SARAVANAN, M.Tech, Ph.D.
-                       Dr. L. LAKSHMANAN, M.E., Ph.D. (HOD CSE)
-- Academic Session:    June 2026 – October 2026
+- Internal Guide:      Ms. M. DEVIPRIYA
+- Head of Department:  Dr. L. LAKSHMANAN, M.E., Ph.D. (HOD CSE)
+- Academic Session:    July 2026 – November 2026
 
 --------------------------------------------------------------------------------
 2. PROJECT WEB LINKS & ACCESS DIRECTORY:
