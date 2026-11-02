@@ -2,49 +2,85 @@
                     PROJECT SUBMISSION: SMART KNOWLEDGE BASE AGENT
 ================================================================================
 
-1. PROJECT REPOSITORY LINK (GITHUB):
-   https://github.com/jvnsivasai456/smart-knowledge-base-agent
-
-2. PERMANENT 24/7 CLOUD WEB APP LINK (WORKS ANYTIME WITHOUT LAPTOP):
-   https://smart-knowledge-base-agent.streamlit.app
-   (Hosted 24/7 on Streamlit Cloud directly from GitHub - accessible worldwide)
-
-   FALLBACK TUNNEL LINK:
-   https://hold-associate-shift-pie.trycloudflare.com
+1. CANDIDATE & INSTITUTION DETAILS:
+--------------------------------------------------------------------------------
+- Student Name:        GOLLA JAYA VENKATA NAGA SIVA SAI
+- Register Number:     44110216
+- Degree:              Bachelor of Engineering (B.E.)
+- Department:          Department of Computer Science and Engineering
+- School:              School of Computing
+- Institution:         Sathyabama Institute of Science and Technology
+                       (Deemed to be University, Accredited "A++" by NAAC)
+                       Jeppiaar Nagar, Rajiv Gandhi Salai, Chennai - 600119
+- Internal Guides:     Dr. D. SARAVANAN, M.Tech, Ph.D.
+                       Dr. L. LAKSHMANAN, M.E., Ph.D. (HOD CSE)
+- Academic Session:    June 2026 – October 2026
 
 --------------------------------------------------------------------------------
-3. PROJECT DETAILS:
+2. PROJECT WEB LINKS & ACCESS DIRECTORY:
 --------------------------------------------------------------------------------
-- Project Title: Smart Knowledge Base Agent
-- Author / Owner: jvnsivasai456
-- Technology Stack: Python, FastAPI, Streamlit, ChromaDB, SentenceTransformers, SQLite
-- Architecture: Retrieval-Augmented Generation (RAG) with Zero-Downtime Resilience
+• 24/7 Live Cloud Web Application:
+  https://smart-knowledge-base-agent.streamlit.app
+  (Hosted 24/7 on Streamlit Cloud directly from GitHub - accessible worldwide)
+
+• 1-Click Cloud Execution (GitHub Codespaces):
+  https://codespaces.new/jvnsivasai456/smart-knowledge-base-agent
+  (Launches full environment in browser without requiring local installation)
+
+• Official GitHub Source Code Repository:
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent
+
+• Direct Source Code ZIP Download:
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/archive/refs/heads/main.zip
+
+• Official Project Report Download (.docx):
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REPORT_44110216.docx
+
+• Online Project Report (.md):
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/blob/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REPORT_44110216.md
+
+• Local Web Interface (when running locally):
+  http://localhost:8501
+
+• FastAPI Backend Health Check:
+  http://localhost:8000/health
 
 --------------------------------------------------------------------------------
-4. KEY FEATURES:
+3. PROJECT SPECIFICATIONS & TECH STACK:
+--------------------------------------------------------------------------------
+- Project Title:       Smart Knowledge Base Agent
+- Author / Owner:      jvnsivasai456
+- Architecture:        Retrieval-Augmented Generation (RAG) with Hybrid Ranking
+- Technology Stack:    Python 3.11+, FastAPI, Streamlit, ChromaDB, 
+                       SentenceTransformers (all-MiniLM-L6-v2), rank_bm25, SQLite
+- Search Pipeline:     Reciprocal Rank Fusion (RRF, k=60) combining Okapi BM25 
+                       lexical scoring and dense semantic cosine similarity
+- Confidence Gate:     Empirical similarity threshold of 0.62 with 95% 
+                       hallucination interception accuracy
+- File Formats:        PDF, Word (.docx), Markdown (.md), Plaintext (.txt), HTML
+
+--------------------------------------------------------------------------------
+4. KEY ARCHITECTURAL FEATURES:
 --------------------------------------------------------------------------------
 • Multi-Format Document Ingestion:
-  Upload and index PDF, DOCX, and TXT files with automatic text extraction.
+  Upload and index PDF, DOCX, TXT, and HTML files with automated text extraction 
+  and overlapping sliding-window chunking (800 chars / 120 token overlap).
 
-• Semantic Vector Search:
-  Generates 384-dimensional dense vector embeddings using 'all-MiniLM-L6-v2' 
-  and stores them in a persistent ChromaDB database.
+• Hybrid Dual-Index Search Engine:
+  Simultaneously executes dense semantic vector retrieval in ChromaDB and sparse 
+  lexical ranking in Okapi BM25, merged via Reciprocal Rank Fusion.
 
 • Natural Language Answers with Citations:
-  Provides answers in clear, simple everyday English along with verified chunk 
-  citations, relevance match percentages, and unique document category badges.
+  Synthesizes direct, professional answers with explicit chunk citations, 
+  relevance match percentages, and unique document category badges.
 
-• Google Gemini-Style User Interface:
-  Clean pure-white theme with responsive mobile design, right-aligned user bubbles, 
-  and an ergonomic search bar that naturally flows below answers.
+• Continuous Incremental Updates:
+  Filesystem change detection driven by APScheduler and SHA-256 cryptographic 
+  hash diffing, re-indexing only altered files with a 20.1x update speedup.
 
-• Self-Healing Zero-Downtime Infrastructure:
-  Automatic in-process fallback engine that continues answering queries even if the 
-  HTTP backend server is restarting.
-
-• Mobile Network Tunneling:
-  Built-in secure HTTPS Cloudflare Tunnel allowing the web app to be opened on mobile 
-  devices over cellular data (4G/5G) from anywhere in the world.
+• Zero-Downtime Resilience:
+  In-process fallback engine ensures continuous conversational question-answering 
+  even when the REST API gateway is offline.
 
 --------------------------------------------------------------------------------
 5. HOW TO RUN LOCALLY:
@@ -53,10 +89,16 @@
    git clone https://github.com/jvnsivasai456/smart-knowledge-base-agent.git
    cd smart-knowledge-base-agent
 
-2. Double-click "run_app.bat" or run:
+2. Quick Windows Launch:
+   Double-click "run_app.bat" to start both Backend and UI automatically.
+
+3. Or launch manually:
+   python -m venv venv
+   .\venv\Scripts\activate
+   pip install -r requirements.txt
    python main.py                     (FastAPI Backend on port 8000)
    streamlit run src/ui/app.py        (Streamlit UI on port 8501)
 
-3. Open in browser:
+4. Open in browser:
    http://localhost:8501
 ================================================================================
