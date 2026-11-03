@@ -1469,6 +1469,27 @@ with tab_controls:
     )
     
     st.markdown("---")
+    st.subheader("📦 Source Code ZIP Export")
+    st.caption("Download or copy the complete project bundle with all source code, models, reports, and documentation:")
+    
+    zip_local_path = os.path.join(PROJECT_DIR, "smart-knowledge-base-agent.zip")
+    if os.path.exists(zip_local_path):
+        with open(zip_local_path, "rb") as f:
+            z_data = f.read()
+        col_z1, col_z2 = st.columns([2, 1])
+        with col_z1:
+            st.download_button(
+                label="⬇️ Download smart-knowledge-base-agent.zip",
+                data=z_data,
+                file_name="smart-knowledge-base-agent.zip",
+                mime="application/zip",
+                use_container_width=True,
+                type="primary"
+            )
+        with col_z2:
+            st.caption(f"📁 Size: **{len(z_data)/(1024*1024):.1f} MB** • Offline Ready")
+    
+    st.markdown("---")
     st.subheader("🧹 Chat Session Controls")
     if st.button("🗑️ Clear Conversation History", use_container_width=True):
         st.session_state.messages = []
@@ -1656,6 +1677,20 @@ with tab_controls:
 # ----------------------------------------------------
 # GLOBAL BOTTOM FOOTER: GITHUB REPOSITORY & DOWNLOADS
 # ----------------------------------------------------
+zip_local_path = os.path.join(PROJECT_DIR, "smart-knowledge-base-agent.zip")
+if os.path.exists(zip_local_path):
+    col_dl1, col_dl2, col_dl3 = st.columns([1, 2, 1])
+    with col_dl2:
+        with open(zip_local_path, "rb") as f:
+            st.download_button(
+                label="📦 Download Complete Source Code ZIP (Offline Ready)",
+                data=f.read(),
+                file_name="smart-knowledge-base-agent.zip",
+                mime="application/zip",
+                use_container_width=True,
+                type="primary",
+                help="Click to download the full project source code, models, reports, and documentation as a .zip file."
+            )
 st.markdown(
     """
     <div style="margin-top: 45px; padding: 26px 20px 22px 20px; border-top: 1px solid #E2E8F0; background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%); border-radius: 16px; text-align: center;">
@@ -1673,7 +1708,7 @@ st.markdown(
         <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REPORT_44110216.docx" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
           📄 Report (.docx)
         </a>
-        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/archive/refs/heads/main.zip" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/smart-knowledge-base-agent.zip" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
           ⬇️ Download ZIP
         </a>
         <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/issues" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">

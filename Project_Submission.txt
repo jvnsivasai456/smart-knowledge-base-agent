@@ -32,7 +32,7 @@
   https://github.com/jvnsivasai456/smart-knowledge-base-agent
 
 • Direct Source Code ZIP Download:
-  https://github.com/jvnsivasai456/smart-knowledge-base-agent/archive/refs/heads/main.zip
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/smart-knowledge-base-agent.zip
 
 • Official Project Report Download (.docx):
   https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REPORT_44110216.docx
