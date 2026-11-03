@@ -302,10 +302,55 @@ def delete_resilient(doc_name: str, is_api_alive: bool) -> bool:
         pass
     return False
 
-# Clean Document Icon & Metadata Resolver
+# Unique Document Icon & Metadata Resolver
 def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
-    ext = (ftype or filename.split(".")[-1]).upper()
-    if ext == "PDF":
+    fname_lower = filename.lower()
+    if any(k in fname_lower for k in ["f_test", "ftest", "stat", "hypothesis", "variance", "math", "calc", "prob"]):
+        return {
+            "symbol": "📊",
+            "badge": "Statistics & Math",
+            "color": "#F59E0B",
+            "bg": "rgba(245, 158, 11, 0.12)",
+            "border": "rgba(245, 158, 11, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["vuforia", "ar", "augmented", "target", "vision"]):
+        return {
+            "symbol": "🥽",
+            "badge": "Augmented Reality",
+            "color": "#EC4899",
+            "bg": "rgba(236, 72, 153, 0.12)",
+            "border": "rgba(236, 72, 153, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(219, 39, 119, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["unity", "game", "physics", "gameobject", "script"]):
+        return {
+            "symbol": "🎮",
+            "badge": "Game Engine",
+            "color": "#818CF8",
+            "bg": "rgba(99, 102, 241, 0.12)",
+            "border": "rgba(99, 102, 241, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["ids", "security", "network", "cyber", "firewall", "crypto"]):
+        return {
+            "symbol": "🛡️",
+            "badge": "Cybersecurity",
+            "color": "#10B981",
+            "bg": "rgba(16, 185, 129, 0.12)",
+            "border": "rgba(16, 185, 129, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1))"
+        }
+    elif any(k in fname_lower for k in ["ai", "neural", "ml", "deep", "embed", "gpt"]):
+        return {
+            "symbol": "⚡",
+            "badge": "Machine Learning",
+            "color": "#C084FC",
+            "bg": "rgba(168, 85, 247, 0.12)",
+            "border": "rgba(168, 85, 247, 0.35)",
+            "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.1))"
+        }
+    elif ftype.upper() == "PDF":
         return {
             "symbol": "📕",
             "badge": "PDF Document",
@@ -314,7 +359,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(239, 68, 68, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.1))"
         }
-    elif ext in ["DOCX", "DOC"]:
+    elif ftype.upper() == "DOCX":
         return {
             "symbol": "📘",
             "badge": "Word Document",
@@ -323,7 +368,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(56, 189, 248, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(37, 99, 235, 0.1))"
         }
-    elif ext in ["TXT", "MD"]:
+    elif ftype.upper() == "TXT":
         return {
             "symbol": "📄",
             "badge": "Text File",
@@ -1164,28 +1209,39 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # TAB 1: AI AGENT CHAT (ERGONOMIC TOP SEARCH BAR)
 # ====================================================
 with tab_chat:
-    # Action Bar with Clear Chat
-    col_hdr, col_clear = st.columns([5.5, 1.3])
-    with col_hdr:
-        st.markdown(
-            '<div style="font-size: 0.85rem; color: #64748B; padding-top: 6px;">'
-            '💬 <strong>Interactive AI Chat</strong> &bull; Ask any question about your indexed documents'
-            '</div>',
-            unsafe_allow_html=True
-        )
+    # ---------------------------------------------------------
+    # QUICK PROMPT CHIPS & ACTIONS (AT TOP)
+    # ---------------------------------------------------------
+    st.markdown('<div class="gemini-chips-container">', unsafe_allow_html=True)
+    col_chip1, col_chip2, col_chip3, col_chip4, col_clear = st.columns([1, 1, 1, 1, 0.55])
+    quick_prompt = None
+
+    with col_chip1:
+        if st.button("✦ Explain Simply", use_container_width=True):
+            quick_prompt = "Explain the core concepts and topics in my documents in simple, everyday English."
+    with col_chip2:
+        if st.button("✦ Summarize All", use_container_width=True):
+            quick_prompt = "Provide a comprehensive executive summary of the main points across the uploaded documents."
+    with col_chip3:
+        if st.button("✦ F-Test Hypotheses", use_container_width=True):
+            quick_prompt = "What are the null and alternative hypotheses for the F-test and how are they calculated?"
+    with col_chip4:
+        if st.button("✦ Vuforia & Unity", use_container_width=True):
+            quick_prompt = "What is Vuforia and how does it integrate with GameObjects and Image Targets in Unity?"
     with col_clear:
-        if st.button("🧹 Clear Chat", key="btn_clear_chat", use_container_width=True, help="Reset conversation history"):
+        if st.button("🧹 Clear", use_container_width=True, help="Clear conversation"):
             st.session_state.messages = []
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Initialize Chat History
-    if "messages" not in st.session_state or not st.session_state.messages:
+    if "messages" not in st.session_state:
         st.session_state.messages = [
             {
                 "role": "assistant",
                 "content": (
                     "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
-                    "Ask any question in the search bar below to explore your knowledge library in natural language!"
+                    "Ask any question in the search bar below or tap one of the quick starter chips above to explore your knowledge library in natural language!"
                 ),
                 "sources": []
             }
@@ -1228,7 +1284,7 @@ with tab_chat:
     # PINNED BOTTOM SEARCH BAR (SCREENSHOT 2 PLACEMENT)
     # ---------------------------------------------------------
     user_query = st.chat_input("✦ Ask Gemini anything about your documents...")
-    active_prompt = user_query
+    active_prompt = quick_prompt if quick_prompt else user_query
 
     if active_prompt:
         st.session_state.messages.append({"role": "user", "content": active_prompt})
@@ -1414,6 +1470,44 @@ with tab_library:
 # TAB 3: APP CONTROLS, SETTINGS & MOBILE
 # ====================================================
 with tab_controls:
+    st.subheader("🔮 Unique Branding & Icon Symbols")
+    st.caption("Custom high-definition icon symbols dynamically assigned to your documents and application:")
+    
+    col_sym1, col_sym2, col_sym3, col_sym4 = st.columns(4)
+    with col_sym1:
+        st.markdown("""
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">📊</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #F59E0B; margin-top: 4px;">Statistics & Math</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">F-Test, formulas, data</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_sym2:
+        st.markdown("""
+        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">🥽</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #EC4899; margin-top: 4px;">Augmented Reality</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">Vuforia, targets, AR</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_sym3:
+        st.markdown("""
+        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">🎮</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #818CF8; margin-top: 4px;">Game Engine</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">Unity, scripts, objects</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_sym4:
+        st.markdown("""
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 1.8rem;">🛡️</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #10B981; margin-top: 4px;">Cybersecurity</div>
+          <div style="font-size: 0.72rem; color: #94A3B8;">IDS, networks, safety</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
     st.subheader("🧠 Natural Language Engine Configuration")
     st.caption("Choose how natural language answers are formulated:")
     
@@ -1453,8 +1547,6 @@ with tab_controls:
                 help="Optional. Leave blank to automatically use the built-in Local Natural Language engine."
             )
             st.session_state["llm_api_key"] = api_key_input
-        elif selected_prov == "ollama":
-            st.info("💻 **Ollama Active:** Connecting to local Ollama instance on `http://localhost:11434` with model `llama3`.")
         else:
             st.info("💡 **Local NLG Active:** Operates 100% offline with zero external API keys needed. All synthesis happens locally on your computer.")
 
@@ -1467,27 +1559,6 @@ with tab_controls:
         value=st.session_state.get("top_k", 4),
         help="Controls the number of semantic vector chunks retrieved from ChromaDB for each query."
     )
-    
-    st.markdown("---")
-    st.subheader("📦 Source Code ZIP Export")
-    st.caption("Download or copy the complete project bundle with all source code, models, reports, and documentation:")
-    
-    zip_local_path = os.path.join(PROJECT_DIR, "smart-knowledge-base-agent.zip")
-    if os.path.exists(zip_local_path):
-        with open(zip_local_path, "rb") as f:
-            z_data = f.read()
-        col_z1, col_z2 = st.columns([2, 1])
-        with col_z1:
-            st.download_button(
-                label="⬇️ Download smart-knowledge-base-agent.zip",
-                data=z_data,
-                file_name="smart-knowledge-base-agent.zip",
-                mime="application/zip",
-                use_container_width=True,
-                type="primary"
-            )
-        with col_z2:
-            st.caption(f"📁 Size: **{len(z_data)/(1024*1024):.1f} MB** • Offline Ready")
     
     st.markdown("---")
     st.subheader("🧹 Chat Session Controls")
@@ -1677,20 +1748,6 @@ with tab_controls:
 # ----------------------------------------------------
 # GLOBAL BOTTOM FOOTER: GITHUB REPOSITORY & DOWNLOADS
 # ----------------------------------------------------
-zip_local_path = os.path.join(PROJECT_DIR, "smart-knowledge-base-agent.zip")
-if os.path.exists(zip_local_path):
-    col_dl1, col_dl2, col_dl3 = st.columns([1, 2, 1])
-    with col_dl2:
-        with open(zip_local_path, "rb") as f:
-            st.download_button(
-                label="📦 Download Complete Source Code ZIP (Offline Ready)",
-                data=f.read(),
-                file_name="smart-knowledge-base-agent.zip",
-                mime="application/zip",
-                use_container_width=True,
-                type="primary",
-                help="Click to download the full project source code, models, reports, and documentation as a .zip file."
-            )
 st.markdown(
     """
     <div style="margin-top: 45px; padding: 26px 20px 22px 20px; border-top: 1px solid #E2E8F0; background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%); border-radius: 16px; text-align: center;">
@@ -1708,7 +1765,7 @@ st.markdown(
         <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REPORT_44110216.docx" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
           📄 Report (.docx)
         </a>
-        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/smart-knowledge-base-agent.zip" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/archive/refs/heads/main.zip" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
           ⬇️ Download ZIP
         </a>
         <a href="https://github.com/jvnsivasai456/smart-knowledge-base-agent/issues" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; color: #1E293B !important; font-weight: 600; font-size: 0.86rem; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
