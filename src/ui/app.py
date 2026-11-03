@@ -304,53 +304,8 @@ def delete_resilient(doc_name: str, is_api_alive: bool) -> bool:
 
 # Unique Document Icon & Metadata Resolver
 def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
-    fname_lower = filename.lower()
-    if any(k in fname_lower for k in ["f_test", "ftest", "stat", "hypothesis", "variance", "math", "calc", "prob"]):
-        return {
-            "symbol": "📊",
-            "badge": "Statistics & Math",
-            "color": "#F59E0B",
-            "bg": "rgba(245, 158, 11, 0.12)",
-            "border": "rgba(245, 158, 11, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["vuforia", "ar", "augmented", "target", "vision"]):
-        return {
-            "symbol": "🥽",
-            "badge": "Augmented Reality",
-            "color": "#EC4899",
-            "bg": "rgba(236, 72, 153, 0.12)",
-            "border": "rgba(236, 72, 153, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(219, 39, 119, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["unity", "game", "physics", "gameobject", "script"]):
-        return {
-            "symbol": "🎮",
-            "badge": "Game Engine",
-            "color": "#818CF8",
-            "bg": "rgba(99, 102, 241, 0.12)",
-            "border": "rgba(99, 102, 241, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["ids", "security", "network", "cyber", "firewall", "crypto"]):
-        return {
-            "symbol": "🛡️",
-            "badge": "Cybersecurity",
-            "color": "#10B981",
-            "bg": "rgba(16, 185, 129, 0.12)",
-            "border": "rgba(16, 185, 129, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["ai", "neural", "ml", "deep", "embed", "gpt"]):
-        return {
-            "symbol": "⚡",
-            "badge": "Machine Learning",
-            "color": "#C084FC",
-            "bg": "rgba(168, 85, 247, 0.12)",
-            "border": "rgba(168, 85, 247, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.1))"
-        }
-    elif ftype.upper() == "PDF":
+    ft = ftype.upper() or (filename.split(".")[-1].upper() if "." in filename else "TXT")
+    if ft == "PDF":
         return {
             "symbol": "📕",
             "badge": "PDF Document",
@@ -359,7 +314,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(239, 68, 68, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.1))"
         }
-    elif ftype.upper() == "DOCX":
+    elif ft in ["DOCX", "DOC"]:
         return {
             "symbol": "📘",
             "badge": "Word Document",
@@ -368,7 +323,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(56, 189, 248, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(37, 99, 235, 0.1))"
         }
-    elif ftype.upper() == "TXT":
+    elif ft in ["TXT", "MD"]:
         return {
             "symbol": "📄",
             "badge": "Text File",
@@ -386,7 +341,6 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(168, 85, 247, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(147, 51, 234, 0.1))"
         }
-
 # Mobile PWA Manifest
 pwa_manifest = {
     "name": "Smart Knowledge Base Agent",
@@ -1470,44 +1424,6 @@ with tab_library:
 # TAB 3: APP CONTROLS, SETTINGS & MOBILE
 # ====================================================
 with tab_controls:
-    st.subheader("🔮 Unique Branding & Icon Symbols")
-    st.caption("Custom high-definition icon symbols dynamically assigned to your documents and application:")
-    
-    col_sym1, col_sym2, col_sym3, col_sym4 = st.columns(4)
-    with col_sym1:
-        st.markdown("""
-        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">📊</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #F59E0B; margin-top: 4px;">Statistics & Math</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">F-Test, formulas, data</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym2:
-        st.markdown("""
-        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🥽</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #EC4899; margin-top: 4px;">Augmented Reality</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">Vuforia, targets, AR</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym3:
-        st.markdown("""
-        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🎮</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #818CF8; margin-top: 4px;">Game Engine</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">Unity, scripts, objects</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym4:
-        st.markdown("""
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🛡️</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #10B981; margin-top: 4px;">Cybersecurity</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">IDS, networks, safety</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
     st.subheader("🧠 Natural Language Engine Configuration")
     st.caption("Choose how natural language answers are formulated:")
     
