@@ -1164,16 +1164,28 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # TAB 1: AI AGENT CHAT (ERGONOMIC TOP SEARCH BAR)
 # ====================================================
 with tab_chat:
-
+    # Action Bar with Clear Chat
+    col_hdr, col_clear = st.columns([5.5, 1.3])
+    with col_hdr:
+        st.markdown(
+            '<div style="font-size: 0.85rem; color: #64748B; padding-top: 6px;">'
+            '💬 <strong>Interactive AI Chat</strong> &bull; Ask any question about your indexed documents'
+            '</div>',
+            unsafe_allow_html=True
+        )
+    with col_clear:
+        if st.button("🧹 Clear Chat", key="btn_clear_chat", use_container_width=True, help="Reset conversation history"):
+            st.session_state.messages = []
+            st.rerun()
 
     # Initialize Chat History
-    if "messages" not in st.session_state:
+    if "messages" not in st.session_state or not st.session_state.messages:
         st.session_state.messages = [
             {
                 "role": "assistant",
                 "content": (
                     "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
-                    "Ask any question in the search bar below or tap one of the quick starter chips above to explore your knowledge library in natural language!"
+                    "Ask any question in the search bar below to explore your knowledge library in natural language!"
                 ),
                 "sources": []
             }
