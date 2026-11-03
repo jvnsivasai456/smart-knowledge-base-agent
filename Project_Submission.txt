@@ -40,6 +40,16 @@
 • Online Project Report (.md):
   https://github.com/jvnsivasai456/smart-knowledge-base-agent/blob/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REPORT_44110216.md
 
+- 5-Minute Team Review Presentation (.pdf):
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KB_5MIN_TEAM_REVIEW_PRESENTATION.pdf
+  (Slide-by-slide presentation & spoken scripts for Siva Sai, Bhargav & Karthikeya)
+
+- 10-Minute Technical Viva Presentation (.pdf):
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KB_10MIN_TEAM_REVIEW_PRESENTATION.pdf
+
+- Viva & Review Preparation Handbook (.pdf):
+  https://github.com/jvnsivasai456/smart-knowledge-base-agent/raw/main/docs/SMART_KNOWLEDGE_BASE_AGENT_REVIEW_HANDBOOK.pdf
+
 • Local Web Interface (when running locally):
   http://localhost:8501
 
