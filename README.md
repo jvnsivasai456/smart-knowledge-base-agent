@@ -51,7 +51,7 @@ A modular, smart document ingestion and retrieval system using Python, FastAPI, 
 - **Smart Chunking**: Overlapping context-aware chunks (800 chars / 120 token overlap).
 - **Vector Search**: Semantic search powered by `sentence-transformers` (`all-MiniLM-L6-v2`) and `ChromaDB`.
 - **Continuous Background Updates**: `APScheduler` scans for new/modified/deleted files using SHA-256 diffing and updates only what's changed without full rebuilds.
-- **Multi-Model Answer Engine**: Supports built-in offline Local NLG as well as Google Gemini, Groq (Llama-3), OpenAI (GPT-4o), and Local Ollama.
+- **Multi-Model Answer Engine**: Supports built-in offline Local NLG as well as Google Gemini, Anthropic Claude (3.5 Sonnet), Groq (Llama-3.1), OpenAI (GPT-4o), and Local Ollama.
 
 ---
 

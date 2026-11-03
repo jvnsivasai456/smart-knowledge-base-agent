@@ -6,23 +6,13 @@ import numpy as np
 from .natural_language_generator import NaturalLanguageGenerator
 
 def get_unique_doc_symbol(filename: str) -> str:
-    """Return a unique icon symbol tailored to the document topic and file type."""
+    """Return a clean document format icon tailored to the file type."""
     fn = filename.lower()
-    if any(k in fn for k in ["f_test", "ftest", "stat", "hypothesis", "variance", "math", "calc"]):
-        return "📊"
-    elif any(k in fn for k in ["vuforia", "ar", "augmented", "target", "vision"]):
-        return "🥽"
-    elif any(k in fn for k in ["unity", "game", "physics", "gameobject", "script"]):
-        return "🎮"
-    elif any(k in fn for k in ["ids", "security", "network", "cyber", "firewall"]):
-        return "🛡️"
-    elif any(k in fn for k in ["ai", "neural", "ml", "deep", "embed"]):
-        return "⚡"
-    elif fn.endswith(".pdf"):
+    if fn.endswith(".pdf"):
         return "📕"
     elif fn.endswith(".docx") or fn.endswith(".doc"):
         return "📘"
-    elif fn.endswith(".txt"):
+    elif fn.endswith(".txt") or fn.endswith(".md"):
         return "📄"
     return "📑"
 

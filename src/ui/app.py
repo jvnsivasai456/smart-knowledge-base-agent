@@ -302,55 +302,10 @@ def delete_resilient(doc_name: str, is_api_alive: bool) -> bool:
         pass
     return False
 
-# Unique Document Icon & Metadata Resolver
+# Clean Document Icon & Metadata Resolver
 def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
-    fname_lower = filename.lower()
-    if any(k in fname_lower for k in ["f_test", "ftest", "stat", "hypothesis", "variance", "math", "calc", "prob"]):
-        return {
-            "symbol": "📊",
-            "badge": "Statistics & Math",
-            "color": "#F59E0B",
-            "bg": "rgba(245, 158, 11, 0.12)",
-            "border": "rgba(245, 158, 11, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["vuforia", "ar", "augmented", "target", "vision"]):
-        return {
-            "symbol": "🥽",
-            "badge": "Augmented Reality",
-            "color": "#EC4899",
-            "bg": "rgba(236, 72, 153, 0.12)",
-            "border": "rgba(236, 72, 153, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(219, 39, 119, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["unity", "game", "physics", "gameobject", "script"]):
-        return {
-            "symbol": "🎮",
-            "badge": "Game Engine",
-            "color": "#818CF8",
-            "bg": "rgba(99, 102, 241, 0.12)",
-            "border": "rgba(99, 102, 241, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["ids", "security", "network", "cyber", "firewall", "crypto"]):
-        return {
-            "symbol": "🛡️",
-            "badge": "Cybersecurity",
-            "color": "#10B981",
-            "bg": "rgba(16, 185, 129, 0.12)",
-            "border": "rgba(16, 185, 129, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1))"
-        }
-    elif any(k in fname_lower for k in ["ai", "neural", "ml", "deep", "embed", "gpt"]):
-        return {
-            "symbol": "⚡",
-            "badge": "Machine Learning",
-            "color": "#C084FC",
-            "bg": "rgba(168, 85, 247, 0.12)",
-            "border": "rgba(168, 85, 247, 0.35)",
-            "gradient": "linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.1))"
-        }
-    elif ftype.upper() == "PDF":
+    ext = (ftype or filename.split(".")[-1]).upper()
+    if ext == "PDF":
         return {
             "symbol": "📕",
             "badge": "PDF Document",
@@ -359,7 +314,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(239, 68, 68, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.1))"
         }
-    elif ftype.upper() == "DOCX":
+    elif ext in ["DOCX", "DOC"]:
         return {
             "symbol": "📘",
             "badge": "Word Document",
@@ -368,7 +323,7 @@ def get_unique_doc_metadata(filename: str, ftype: str = "") -> dict:
             "border": "rgba(56, 189, 248, 0.35)",
             "gradient": "linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(37, 99, 235, 0.1))"
         }
-    elif ftype.upper() == "TXT":
+    elif ext in ["TXT", "MD"]:
         return {
             "symbol": "📄",
             "badge": "Text File",
@@ -1163,6 +1118,7 @@ with col_stat:
     provider_labels = {
         "local": "⚡ Local NLG",
         "gemini": "🌟 Gemini AI",
+        "claude": "🎭 Claude 3.5",
         "groq": "🚀 Groq Llama-3",
         "openai": "🤖 GPT-4o",
         "ollama": "💻 Ollama"
@@ -1208,30 +1164,7 @@ tab_chat, tab_library, tab_controls = st.tabs([
 # TAB 1: AI AGENT CHAT (ERGONOMIC TOP SEARCH BAR)
 # ====================================================
 with tab_chat:
-    # ---------------------------------------------------------
-    # QUICK PROMPT CHIPS & ACTIONS (AT TOP)
-    # ---------------------------------------------------------
-    st.markdown('<div class="gemini-chips-container">', unsafe_allow_html=True)
-    col_chip1, col_chip2, col_chip3, col_chip4, col_clear = st.columns([1, 1, 1, 1, 0.55])
-    quick_prompt = None
 
-    with col_chip1:
-        if st.button("✦ Explain Simply", use_container_width=True):
-            quick_prompt = "Explain the core concepts and topics in my documents in simple, everyday English."
-    with col_chip2:
-        if st.button("✦ Summarize All", use_container_width=True):
-            quick_prompt = "Provide a comprehensive executive summary of the main points across the uploaded documents."
-    with col_chip3:
-        if st.button("✦ F-Test Hypotheses", use_container_width=True):
-            quick_prompt = "What are the null and alternative hypotheses for the F-test and how are they calculated?"
-    with col_chip4:
-        if st.button("✦ Vuforia & Unity", use_container_width=True):
-            quick_prompt = "What is Vuforia and how does it integrate with GameObjects and Image Targets in Unity?"
-    with col_clear:
-        if st.button("🧹 Clear", use_container_width=True, help="Clear conversation"):
-            st.session_state.messages = []
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Initialize Chat History
     if "messages" not in st.session_state:
@@ -1283,7 +1216,7 @@ with tab_chat:
     # PINNED BOTTOM SEARCH BAR (SCREENSHOT 2 PLACEMENT)
     # ---------------------------------------------------------
     user_query = st.chat_input("✦ Ask Gemini anything about your documents...")
-    active_prompt = quick_prompt if quick_prompt else user_query
+    active_prompt = user_query
 
     if active_prompt:
         st.session_state.messages.append({"role": "user", "content": active_prompt})
@@ -1469,53 +1402,16 @@ with tab_library:
 # TAB 3: APP CONTROLS, SETTINGS & MOBILE
 # ====================================================
 with tab_controls:
-    st.subheader("🔮 Unique Branding & Icon Symbols")
-    st.caption("Custom high-definition icon symbols dynamically assigned to your documents and application:")
-    
-    col_sym1, col_sym2, col_sym3, col_sym4 = st.columns(4)
-    with col_sym1:
-        st.markdown("""
-        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">📊</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #F59E0B; margin-top: 4px;">Statistics & Math</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">F-Test, formulas, data</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym2:
-        st.markdown("""
-        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🥽</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #EC4899; margin-top: 4px;">Augmented Reality</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">Vuforia, targets, AR</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym3:
-        st.markdown("""
-        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🎮</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #818CF8; margin-top: 4px;">Game Engine</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">Unity, scripts, objects</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_sym4:
-        st.markdown("""
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
-          <div style="font-size: 1.8rem;">🛡️</div>
-          <div style="font-weight: 700; font-size: 0.85rem; color: #10B981; margin-top: 4px;">Cybersecurity</div>
-          <div style="font-size: 0.72rem; color: #94A3B8;">IDS, networks, safety</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
     st.subheader("🧠 Natural Language Engine Configuration")
     st.caption("Choose how natural language answers are formulated:")
     
     col_prov1, col_prov2 = st.columns([1.5, 2])
     with col_prov1:
-        provider_options = ["local", "gemini", "groq", "openai", "ollama"]
+        provider_options = ["local", "gemini", "claude", "groq", "openai", "ollama"]
         provider_format = {
             "local": "⚡ Local NLG (Offline & Private)",
             "gemini": "🌟 Google Gemini API",
+            "claude": "🎭 Anthropic Claude (Claude 3.5 Sonnet)",
             "groq": "🚀 Groq (Llama-3.1)",
             "openai": "🤖 OpenAI (GPT-4o)",
             "ollama": "💻 Local Ollama"
@@ -1529,8 +1425,15 @@ with tab_controls:
         st.session_state["llm_provider"] = selected_prov
 
     with col_prov2:
-        if selected_prov in ["gemini", "groq", "openai"]:
-            key_label = "Google Gemini API Key:" if selected_prov == "gemini" else "Groq API Key:" if selected_prov == "groq" else "OpenAI API Key:"
+        if selected_prov in ["gemini", "claude", "groq", "openai"]:
+            if selected_prov == "gemini":
+                key_label = "Google Gemini API Key:"
+            elif selected_prov == "claude":
+                key_label = "Anthropic Claude API Key:"
+            elif selected_prov == "groq":
+                key_label = "Groq API Key:"
+            else:
+                key_label = "OpenAI API Key:"
             api_key_input = st.text_input(
                 key_label,
                 type="password",
@@ -1538,6 +1441,8 @@ with tab_controls:
                 help="Optional. Leave blank to automatically use the built-in Local Natural Language engine."
             )
             st.session_state["llm_api_key"] = api_key_input
+        elif selected_prov == "ollama":
+            st.info("💻 **Ollama Active:** Connecting to local Ollama instance on `http://localhost:11434` with model `llama3`.")
         else:
             st.info("💡 **Local NLG Active:** Operates 100% offline with zero external API keys needed. All synthesis happens locally on your computer.")
 

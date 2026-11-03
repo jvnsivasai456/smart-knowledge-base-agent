@@ -23,7 +23,7 @@ Time Allocated: ~1.5 Minutes
 ChatGPT hallucinates & lacks private college data.
 - Our Solution: Local AI Agent with cited answers.
 - Frontend UI: Streamlit Web UI + Native Desktop App with
-chat chips & knowledge library table.MEMBER 2: BHARGAV (44110216)
+AI chat workspace & knowledge library table.MEMBER 2: BHARGAV (44110216)
 Role: Architecture & Backend Lead
 Time Allocated: ~1.5 to 2 Minutes
 - System Architecture Diagram (Fig 4.1):
@@ -91,8 +91,7 @@ Two Modes of Access Built:
 a standalone, borderless Windows software window.
 Key UI Components on Screen:
 * AI Agent Chat Desk: Interactive search box with query suggestions.
-* 1-Click Starter Chips: 'Vuforia & Unity', 'Explain Simply', 'Summarize All' for immediate
-quick queries.
+* Clean Conversational AI Desk: Intuitive prompt bar with real-time semantic query answering.
 * Knowledge Library Desk: Shows all 6 indexed files, types (PDF/DOCX), and chunk
 numbers.
 * Controls & Settings: Toggles between local offline synthesis and Gemini AI.SPOKEN SCRIPT (WHAT SIVA SAI SAYS TO MA'AM)
@@ -102,12 +101,10 @@ students. We built two interfaces:
 First, a Web UI built with Streamlit running on port 8501. Second, a Desktop App using
 PyWebView that opens as a native Windows window.
 On the screen, users have three main tabs:
-1. The AI Chat tab, where students can type any question or click quick buttons like
-'Vuforia & Unity'.
+1. The AI Chat tab, where students and teachers can type any question in natural language to query their documents.
 2. The Knowledge Library tab, which shows all active documents, file sizes, and chunk
 numbers.
-3. The Controls tab, which lets us switch between offline local mode and Gemini cloud
-mode.
+3. The Controls tab, which lets us configure natural language models including offline Local NLG, Claude, and Gemini.
 Now, my teammate Bhargav will explain our System Architecture Diagram and the
 Backend engine."
 `
@@ -205,8 +202,7 @@ Smart Knowledge Base Agent | 5-Minute Review Presentation for Internal Guide Ms.
 5. Gated Retrieval: User asks query -> Hybrid search retrieves top chunks -> Gated check
 -> Grounded answer generated.
 What to Show Ma'am During Demo:
-* 1. Run Frontend: Double-click run_app.bat -> Click 'Vuforia & Unity' -> Show cited
-answer.
+* 1. Run Frontend: Double-click run_app.bat -> Type query -> Show cited answer.
 * 2. Run Backend Docs: Open http://localhost:8000/docs -> Test GET /health.
 * 3. Run Database Audit: In PowerShell run .\venv\Scripts\python.exe show_db.py.SPOKEN SCRIPT & CLOSING (KARTHIKEYA)
 Closing Script (1 Minute):
@@ -218,8 +214,7 @@ The best part is Zero Downtime: new files are indexed in the background without
 restarting the server.
 Now, let us show you the live running project:
 1. We run run_app.bat to launch our frontend.
-2. We click the 'Vuforia & Unity' button on screen to show the exact answer from our
-college document.
+2. We type a question on screen to show the exact cited answer from our college document.
 3. We show our Swagger API at port 8000.
 4. And we run python show_db.py in terminal to prove our 61 vectors and 6 files in
 ChromaDB and SQLite.

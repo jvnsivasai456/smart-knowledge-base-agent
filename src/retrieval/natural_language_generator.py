@@ -12,9 +12,10 @@ class NaturalLanguageGenerator:
     Natural Language Generation (NLG) engine for the Smart Knowledge Base Agent.
     Supports:
     1. Google Gemini API (gemini-1.5-flash / gemini-2.0-flash) via REST
-    2. Groq API (llama-3.1-8b-instant) via REST
-    3. OpenAI API (gpt-4o-mini) via REST
-    4. Local Ollama via REST
+    2. Anthropic Claude API (claude-3-5-sonnet-20241022) via REST
+    3. Groq API (llama-3.1-8b-instant) via REST
+    4. OpenAI API (gpt-4o-mini) via REST
+    5. Local Ollama via REST
     5. Local Natural Language Synthesizer (Offline, zero-API-key, fully local)
     """
 
@@ -34,7 +35,7 @@ class NaturalLanguageGenerator:
         Supported engine IDs: 'local', 'gemini', 'groq', 'openai', 'ollama'.
         """
         active_provider = (provider or os.getenv("LLM_PROVIDER") or self.default_provider).lower().strip()
-        effective_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
+        effective_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
 
         # 1. Try cloud LLM if configured and key is available
         if active_provider in ["gemini", "google"] and effective_key:
@@ -44,6 +45,14 @@ class NaturalLanguageGenerator:
                     return response, "gemini"
             except Exception as e:
                 logger.warning(f"Gemini API call failed, falling back to local NLG: {e}")
+
+        elif active_provider in ["claude", "anthropic"] and effective_key:
+            try:
+                response = self._call_claude(query, context_chunks, doc_names, effective_key)
+                if response:
+                    return response, "claude"
+            except Exception as e:
+                logger.warning(f"Claude API call failed, falling back to local NLG: {e}")
 
         elif active_provider in ["groq"] and effective_key:
             try:
