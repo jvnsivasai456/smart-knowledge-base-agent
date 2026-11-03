@@ -102,22 +102,16 @@ class NaturalLanguageGenerator:
         docs_str = ", ".join([f"`{d}`" for d in doc_names]) if doc_names else "indexed files"
         context_str = "\n\n---\n\n".join(context_chunks)
         return (
-            f"You are the Smart Knowledge Base Agent. Your role is to help users quickly find, understand, and apply information from the knowledge base.\n\n"
-            f"Answer the user's question accurately based strictly on the following document context from {docs_str}.\n\n"
+            f"You are the Smart Knowledge Base Agent.\n\n"
+            f"Answer the user's question accurately in SIMPLE, CLEAR ENGLISH based strictly on the document context from {docs_str}.\n\n"
             f"Guidelines:\n"
-            f"1. Tone: Warm, clear, concise, and professional. Avoid robotic intros like 'Based on the provided documents' or 'Here is the information you requested.'\n"
-            f"2. Structure:\n"
-            f"   - Start immediately with the direct answer in the first 1-2 sentences.\n"
-            f"   - Use bold bullet points for lists, specifications, or key conditions.\n"
-            f"   - If a step-by-step process is required, number the steps chronologically.\n"
-            f"3. Citation & Grounding:\n"
-            f"   - Ground answers strictly in the knowledge base context.\n"
-            f"   - If information is missing or uncertain, state what is known and clarify what is missing. Never fabricate facts.\n"
-            f"4. Next Steps:\n"
-            f"   - Conclude complex answers with a single actionable follow-up suggestion.\n\n"
+            f"1. Language: Use plain, simple English that is very easy to read and understand. Avoid complex technical jargon.\n"
+            f"2. Length: Keep your answer SHORT and concise (under 2-3 brief paragraphs or short bullet points). Avoid long essays or filler words.\n"
+            f"3. Direct Answer: Start immediately with the direct answer in the very first sentence.\n"
+            f"4. Grounding: Answer strictly using facts from the context. If information is not in the documents, state 'This information is not found in the uploaded documents' in one sentence.\n\n"
             f"DOCUMENT CONTEXT:\n{context_str}\n\n"
             f"USER QUESTION: {query}\n\n"
-            f"ANSWER:"
+            f"SHORT ANSWER IN SIMPLE ENGLISH:"
         )
 
     def _call_gemini(self, query: str, context_chunks: List[str], doc_names: List[str], api_key: str) -> Optional[str]:
@@ -129,7 +123,7 @@ class NaturalLanguageGenerator:
             ],
             "generationConfig": {
                 "temperature": 0.2,
-                "maxOutputTokens": 1024
+                "maxOutputTokens": 512
             }
         }
         res = requests.post(url, json=payload, timeout=20)
@@ -143,6 +137,31 @@ class NaturalLanguageGenerator:
         logger.warning(f"Gemini API returned status {res.status_code}: {res.text}")
         return None
 
+    def _call_claude(self, query: str, context_chunks: List[str], doc_names: List[str], api_key: str) -> Optional[str]:
+        prompt = self._build_prompt(query, context_chunks, doc_names)
+        url = "https://api.anthropic.com/v1/messages"
+        headers = {
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        }
+        payload = {
+            "model": "claude-3-5-sonnet-20241022",
+            "max_tokens": 512,
+            "system": "You are the Smart Knowledge Base Agent. Provide short, concise answers in simple, easy-to-understand English based strictly on document knowledge.",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ]
+        }
+        res = requests.post(url, headers=headers, json=payload, timeout=20)
+        if res.status_code == 200:
+            data = res.json()
+            content_list = data.get("content", [])
+            if content_list and isinstance(content_list, list):
+                return content_list[0].get("text", "").strip()
+        logger.warning(f"Claude API returned status {res.status_code}: {res.text}")
+        return None
+
     def _call_groq(self, query: str, context_chunks: List[str], doc_names: List[str], api_key: str) -> Optional[str]:
         prompt = self._build_prompt(query, context_chunks, doc_names)
         url = "https://api.groq.com/openai/v1/chat/completions"
@@ -150,7 +169,7 @@ class NaturalLanguageGenerator:
         payload = {
             "model": "llama-3.1-8b-instant",
             "messages": [
-                {"role": "system", "content": "You are the Smart Knowledge Base Agent, an articulate and accurate assistant grounded strictly in document knowledge."},
+                {"role": "system", "content": "You are the Smart Knowledge Base Agent. Give short, direct answers in simple English based strictly on document knowledge."},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.2
@@ -167,7 +186,7 @@ class NaturalLanguageGenerator:
         payload = {
             "model": "gpt-4o-mini",
             "messages": [
-                {"role": "system", "content": "You are the Smart Knowledge Base Agent, an articulate and accurate assistant grounded strictly in document knowledge."},
+                {"role": "system", "content": "You are the Smart Knowledge Base Agent. Give short, direct answers in simple English based strictly on document knowledge."},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.2
@@ -227,25 +246,21 @@ class NaturalLanguageGenerator:
         return self._synthesize_definitions_and_concepts(q_lower, combined, doc_str)
 
     def _synthesize_ftest(self, q_lower: str, text: str, doc_str: str) -> str:
-        """Generate a structured, rigorous technical explanation for F-test queries."""
+        """Generate a short, simple English explanation for F-test queries."""
         out = []
-        out.append("An **F-test** is a statistical hypothesis test used to evaluate whether the variances of two independent populations or sample sets are equal.")
+        out.append("An **F-test** compares two groups of data to see if their spread (variance) is equal.")
         
-        # Check if user asked about hypotheses
         if "null" in q_lower or "alternative" in q_lower or "hypothesis" in q_lower or "hypotheses" in q_lower:
-            out.append("\n### 🎯 Formal Hypothesis Formulation:")
-            out.append("* **Null Hypothesis ($H_0$):**\n  $$H_0 : \\sigma_1^2 = \\sigma_2^2$$\n  *Interpretation:* Both populations possess identical variances ($\\sigma_1^2 = \\sigma_2^2$).")
-            out.append("* **Alternative Hypothesis ($H_1$):**\n  $$H_1 : \\sigma_1^2 \\neq \\sigma_2^2$$\n  *Interpretation:* The variances of the two populations differ significantly ($\\sigma_1^2 \\neq \\sigma_2^2$).")
-            out.append("* **Test Type:** Two-tailed test evaluated at the standard $\\alpha = 0.05$ significance level.")
+            out.append("\n**Hypotheses in Simple English:**")
+            out.append("* **Null Hypothesis ($H_0$):** Both groups have equal variances ($\\sigma_1^2 = \\sigma_2^2$).")
+            out.append("* **Alternative Hypothesis ($H_1$):** The variances are different ($\\sigma_1^2 \\neq \\sigma_2^2$).")
 
-        # Check if user asked about calculation or decision
         if any(w in q_lower for w in ["calculate", "f-statistic", "statistic", "degrees of freedom", "critical", "decision", "conclusion", "solution", "solve"]):
-            out.append("\n### 🔢 Step-by-Step Statistical Calculation:")
-            out.append("1. **Calculate Sample Variances:**\n   - Sample 1: $s_1 = 8 \\implies s_1^2 = 64$ ($n_1 = 15$)\n   - Sample 2: $s_2 = 5 \\implies s_2^2 = 25$ ($n_2 = 12$)\n   *(Assign the larger sample variance to the numerator)*")
-            out.append("2. **Compute the F-Statistic:**\n   $$F = \\frac{s_1^2}{s_2^2} = \\frac{64}{25} = 2.56$$")
-            out.append("3. **Determine Degrees of Freedom ($df$):**\n   - Numerator: $df_1 = n_1 - 1 = 15 - 1 = 14$\n   - Denominator: $df_2 = n_2 - 1 = 12 - 1 = 11$")
-            out.append("4. **Critical Value from F-Distribution Table ($F_{\\text{crit}}$):**\n   At $\\alpha = 0.05$, $F_{0.05}(14, 11) = \\mathbf{3.36}$.")
-            out.append("5. **Statistical Decision & Inference:**\n   Since the computed test statistic ($F = 2.56$) is strictly less than the critical threshold ($F_{\\text{crit}} = 3.36$), we **fail to reject (accept)** the null hypothesis $H_0$. There is no statistically significant difference between the two population variances.")
+            out.append("\n**Calculation:**")
+            out.append("1. **F-Statistic:** $F = \\frac{s_1^2}{s_2^2} = \\frac{64}{25} = 2.56$")
+            out.append("2. **Degrees of Freedom:** $df_1 = 14$, $df_2 = 11$")
+            out.append("3. **Critical Value ($F_{\\text{crit}}$):** At $\\alpha = 0.05$, $F = 3.36$")
+            out.append("4. **Conclusion:** Since $2.56 < 3.36$, we **accept $H_0$**. The variances are equal.")
 
         return "\n\n".join(out)
 

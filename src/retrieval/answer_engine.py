@@ -72,14 +72,10 @@ class AnswerEngine:
         elif any(w in q_clean for w in ["bye", "goodbye"]):
             answer = "👋 **Goodbye!** Have a wonderful day!"
         else:
+            doc_info = f" ({doc_count} document{'s' if doc_count > 1 else ''} ready)" if doc_count > 0 else ""
             answer = (
-                "👋 **Hello! I'm your Smart Knowledge Base Agent.**\n\n"
-                "I analyze and synthesize accurate answers grounded directly in your uploaded technical documentation."
-                f"{doc_list_text}\n\n"
-                "**What you can do:**\n"
-                "- 💬 Ask technical inquiries regarding concepts, architectures, or calculations (e.g., *'What is Vuforia?'* or *'Formulate the F-test hypotheses'*)\n"
-                "- 📋 Ask me to summarize your documents\n"
-                "- 📁 Upload more documents anytime"
+                f"👋 **Hello!** I'm your Smart Knowledge Base Agent{doc_info}.\n\n"
+                "Ask me any question in simple English, and I will give you a short, direct answer from your documents!"
             )
             
         return {
